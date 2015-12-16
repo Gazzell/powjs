@@ -7,7 +7,7 @@ describe("Engine initialization", function() {
     afterEach(function() { });
     describe(" - ResourceManager initialization -->", function(){
         it('Resource manager exists', function() {
-            assert.isDefined( engine.resourceMgr, ' Engine.resoruceMgr not defined' );
+            assert.isDefined( engine.resourceMgr, ' Engine.resourceMgr not defined' );
         });
         it('Has pepe', function() {
             expect( engine.resourceMgr.pepe ).to.equal("pepe");

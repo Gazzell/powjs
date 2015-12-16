@@ -5,7 +5,7 @@ import { default as RenderManager } from "./core/renderManager.jsx";
 class Engine {
     constructor( params ){
         this.htmlContainer = undefined;
-        this.renderMgr = new core.RenderManager( );
+        this.renderMgr = new RenderManager( );
         this.resourceMgr = new core.ResourceManager( );
         if(!params){
             params = {};
