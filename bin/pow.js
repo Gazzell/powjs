@@ -1,17 +1,326 @@
-var pow=function(t){function e(r){if(n[r])return n[r].exports;var i=n[r]={exports:{},id:r,loaded:!1};return t[r].call(i.exports,i,i.exports,e),i.loaded=!0,i.exports}var n={};return e.m=t,e.c=n,e.p="",e(0)}([/*!********************!*\
-  !*** ./src/pow.js ***!
-  \********************/
-function(t,e,n){"use strict";function r(t){if(t&&t.__esModule)return t;var e={};if(null!=t)for(var n in t)Object.prototype.hasOwnProperty.call(t,n)&&(e[n]=t[n]);return e["default"]=t,e}function i(t){return t&&t.__esModule?t:{"default":t}}Object.defineProperty(e,"__esModule",{value:!0}),e.utils=e.core=e.Engine=void 0;var o=n(3),u=i(o),a=n(1),s=i(a),c=n(4),l=r(c);e.Engine=u["default"],e.core=s["default"],e.utils=l},/*!***************************!*\
-  !*** ./src/core/core.jsx ***!
-  \***************************/
-function(t,e,n){"use strict";function r(t){return t&&t.__esModule?t:{"default":t}}Object.defineProperty(e,"__esModule",{value:!0}),e["default"]=void 0;var i=n(2),o=r(i),u={ResourceManager:o["default"]};e["default"]=u},/*!**************************************!*\
-  !*** ./src/core/resourceManager.jsx ***!
-  \**************************************/
-function(t,e){"use strict";function n(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}Object.defineProperty(e,"__esModule",{value:!0});var r=function i(){n(this,i),this.pepe="pepe"};e["default"]=r},/*!************************!*\
-  !*** ./src/engine.jsx ***!
-  \************************/
-function(t,e,n){"use strict";function r(t){return t&&t.__esModule?t:{"default":t}}function i(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}var o=function(){function t(t,e){for(var n=0;n<e.length;n++){var r=e[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(t,r.key,r)}}return function(e,n,r){return n&&t(e.prototype,n),r&&t(e,r),e}}();Object.defineProperty(e,"__esModule",{value:!0}),e["default"]=void 0;var u=n(1),a=r(u),s=function(){function t(e){i(this,t),this._scene=void 0,this._viewport=void 0,this.htmlContainer=void 0,this.renderMgr=void 0,this.resourceMgr=new a["default"].ResourceManager,e||(e={}),e.container?this.htmlContainer=e.container:(this.htmlContainer=document.createElement("div"),this.htmlContainer.name="TWO_Div",this.htmlContainer.id="TWO_Div",this.htmlContainer.setAttribute("style","position:absolute;top:0px;left:0px;"),e.container=this.htmlContainer)}return o(t,[{key:"scene",get:function(){return this._scene},set:function(t){this._scene!==t&&(this._scene=t)}},{key:"viewport",get:function(){return this._viewport},set:function(t){this._viewport=t}}]),t}();e["default"]=s},/*!*****************************!*\
-  !*** ./src/utils/utils.jsx ***!
-  \*****************************/
-function(t,e){"use strict";function n(t){var e=t.split("/");return e.pop(),e.length<1?"":e.join("/")+"/"}function r(t){var e=t,n=void 0,r=void 0,i="";"http://"==e.substr(0,7)&&(i="http://",e=e.substring(7,e.length));var o=e.split("/");for(e="",n=o.length;n>0;)r=o.pop(),""!=r&&(e=""==e?r:r+"/"+e),n--,0==n&&"/"==t[0]&&(e="/"+e);return i+e}function i(){var t=void 0,e=function(){return(65536*(1+Math.random())|0).toString(16).substring(1)};return t=e()+e()+e()+e()}function o(t){for(var e=2;t>e;)e*=2;return e}Object.defineProperty(e,"__esModule",{value:!0}),e.extractUrlBase=n,e.normalizeUrl=r,e.generateGUID=i,e.computePowerOfTwo=o;e.extractFileName=function(t){return t.split("/").pop()},e.extractExt=function(t){return t.split(".").pop()}}]);
-//# sourceMappingURL=pow.js.map
+var pow =
+/******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId])
+/******/ 			return installedModules[moduleId].exports;
+
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			exports: {},
+/******/ 			id: moduleId,
+/******/ 			loaded: false
+/******/ 		};
+
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+
+/******/ 		// Flag the module as loaded
+/******/ 		module.loaded = true;
+
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+
+
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(0);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Created by joseba on 10/12/15.
+	 */
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.utils = exports.core = exports.Engine = undefined;
+
+	var _engine2 = __webpack_require__(1);
+
+	var _engine3 = _interopRequireDefault(_engine2);
+
+	var _core2 = __webpack_require__(2);
+
+	var _core3 = _interopRequireDefault(_core2);
+
+	var _utils2 = __webpack_require__(5);
+
+	var _utils = _interopRequireWildcard(_utils2);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var Engine = exports.Engine = _engine3.default;
+	var core = exports.core = _core3.default;
+	var utils = exports.utils = _utils;
+
+/***/ },
+/* 1 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.default = undefined;
+
+	var _core = __webpack_require__(2);
+
+	var _core2 = _interopRequireDefault(_core);
+
+	var _renderManager = __webpack_require__(4);
+
+	var _renderManager2 = _interopRequireDefault(_renderManager);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var Engine = function Engine(params) {
+	    _classCallCheck(this, Engine);
+
+	    this.htmlContainer = undefined;
+	    this.renderMgr = new _core2.default.RenderManager();
+	    this.resourceMgr = new _core2.default.ResourceManager();
+	    if (!params) {
+	        params = {};
+	    }
+
+	    if (!params.container) {
+	        this.htmlContainer = document.createElement('div');
+	        this.htmlContainer.name = 'POW_Div';
+	        this.htmlContainer.id = 'POW_Div';
+	        this.htmlContainer.setAttribute("style", "position:absolute;top:0px;left:0px;");
+	        params.container = this.htmlContainer;
+	    } else {
+	        this.htmlContainer = params.container;
+	    }
+	};
+
+	exports.default = Engine;
+
+/***/ },
+/* 2 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Created by joseba on 10/12/15.
+	 */
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = undefined;
+
+	var _resourceManager = __webpack_require__(3);
+
+	var _resourceManager2 = _interopRequireDefault(_resourceManager);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var core = {
+	  ResourceManager: _resourceManager2.default
+	};
+	exports.default = core;
+
+/***/ },
+/* 3 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var ResourceManager = function ResourceManager() {
+	    _classCallCheck(this, ResourceManager);
+
+	    this.pepe = "pepe";
+	};
+
+	exports.default = ResourceManager;
+
+/***/ },
+/* 4 */
+/***/ function(module, exports) {
+
+	/**
+	 * Created by joseba on 12/12/15.
+	 */
+	"use strict";
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var RenderManager = (function () {
+	    function RenderManager(params) {
+	        _classCallCheck(this, RenderManager);
+
+	        this._scene = undefined;
+	    }
+
+	    _createClass(RenderManager, [{
+	        key: "scene",
+	        get: function get() {
+	            return this._scene;
+	        },
+	        set: function set(value) {}
+	    }]);
+
+	    return RenderManager;
+	})();
+
+	exports.default = RenderManager;
+
+/***/ },
+/* 5 */
+/***/ function(module, exports) {
+
+	/**
+	 * Created by joseba on 11/12/15.
+	 */
+	"use strict"
+
+	/**
+	 * Extracts base path from an URL
+	 * @param {string} url. URL to parse
+	 * @returns {string}. Base URL
+	 */
+	;
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.extractUrlBase = extractUrlBase;
+	exports.normalizeUrl = normalizeUrl;
+	exports.generateGUID = generateGUID;
+	exports.computePowerOfTwo = computePowerOfTwo;
+	function extractUrlBase(url) {
+	    var parts = url.split('/');
+	    parts.pop();
+	    return parts.length < 1 ? '' : parts.join('/') + '/';
+	}
+
+	/**
+	 * Extracts fileName from an URL
+	 * @param {string} url. Complete URL
+	 * @returns {string} [fileName]. File name
+	 */
+	var extractFileName = exports.extractFileName = function extractFileName(url) {
+	    return url.split('/').pop();
+	};
+
+	/**
+	 * Very basic func to extract a file extension from its name
+	 * @param {string} url. File URL, assuming the file has only a '.' separating file extension
+	 * @returns {string} file extension
+	 */
+	var extractExt = exports.extractExt = function extractExt(url) {
+	    return url.split('.').pop();
+	};
+
+	/**
+	 * Normalize URL, removing '//' and other chars
+	 * @param {string} url. URL to normalize
+	 * @returns {string} Normalized URL
+	 */
+	function normalizeUrl(url) {
+	    var newUrl = url,
+	        len = undefined,
+	        tag = undefined;
+
+	    var httpHead = "";
+	    if (newUrl.substr(0, 7) == 'http://') {
+	        httpHead = 'http://';
+	        newUrl = newUrl.substring(7, newUrl.length);
+	    }
+	    // remove extra slashes
+	    var tags = newUrl.split('/');
+	    newUrl = '';
+
+	    len = tags.length;
+	    while (len > 0) {
+	        tag = tags.pop();
+	        if (tag != '') {
+	            if (newUrl == '') {
+	                newUrl = tag;
+	            } else {
+	                newUrl = tag + '/' + newUrl;
+	            }
+	        }
+	        len--;
+	        if (len == 0 && url[0] == '/') {
+	            newUrl = '/' + newUrl;
+	        }
+	    }
+
+	    return httpHead + newUrl;
+	}
+
+	/**
+	 * Generates a random UID
+	 * @returns {number} generated UID
+	 */
+	function generateGUID() {
+	    var newGuid = undefined;
+
+	    var S4 = function S4() {
+	        return ((1 + Math.random()) * 0x10000 | 0).toString(16).substring(1);
+	    };
+
+	    newGuid = S4() + S4() + S4() + S4();
+
+	    return newGuid;
+	}
+
+	/**
+	 * Normalize URL, removing '//' and other chars
+	 * @param {number} num. Number to find the nearest power of two
+	 * @returns {number} power of two
+	 */
+	function computePowerOfTwo(num) {
+	    // brute force solution
+	    var poweroftwo = 2;
+
+	    // while power of two is smaller
+	    while (poweroftwo < num) {
+	        // compute next one
+	        poweroftwo *= 2;
+	    }
+
+	    return poweroftwo;
+	}
+
+/***/ }
+/******/ ]);
