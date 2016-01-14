@@ -9,7 +9,15 @@ class ObjectFactory {
         this.typeConstructors = new Map();
     }
 
-    static registerObjectType( typeName, constructor ){
+    registerObjects( objects ){
+        for( var key in objects ){
+            if( objects.hasOwnProperty( key ) ){
+                this.registerObjectType( key, objects[ key ] );
+            }
+        }
+    }
+
+    registerObjectType( typeName, constructor ){
         if( !this.objectPool.has( typeName ) ){
             this.objectPool.set( typeName, [] );
         }
@@ -18,18 +26,18 @@ class ObjectFactory {
         }
     }
 
-    static create( objectType ){
-        if( this.objectPool.has( object.type && this.typeConstructors.has( object.type ) ) ){
-            let objectArray = this.objectPool.get( object.type );
+    create( objectType ){
+        if( this.objectPool.has( objectType ) && this.typeConstructors.has( objectType ) ){
+            let objectArray = this.objectPool.get( objectType );
             if(  objectArray.length > 0) {
                 return objectArray.pop();
             } else {
-                return new this.typeConstructors.get( objectType )();
+                return new ( this.typeConstructors.get( objectType ) )();
             }
         }
     }
 
-    static free( object ){
+    free( object ){
         if( this.objectPool.has( object.type ) ){
             object.init();
             this.objectPool.get( object.type ).push( object );

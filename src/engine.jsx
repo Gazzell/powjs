@@ -8,6 +8,8 @@ class Engine {
         this.renderMgr = new RenderManager( );
         this.resourceMgr = new core.ResourceManager( );
         this.objectFactory = new core.ObjectFactory( );
+        this.objectFactory.registerObjects( core.renderables );
+
         if(!params){
             params = {};
         }

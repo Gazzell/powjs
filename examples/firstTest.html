@@ -6,8 +6,8 @@
 </head>
 <script src="../bin/pow.js"></script>
 <script>
-    var pp = new pow.core.ResourceManager();
-    console.log(pp.pepe);
+    var engine = new pow.Engine();
+    var pepe = engine.objectFactory.create('SceneObject');
 </script>
 
 <body>

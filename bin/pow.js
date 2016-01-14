@@ -106,6 +106,8 @@ var pow =
 	    this.renderMgr = new _renderManager2.default();
 	    this.resourceMgr = new _core2.default.ResourceManager();
 	    this.objectFactory = new _core2.default.ObjectFactory();
+	    this.objectFactory.registerObjects(_core2.default.renderables);
+
 	    if (!params) {
 	        params = {};
 	    }
@@ -203,7 +205,16 @@ var pow =
 	        this.typeConstructors = new Map();
 	    }
 
-	    _createClass(ObjectFactory, null, [{
+	    _createClass(ObjectFactory, [{
+	        key: "registerObjects",
+	        value: function registerObjects(objects) {
+	            for (var key in objects) {
+	                if (objects.hasOwnProperty(key)) {
+	                    this.registerObjectType(key, objects[key]);
+	                }
+	            }
+	        }
+	    }, {
 	        key: "registerObjectType",
 	        value: function registerObjectType(typeName, constructor) {
 	            if (!this.objectPool.has(typeName)) {
@@ -216,12 +227,12 @@ var pow =
 	    }, {
 	        key: "create",
 	        value: function create(objectType) {
-	            if (this.objectPool.has(object.type && this.typeConstructors.has(object.type))) {
-	                var objectArray = this.objectPool.get(object.type);
+	            if (this.objectPool.has(objectType) && this.typeConstructors.has(objectType)) {
+	                var objectArray = this.objectPool.get(objectType);
 	                if (objectArray.length > 0) {
 	                    return objectArray.pop();
 	                } else {
-	                    return new this.typeConstructors.get(objectType)();
+	                    return new (this.typeConstructors.get(objectType))();
 	                }
 	            }
 	        }
