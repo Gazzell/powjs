@@ -64,7 +64,7 @@ var pow =
 
 	var _core3 = _interopRequireDefault(_core2);
 
-	var _utils2 = __webpack_require__(5);
+	var _utils2 = __webpack_require__(8);
 
 	var _utils = _interopRequireWildcard(_utils2);
 
@@ -91,7 +91,7 @@ var pow =
 
 	var _core2 = _interopRequireDefault(_core);
 
-	var _renderManager = __webpack_require__(4);
+	var _renderManager = __webpack_require__(7);
 
 	var _renderManager2 = _interopRequireDefault(_renderManager);
 
@@ -103,8 +103,9 @@ var pow =
 	    _classCallCheck(this, Engine);
 
 	    this.htmlContainer = undefined;
-	    this.renderMgr = new _core2.default.RenderManager();
+	    this.renderMgr = new _renderManager2.default();
 	    this.resourceMgr = new _core2.default.ResourceManager();
+	    this.objectFactory = new _core2.default.ObjectFactory();
 	    if (!params) {
 	        params = {};
 	    }
@@ -132,7 +133,7 @@ var pow =
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
-	  value: true
+	    value: true
 	});
 	exports.default = undefined;
 
@@ -140,10 +141,20 @@ var pow =
 
 	var _resourceManager2 = _interopRequireDefault(_resourceManager);
 
+	var _objectFactory = __webpack_require__(4);
+
+	var _objectFactory2 = _interopRequireDefault(_objectFactory);
+
+	var _renderables = __webpack_require__(5);
+
+	var _renderables2 = _interopRequireDefault(_renderables);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var core = {
-	  ResourceManager: _resourceManager2.default
+	    ResourceManager: _resourceManager2.default,
+	    ObjectFactory: _objectFactory2.default,
+	    renderables: _renderables2.default
 	};
 	exports.default = core;
 
@@ -169,6 +180,118 @@ var pow =
 
 /***/ },
 /* 4 */
+/***/ function(module, exports) {
+
+	/**
+	 * Created by joseba on 14/1/16.
+	 */
+	"use strict";
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var ObjectFactory = (function () {
+	    function ObjectFactory() {
+	        _classCallCheck(this, ObjectFactory);
+
+	        this.objectPool = new Map();
+	        this.typeConstructors = new Map();
+	    }
+
+	    _createClass(ObjectFactory, null, [{
+	        key: "registerObjectType",
+	        value: function registerObjectType(typeName, constructor) {
+	            if (!this.objectPool.has(typeName)) {
+	                this.objectPool.set(typeName, []);
+	            }
+	            if (!this.typeConstructors.has(typeName)) {
+	                this.typeConstructors.set(typeName, constructor);
+	            }
+	        }
+	    }, {
+	        key: "create",
+	        value: function create(objectType) {
+	            if (this.objectPool.has(object.type && this.typeConstructors.has(object.type))) {
+	                var objectArray = this.objectPool.get(object.type);
+	                if (objectArray.length > 0) {
+	                    return objectArray.pop();
+	                } else {
+	                    return new this.typeConstructors.get(objectType)();
+	                }
+	            }
+	        }
+	    }, {
+	        key: "free",
+	        value: function free(object) {
+	            if (this.objectPool.has(object.type)) {
+	                object.init();
+	                this.objectPool.get(object.type).push(object);
+	            }
+	        }
+	    }]);
+
+	    return ObjectFactory;
+	})();
+
+	exports.default = ObjectFactory;
+
+/***/ },
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Created by joseba on 14/1/16.
+	 */
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = undefined;
+
+	var _sceneObject = __webpack_require__(6);
+
+	var _sceneObject2 = _interopRequireDefault(_sceneObject);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var renderables = {
+	  SceneObject: _sceneObject2.default
+	};
+	exports.default = renderables;
+
+/***/ },
+/* 6 */
+/***/ function(module, exports) {
+
+	/**
+	 * Created by joseba on 14/1/16.
+	 */
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var SceneObject = function SceneObject(params) {
+	    _classCallCheck(this, SceneObject);
+
+	    this.type = 'SceneObject';
+	};
+
+	exports.default = SceneObject;
+
+/***/ },
+/* 7 */
 /***/ function(module, exports) {
 
 	/**
@@ -205,7 +328,7 @@ var pow =
 	exports.default = RenderManager;
 
 /***/ },
-/* 5 */
+/* 8 */
 /***/ function(module, exports) {
 
 	/**

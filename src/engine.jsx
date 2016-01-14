@@ -7,6 +7,7 @@ class Engine {
         this.htmlContainer = undefined;
         this.renderMgr = new RenderManager( );
         this.resourceMgr = new core.ResourceManager( );
+        this.objectFactory = new core.ObjectFactory( );
         if(!params){
             params = {};
         }
