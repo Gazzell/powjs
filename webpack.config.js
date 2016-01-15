@@ -1,5 +1,5 @@
 module.exports = {
-    entry: './src/pow.js',
+    entry: ['babel-polyfill', './src/pow.js'],
     output: {
         filename: 'pow.js',
         path: __dirname +'/bin',
