@@ -3,15 +3,16 @@
  */
 "use strict";
 
-class RenderManager {
-    constructor( params ){
-        this._scene = undefined;
-    }
+var renderManager = new (
+    class RenderManager {
+        constructor( params ){
+            this._scene = undefined;
+        }
 
-    get scene(){ return this._scene; }
-    set scene( value ){
+        get scene(){ return this._scene; }
+        set scene( value ){
 
-    }
-}
+        }
+    })();
 
-export { RenderManager as default };
+export { renderManager as default };

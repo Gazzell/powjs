@@ -1,13 +1,13 @@
 "use strict";
 import { default as core } from "./core/core.jsx";
-import { default as RenderManager } from "./core/renderManager.jsx";
 
 class Engine {
     constructor( params ){
         this.htmlContainer = undefined;
-        this.renderMgr = new RenderManager( );
-        this.resourceMgr = new core.ResourceManager( );
-        this.objectFactory = new core.ObjectFactory( );
+        this.renderMgr = core.renderManager;
+        this.resourceMgr = core.resourceManager;
+        this.objectFactory = core.objectFactory;
+        this.objectFactory.registerObjects( core.math );
         this.objectFactory.registerObjects( core.renderables );
 
         if(!params){

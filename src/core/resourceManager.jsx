@@ -1,8 +1,9 @@
 "use strict";
-class ResourceManager {
-    constructor(){
-        this.pepe = "pepe";
-    }
-}
+var resourceManager = new(
+    class ResourceManager {
+        constructor(){
+            this.pepe = "pepe";
+        }
+    })();
 
-export { ResourceManager as default };
+export { resourceManager as default };

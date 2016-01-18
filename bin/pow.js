@@ -5335,7 +5335,7 @@ var pow =
 
 	var _core3 = _interopRequireDefault(_core2);
 
-	var _utils2 = __webpack_require__(199);
+	var _utils2 = __webpack_require__(203);
 
 	var _utils = _interopRequireWildcard(_utils2);
 
@@ -5362,10 +5362,6 @@ var pow =
 
 	var _core2 = _interopRequireDefault(_core);
 
-	var _renderManager = __webpack_require__(198);
-
-	var _renderManager2 = _interopRequireDefault(_renderManager);
-
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -5374,9 +5370,10 @@ var pow =
 	    _classCallCheck(this, Engine);
 
 	    this.htmlContainer = undefined;
-	    this.renderMgr = new _renderManager2.default();
-	    this.resourceMgr = new _core2.default.ResourceManager();
-	    this.objectFactory = new _core2.default.ObjectFactory();
+	    this.renderMgr = _core2.default.renderManager;
+	    this.resourceMgr = _core2.default.resourceManager;
+	    this.objectFactory = _core2.default.objectFactory;
+	    this.objectFactory.registerObjects(_core2.default.math);
 	    this.objectFactory.registerObjects(_core2.default.renderables);
 
 	    if (!params) {
@@ -5414,20 +5411,30 @@ var pow =
 
 	var _resourceManager2 = _interopRequireDefault(_resourceManager);
 
-	var _objectFactory = __webpack_require__(195);
+	var _renderManager = __webpack_require__(195);
+
+	var _renderManager2 = _interopRequireDefault(_renderManager);
+
+	var _objectFactory = __webpack_require__(196);
 
 	var _objectFactory2 = _interopRequireDefault(_objectFactory);
 
-	var _renderables = __webpack_require__(196);
+	var _renderables = __webpack_require__(197);
 
 	var _renderables2 = _interopRequireDefault(_renderables);
+
+	var _math = __webpack_require__(199);
+
+	var _math2 = _interopRequireDefault(_math);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var core = {
-	    ResourceManager: _resourceManager2.default,
-	    ObjectFactory: _objectFactory2.default,
-	    renderables: _renderables2.default
+	    resourceManager: _resourceManager2.default,
+	    renderManager: _renderManager2.default,
+	    objectFactory: _objectFactory2.default,
+	    renderables: _renderables2.default,
+	    math: _math2.default
 	};
 	exports.default = core;
 
@@ -5443,16 +5450,53 @@ var pow =
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var ResourceManager = function ResourceManager() {
+	var resourceManager = new (function ResourceManager() {
 	    _classCallCheck(this, ResourceManager);
 
 	    this.pepe = "pepe";
-	};
+	})();
 
-	exports.default = ResourceManager;
+	exports.default = resourceManager;
 
 /***/ },
 /* 195 */
+/***/ function(module, exports) {
+
+	/**
+	 * Created by joseba on 12/12/15.
+	 */
+	"use strict";
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var renderManager = new ((function () {
+	    function RenderManager(params) {
+	        _classCallCheck(this, RenderManager);
+
+	        this._scene = undefined;
+	    }
+
+	    _createClass(RenderManager, [{
+	        key: "scene",
+	        get: function get() {
+	            return this._scene;
+	        },
+	        set: function set(value) {}
+	    }]);
+
+	    return RenderManager;
+	})())();
+
+	exports.default = renderManager;
+
+/***/ },
+/* 196 */
 /***/ function(module, exports) {
 
 	/**
@@ -5468,7 +5512,7 @@ var pow =
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var ObjectFactory = (function () {
+	var objectFactory = new ((function () {
 	    function ObjectFactory() {
 	        _classCallCheck(this, ObjectFactory);
 
@@ -5518,12 +5562,12 @@ var pow =
 	    }]);
 
 	    return ObjectFactory;
-	})();
+	})())();
 
-	exports.default = ObjectFactory;
+	exports.default = objectFactory;
 
 /***/ },
-/* 196 */
+/* 197 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -5537,7 +5581,7 @@ var pow =
 	});
 	exports.default = undefined;
 
-	var _sceneObject = __webpack_require__(197);
+	var _sceneObject = __webpack_require__(198);
 
 	var _sceneObject2 = _interopRequireDefault(_sceneObject);
 
@@ -5549,7 +5593,7 @@ var pow =
 	exports.default = renderables;
 
 /***/ },
-/* 197 */
+/* 198 */
 /***/ function(module, exports) {
 
 	/**
@@ -5573,11 +5617,47 @@ var pow =
 	exports.default = SceneObject;
 
 /***/ },
-/* 198 */
+/* 199 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Created by joseba on 18/1/16.
+	 */
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.default = undefined;
+
+	var _vector = __webpack_require__(200);
+
+	var _vector2 = _interopRequireDefault(_vector);
+
+	var _rect = __webpack_require__(201);
+
+	var _rect2 = _interopRequireDefault(_rect);
+
+	var _matrix = __webpack_require__(202);
+
+	var _matrix2 = _interopRequireDefault(_matrix);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var math = {
+	    Vector: _vector2.default,
+	    Rect: _rect2.default,
+	    Matrix3: _matrix2.default
+	};
+	exports.default = math;
+
+/***/ },
+/* 200 */
 /***/ function(module, exports) {
 
 	/**
-	 * Created by joseba on 12/12/15.
+	 * Created by joseba on 18/1/16.
 	 */
 	"use strict";
 
@@ -5589,28 +5669,737 @@ var pow =
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var RenderManager = (function () {
-	    function RenderManager(params) {
-	        _classCallCheck(this, RenderManager);
+	var Vector = (function () {
+	    function Vector() {
+	        _classCallCheck(this, Vector);
 
-	        this._scene = undefined;
+	        this.x = x || 0;
+	        this.y = y || 0;
 	    }
 
-	    _createClass(RenderManager, [{
-	        key: "scene",
-	        get: function get() {
-	            return this._scene;
-	        },
-	        set: function set(value) {}
+	    /**
+	     * Set
+	     * @param {number}  x
+	     * @param {number} y
+	     */
+
+	    _createClass(Vector, [{
+	        key: "set",
+	        value: function set(x, y) {
+	            this.x = x;
+	            this.y = y;
+	        }
+
+	        /**
+	         * Reset to default
+	         */
+
+	    }, {
+	        key: "reset",
+	        value: function reset() {
+	            this.set(0, 0);
+	        }
+
+	        /**
+	         * Copy from another Vector2
+	         * @param {Object} v. TWO.core.math.Vector2 to copy
+	         */
+
+	    }, {
+	        key: "copy",
+	        value: function copy(v) {
+	            this.x = v.x;
+	            this.y = v.y;
+	        }
+
+	        /**
+	         * Adds two vector2d
+	         * @param {Object} v1. TWO.core.math.Vector2 to add
+	         * @param {Object} v2. TWO.core.math.Vector2 to add
+	         */
+
+	    }, {
+	        key: "add",
+	        value: function add(v1, v2) {
+	            this.x = v1.x + v2.x;
+	            this.y = v1.y + v2.y;
+	        }
+
+	        /**
+	         * Adds a Vector2 to thos vector
+	         * @param {Object} v. TWO.core.math.Vector2 to add
+	         */
+
+	    }, {
+	        key: "addSelf",
+	        value: function addSelf(v) {
+	            this.x += v.x;
+	            this.y += v.y;
+	        }
+
+	        /**
+	         * substract two vector2d
+	         * @param {Object} v1. TWO.core.math.Vector2 to add
+	         * @param {Object} v2. TWO.core.math.Vector2 to add
+	         */
+
+	    }, {
+	        key: "sub",
+	        value: function sub(v1, v2) {
+	            this.x = v1.x - v2.x;
+	            this.y = v1.y - v2.y;
+	        }
+
+	        /**
+	         * Substract a Vector2 to this vector
+	         * @param {Object} v. TWO.core.math.Vector2 to add
+	         */
+
+	    }, {
+	        key: "subSelf",
+	        value: function subSelf(v) {
+	            this.x -= v.x;
+	            this.y -= v.y;
+	        }
+
+	        /**
+	         * Multiply by scalar
+	         * @param {number} s.Value to multiply
+	         */
+
+	    }, {
+	        key: "multiplyScalar",
+	        value: function multiplyScalar(s) {
+	            this.x *= s;
+	            this.y *= s;
+	        }
+
+	        /**
+	         * divide by scalar
+	         * @param {number} s. Scalar to divide
+	         */
+
+	    }, {
+	        key: "divideScalar",
+	        value: function divideScalar(s) {
+	            if (s) {
+	                this.x /= s;
+	                this.y /= s;
+	            } else {
+	                this.set(0, 0);
+	            }
+	        }
+
+	        /**
+	         * Negate
+	         */
+
+	    }, {
+	        key: "negate",
+	        value: function negate() {
+	            this.multiplyScalar(-1);
+	        }
+
+	        /**
+	         * Dot product
+	         * @param {Object} v. TWO.core.math.Vector2 to make the dot product
+	         * @returns {number}
+	         */
+
+	    }, {
+	        key: "dot",
+	        value: function dot(v) {
+	            return this.x * v.x + this.y * v.y;
+	        }
+
+	        /**
+	         * Squared length
+	         * @returns {number}
+	         */
+
+	    }, {
+	        key: "lengthSq",
+	        value: function lengthSq() {
+	            return this.x * this.x + this.y * this.y;
+	        }
+
+	        /**
+	         * length
+	         * @returns {number}
+	         */
+
+	    }, {
+	        key: "length",
+	        value: function length() {
+	            return Math.sqrt(this.lengthSq());
+	        }
+
+	        /**
+	         * Normalize vector
+	         */
+
+	    }, {
+	        key: "normalize",
+	        value: function normalize() {
+	            this.divideScalar(this.length());
+	        }
+
+	        /**
+	         * Distance to a nother Vector2
+	         * @param {Object} v. TWO.core.math.Vector2
+	         * @returns {number} distance
+	         */
+
+	    }, {
+	        key: "distanceTo",
+	        value: function distanceTo(v) {
+	            return Math.sqrt(this.distanceToSquared(v));
+	        }
+
+	        /**
+	         * Squared distance
+	         * @param {Object} v. TWO.core.math.Vector2
+	         * @returns {number} squared distance
+	         */
+
+	    }, {
+	        key: "distanceToSquared",
+	        value: function distanceToSquared(v) {
+	            var dx = this.x - v.x,
+	                dy = this.y - v.y;
+	            return dx * dx + dy * dy;
+	        }
+
+	        /**
+	         * Set vector's lenght
+	         * @param {number} l. Length to set
+	         */
+
+	    }, {
+	        key: "setLength",
+	        value: function setLength(l) {
+	            this.normalize().multiplyScalar(l);
+	        }
+
+	        /**
+	         * Checks equality with another Vector2
+	         * @param {Object} v. TWO.core.math.Vector2 The vector2 to check against
+	         * @returns {boolean} true if equals
+	         */
+
+	    }, {
+	        key: "equals",
+	        value: function equals(v) {
+	            return v.x === this.x && v.y === this.y;
+	        }
 	    }]);
 
-	    return RenderManager;
+	    return Vector;
 	})();
 
-	exports.default = RenderManager;
+	exports.default = Vector;
 
 /***/ },
-/* 199 */
+/* 201 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Created by joseba on 18/1/16.
+	 */
+	"use strict";
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.default = undefined;
+
+	var _vector = __webpack_require__(200);
+
+	var _vector2 = _interopRequireDefault(_vector);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var Rect = (function () {
+	    function Rect() {
+	        _classCallCheck(this, Rect);
+
+	        this.x = 0;
+	        this.y = 0;
+	        this.w = 0;
+	        this.h = 0;
+	    }
+
+	    /**
+	     * Sets Rect values
+	     * @param {number} x. x position
+	     * @param {number} y. y position
+	     * @param {number} w. width
+	     * @param {number} h. height
+	     */
+
+	    _createClass(Rect, [{
+	        key: "set",
+	        value: function set(x, y, w, h) {
+	            this.x = x;
+	            this.y = y;
+	            this.w = w;
+	            this.h = h;
+	        }
+
+	        /**
+	         * Reset to default
+	         */
+
+	    }, {
+	        key: "reset",
+	        value: function reset() {
+	            this.set(0, 0, 0, 0);
+	        }
+
+	        /**
+	         * Set Rect as initial and final point
+	         * @param {number} pix. Initial x
+	         * @param {number} piy. Initial y
+	         * @param {number} pfx. Final x
+	         * @param {number} pfy. Final y
+	         */
+
+	    }, {
+	        key: "setPoints",
+	        value: function setPoints(pix, piy, pfx, pfy) {
+	            this.x = pix;
+	            this.y = piy;
+	            this.w = pfx - pix;
+	            this.h = pfy - piy;
+	        }
+
+	        /**
+	         * Copy a rect into this one
+	         * @param {Object} rect. TWO.core.math.Rect to copy
+	         */
+
+	    }, {
+	        key: "copy",
+	        value: function copy(rect) {
+	            this.x = rect.x;
+	            this.y = rect.y;
+	            this.w = rect.w;
+	            this.h = rect.h;
+	        }
+
+	        /**
+	         * Check if this rect intersects with a given one
+	         * @param {Object} rect. TWO.core.math.Rect to check intersection against
+	         * @returns {boolean} true if intersect
+	         */
+
+	    }, {
+	        key: "intersects",
+	        value: function intersects(rect) {
+	            return !(this.x > rect.x + rect.w || this.x + this.w < rect.x || this.y > rect.y + rect.h || this.y + this.h < rect.y);
+	        }
+
+	        /**
+	         * Calculates the closes point to a Vector 2
+	         * @param {Object} p. TWO.core.math.Vector2 to test
+	         * @param {Object} result. TWO.core.math.Vector2 result
+	         */
+
+	    }, {
+	        key: "closestPointToVector2",
+	        value: function closestPointToVector2(p, result) {
+	            result.copy(p);
+	            if (result.x < this.x) {
+	                result.x = this.x;
+	            } // v = max(v, b.min[i])
+	            if (result.x > this.x + this.w) {
+	                result.x = this.x + this.w;
+	            } // v = min(v, b.max[i])
+	            if (result.y < this.y) {
+	                result.y = this.y;
+	            } // v = max(v, b.min[i])
+	            if (result.y > this.y + this.h) {
+	                result.y = this.y + this.h;
+	            } // v = min(v, b.max[i])
+	        }
+
+	        /**
+	         * Check if a given point is inside the Rect
+	         * @param {number} x. X coord
+	         * @param {number} y. Y coord
+	         * @returns {boolean} tru if its inside
+	         */
+
+	    }, {
+	        key: "isPointInside",
+	        value: function isPointInside(x, y) {
+	            return x >= this.x && x <= this.x + this.w && y >= this.y && y <= this.y + this.h;
+	        }
+
+	        /**
+	         * Translate rect using a Vector2
+	         * @param  {Object} vector. TWO.core.math.Vector2 to translate
+	         */
+
+	    }, {
+	        key: "translate",
+	        value: function translate(vector) {
+	            this.x += vector.x;
+	            this.y += vector.y;
+	        }
+
+	        /**
+	         * Sets this Rect as the union of this rect with a given one
+	         * @param {Object} rect. Rect to make union with
+	         */
+
+	    }, {
+	        key: "union",
+	        value: function union(rect) {
+	            var tempVect = new _vector2.default();
+	            tempVect.set(Math.min(this.x, rect.x), Math.min(this.y, rect.y));
+	            this.w = Math.max(this.x + this.w, rect.x + rect.w) - tempVect.x;
+	            this.h = Math.max(this.y + this.h, rect.y + rect.h) - tempVect.y;
+	            this.x = tempVect.x;
+	            this.y = tempVect.y;
+	        }
+	    }]);
+
+	    return Rect;
+	})();
+
+	exports.default = Rect;
+
+/***/ },
+/* 202 */
+/***/ function(module, exports) {
+
+	/**
+	 * Created by joseba on 18/1/16.
+	 */
+	"use strict";
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var ARR_TYPE = typeof Float32Array !== 'undefined' ? Float32Array : Array;
+
+	var Matrix3 = (function () {
+	    function Matrix3() {
+	        _classCallCheck(this, Matrix3);
+
+	        this.value = new ARR_TYPE(6);
+	        this.value = [1, 0, 0, 0, 1, 0];
+	    }
+
+	    /**
+	     * Sets the matrix assining all the values
+	     * @param m00
+	     * @param m10
+	     * @param m20
+	     * @param m01
+	     * @param m11
+	     * @param m21
+	     */
+
+	    _createClass(Matrix3, [{
+	        key: "set",
+	        value: function set(m00, m10, m20, m01, m11, m21) {
+	            var val = this.value;
+	            val[0] = m00;
+	            val[1] = m10;
+	            val[2] = m20;
+	            val[3] = m01;
+	            val[4] = m11;
+	            val[5] = m21;
+	        }
+
+	        /**
+	         * Reset to default
+	         */
+
+	    }, {
+	        key: "reset",
+	        value: function reset() {
+	            this.identity();
+	        }
+
+	        /**
+	         * Copy to this matrix the values of another one
+	         * @param {Object} m. TWO.core.math.Matrix reference matrix
+	         */
+
+	    }, {
+	        key: "copy",
+	        value: function copy(m) {
+	            var val = this.value,
+	                valM = m.value;
+	            var i = 5;
+	            do {
+	                val[i] = valM[i];
+	            } while (i--);
+	        }
+
+	        /**
+	         * Reset this matrix
+	         */
+
+	    }, {
+	        key: "identity",
+	        value: function identity() {
+	            var val = this.value;
+
+	            val[0] = 1;
+	            val[1] = 0;
+	            val[2] = 0;
+	            val[3] = 0;
+	            val[4] = 1;
+	            val[5] = 0;
+	        }
+
+	        /**
+	         * Set this matrix aas a rotation matrix
+	         * @param {number} angle. Angle in Radians
+	         */
+
+	    }, {
+	        key: "makeRotate",
+	        value: function makeRotate(angle) {
+	            var val = this.value;
+
+	            var v0 = Math.sin(angle);
+	            var v1 = Math.cos(angle);
+	            val[0] = v1;
+	            val[1] = -v0;
+	            val[2] = 0;
+	            val[3] = v0;
+	            val[4] = v1;
+	            val[5] = 0;
+	        }
+
+	        /**
+	         * Apply a rotation to this matrix
+	         * @param {number} angle. Angle to rotate in radians
+	         */
+
+	    }, {
+	        key: "rotate",
+	        value: function rotate(angle) {
+	            var t0 = undefined,
+	                t1 = undefined,
+	                t3 = undefined,
+	                t4 = undefined;
+	            var val = this.value;
+
+	            var v0 = Math.sin(angle);
+	            var v1 = Math.cos(angle);
+	            t0 = val[0] * v1 + val[1] * v0;
+	            t1 = val[0] * -v0 + val[1] * v1;
+	            t3 = val[3] * v1 + val[4] * v0;
+	            t4 = val[3] * -v0 + val[4] * v1;
+	            val[0] = t0;
+	            val[1] = t1;
+	            val[3] = t3;
+	            val[4] = t4;
+	        }
+
+	        /**
+	         * Set matrix as a scale matrix
+	         * @param {number} sx. Scale in x
+	         * @param {number} sy. Scale in y
+	             */
+
+	    }, {
+	        key: "makeScale",
+	        value: function makeScale(sx, sy) {
+	            var val = this.value;
+
+	            val[0] = sx;
+	            val[1] = 0;
+	            val[2] = 0;
+	            val[3] = 0;
+	            val[4] = sy;
+	            val[5] = 0;
+	        }
+
+	        /**
+	         * Apply a scale to this matrix
+	         * @param {number} sx. Scale in x
+	         * @param {number} sy. Scale in y
+	             */
+
+	    }, {
+	        key: "scale",
+	        value: function scale(sx, sy) {
+	            var val = this.value;
+
+	            val[0] *= sx;
+	            val[1] *= sy;
+	            val[3] *= sx;
+	            val[4] *= sy;
+	        }
+
+	        /**
+	         * Set matrix as a translation matrix
+	         * @param {number} x. Translation in x
+	         * @param {number} y. Translation in y
+	         */
+
+	    }, {
+	        key: "makeTranslate",
+	        value: function makeTranslate(x, y) {
+	            var val = this.value;
+
+	            val[0] = 1;
+	            val[1] = 0;
+	            val[2] = x;
+	            val[3] = 0;
+	            val[4] = 1;
+	            val[5] = y;
+	        }
+
+	        /**
+	         * Apply a translation to this matrix matrix
+	         * @param {number} x. Translation in x
+	         * @param {number} y. Translation in y
+	         */
+
+	    }, {
+	        key: "translate",
+	        value: function translate(x, y) {
+	            this.value[2] += x;
+	            this.value[5] += y;
+	        }
+
+	        /**
+	         * Premultiply matrix ( this = this * matrix)
+	         * @param {Object} matrix. TWO. core.math.Matrix to premultiply
+	         */
+
+	    }, {
+	        key: "multiply",
+	        value: function multiply(matrix) {
+	            var val = this.value,
+	                matVal = matrix.value;
+	            var a0 = val[0],
+	                a1 = val[1],
+	                a2 = val[2],
+	                a3 = val[3],
+	                a4 = val[4],
+	                a5 = val[5];
+
+	            val[0] = a0 * matVal[0] + a1 * matVal[3];
+	            val[1] = a0 * matVal[1] + a1 * matVal[4];
+	            val[2] = a0 * matVal[2] + a1 * matVal[5] + a2;
+	            val[3] = a3 * matVal[0] + a4 * matVal[3];
+	            val[4] = a3 * matVal[1] + a4 * matVal[4];
+	            val[5] = a3 * matVal[2] + a4 * matVal[5] + a5;
+	        }
+
+	        /**
+	         * Transforms a vector 2 by this matrix ([v[0], v[1], 1] * this)
+	         * @param {Object} v. TWO.core.math.Vector2 to transform
+	         */
+
+	    }, {
+	        key: "transformVector2",
+	        value: function transformVector2(v) {
+	            var v0 = undefined,
+	                v1 = undefined;
+	            var val = this.value;
+
+	            v0 = v.x * val[0] + v.y * val[1] + val[2];
+	            v1 = v.x * val[3] + v.y * val[4] + val[5];
+	            v.x = v0;
+	            v.y = v1;
+	        }
+
+	        /**
+	         * Gets inverse matrix
+	         * @param {Object} result. TWO.core.math.Matrix to set
+	         * @returns {number} -1 if failed, undefined otherwise
+	         */
+
+	    }, {
+	        key: "getInverse",
+	        value: function getInverse(result) {
+	            var m00 = this.value[0];
+	            var m01 = this.value[1];
+	            var m02 = this.value[2];
+	            var m10 = this.value[3];
+	            var m11 = this.value[4];
+	            var m12 = this.value[5];
+
+	            var determinant = m00 * m11 - m10 * m01;
+	            if (determinant === 0) {
+	                return -1;
+	            }
+
+	            var m = result.value;
+
+	            m[0] = m11;
+	            m[1] = -m01;
+	            m[2] = m01 * m12 - m02 * m11;
+
+	            m[3] = -m10;
+	            m[4] = m00;
+	            m[5] = m02 * m10 - m00 * m12;
+
+	            result.multiplyScalar(1 / determinant);
+	        }
+
+	        /**
+	         * Multiply by a scalar
+	         * @param {number} scalar. Scalar to multiply
+	         * @returns {Matrix3} this matrix
+	         */
+
+	    }, {
+	        key: "multiplyScalar",
+	        value: function multiplyScalar(scalar) {
+	            var val = this.value;
+
+	            var i = 5;
+
+	            do {
+	                val[i] *= scalar;
+	            } while (i--);
+
+	            return this;
+	        }
+
+	        /**
+	         * Check if this matrix is equal to a given one
+	         * @param {Object} mat. TWO.core.math.Matrix to compare
+	         * @returns {boolean} true if equal, false otherwise
+	         */
+
+	    }, {
+	        key: "equals",
+	        value: function equals(mat) {
+	            var matVal = mat.value;
+	            var val = this.value;
+
+	            return val[0] == matVal[0] && val[1] == matVal[1] && val[2] == matVal[2] && val[3] == matVal[3] && val[4] == matVal[4] && val[5] == matVal[5];
+	        }
+	    }]);
+
+	    return Matrix3;
+	})();
+
+	exports.default = Matrix3;
+
+/***/ },
+/* 203 */
 /***/ function(module, exports) {
 
 	/**
