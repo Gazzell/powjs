@@ -27,20 +27,20 @@ var objectFactory = new (
             }
         }
 
-        create( objectType ){
+        create( objectType, params ){
             if( this.objectPool.has( objectType ) && this.typeConstructors.has( objectType ) ){
                 let objectArray = this.objectPool.get( objectType );
                 if(  objectArray.length > 0) {
                     return objectArray.pop();
                 } else {
-                    return new ( this.typeConstructors.get( objectType ) )();
+                    return new ( this.typeConstructors.get( objectType ) )( this, params );
                 }
             }
         }
 
-        free( object ){
+        dispose( object ){
             if( this.objectPool.has( object.type ) ){
-                object.init();
+                object.reset();
                 this.objectPool.get( object.type ).push( object );
             }
         }

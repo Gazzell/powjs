@@ -6,7 +6,8 @@
 const ARR_TYPE = (typeof Float32Array !== 'undefined') ? Float32Array : Array;
 
 class Matrix3 {
-    constructor(){
+    constructor( objectFactory ){
+        this.objectFactory = objectFactory;
         this.value = new ARR_TYPE( 6 );
         this.value = [1, 0, 0, 0, 1, 0];
     }
@@ -39,7 +40,7 @@ class Matrix3 {
 
     /**
      * Copy to this matrix the values of another one
-     * @param {Object} m. TWO.core.math.Matrix reference matrix
+     * @param {Matrix3} m. Reference matrix
      */
     copy (m){
         let val = this.value,
@@ -49,6 +50,16 @@ class Matrix3 {
             val[i] = valM[i];
         } while( i-- )
 
+    }
+
+    /**
+     * Copy to this matrix the values of another one
+     * @param {Matrix3} matToClone. Reference matrix
+     */
+    clone ( matToClone ){
+        var newMat = this.objectFactory.create( "Matrix3" );
+        newMat.copy( this );
+        return newMat;
     }
 
     /**

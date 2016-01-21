@@ -5,7 +5,8 @@
 import { default as Vector } from "./vector.jsx";
 
 class Rect {
-    constructor( ) {
+    constructor( objectFactory ) {
+        this.objectFactory = objectFactory;
         this.x = 0;
         this.y = 0;
         this.w = 0;
@@ -114,12 +115,13 @@ class Rect {
      * @param {Object} rect. Rect to make union with
      */
     union(rect) {
-        let tempVect = new Vector();
+        let tempVect = this.objectFactory.create("Vector");
         tempVect.set(Math.min(this.x, rect.x), Math.min(this.y, rect.y));
         this.w = Math.max(this.x + this.w, rect.x + rect.w) - tempVect.x;
         this.h = Math.max(this.y + this.h, rect.y + rect.h) - tempVect.y;
         this.x = tempVect.x;
         this.y = tempVect.y;
+        this.objectFactory.release( tempVect );
     }
 }
 

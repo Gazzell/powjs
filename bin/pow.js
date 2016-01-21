@@ -5541,21 +5541,21 @@ var pow =
 	        }
 	    }, {
 	        key: "create",
-	        value: function create(objectType) {
+	        value: function create(objectType, params) {
 	            if (this.objectPool.has(objectType) && this.typeConstructors.has(objectType)) {
 	                var objectArray = this.objectPool.get(objectType);
 	                if (objectArray.length > 0) {
 	                    return objectArray.pop();
 	                } else {
-	                    return new (this.typeConstructors.get(objectType))();
+	                    return new (this.typeConstructors.get(objectType))(this, params);
 	                }
 	            }
 	        }
 	    }, {
-	        key: "free",
-	        value: function free(object) {
+	        key: "dispose",
+	        value: function dispose(object) {
 	            if (this.objectPool.has(object.type)) {
-	                object.init();
+	                object.reset();
 	                this.objectPool.get(object.type).push(object);
 	            }
 	        }
@@ -5602,17 +5602,65 @@ var pow =
 
 	"use strict";
 
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var SceneObject = function SceneObject(params) {
-	    _classCallCheck(this, SceneObject);
+	var SceneObject = (function () {
+	    function SceneObject(objectFactory, params) {
+	        _classCallCheck(this, SceneObject);
 
-	    this.type = 'SceneObject';
-	};
+	        this.type = 'SceneObject';
+	        this.objectFactory = objectFactory;
+	        this._position = objectFactory.create("Vector");
+	        this._rotation = 0;
+	        this._scale = objectFactory.create("Vector").set(1, 1);
+	        this._pivot = objectFactory.create("Vector");
+
+	        this.children = new Set();
+
+	        this._transformMatrix = objectFactory.create("Matrix3");
+	        this._boundingRect = objectFactory.create("Rect");
+	        this._dirty = true;
+	    }
+
+	    _createClass(SceneObject, [{
+	        key: "reset",
+	        value: function reset() {
+	            var _this = this;
+
+	            this._position.reset();
+	            this._rotation = 0;
+	            this._scale.set(1, 1);
+	            this._pivot.reset();
+
+	            this._transformMatrix.reset();
+	            this._boundingRect.reset();
+
+	            this.children.forEach(function (child) {
+	                return _this.objectFactory.dispose(child);
+	            });
+	        }
+	    }, {
+	        key: "update",
+	        value: function update() {}
+	    }, {
+	        key: "position",
+	        set: function set(pos) {
+	            this._position = pos;
+	            this._dirty = true;
+	        },
+	        get: function get() {
+	            return this._position;
+	        }
+	    }]);
+
+	    return SceneObject;
+	})();
 
 	exports.default = SceneObject;
 
@@ -5924,9 +5972,10 @@ var pow =
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	var Rect = (function () {
-	    function Rect() {
+	    function Rect(objectFactory) {
 	        _classCallCheck(this, Rect);
 
+	        this.objectFactory = objectFactory;
 	        this.x = 0;
 	        this.y = 0;
 	        this.w = 0;
@@ -6060,12 +6109,13 @@ var pow =
 	    }, {
 	        key: "union",
 	        value: function union(rect) {
-	            var tempVect = new _vector2.default();
+	            var tempVect = this.objectFactory.create("Vector");
 	            tempVect.set(Math.min(this.x, rect.x), Math.min(this.y, rect.y));
 	            this.w = Math.max(this.x + this.w, rect.x + rect.w) - tempVect.x;
 	            this.h = Math.max(this.y + this.h, rect.y + rect.h) - tempVect.y;
 	            this.x = tempVect.x;
 	            this.y = tempVect.y;
+	            this.objectFactory.release(tempVect);
 	        }
 	    }]);
 
@@ -6094,9 +6144,10 @@ var pow =
 	var ARR_TYPE = typeof Float32Array !== 'undefined' ? Float32Array : Array;
 
 	var Matrix3 = (function () {
-	    function Matrix3() {
+	    function Matrix3(objectFactory) {
 	        _classCallCheck(this, Matrix3);
 
+	        this.objectFactory = objectFactory;
 	        this.value = new ARR_TYPE(6);
 	        this.value = [1, 0, 0, 0, 1, 0];
 	    }
@@ -6135,7 +6186,7 @@ var pow =
 
 	        /**
 	         * Copy to this matrix the values of another one
-	         * @param {Object} m. TWO.core.math.Matrix reference matrix
+	         * @param {Matrix3} m. Reference matrix
 	         */
 
 	    }, {
@@ -6147,6 +6198,19 @@ var pow =
 	            do {
 	                val[i] = valM[i];
 	            } while (i--);
+	        }
+
+	        /**
+	         * Copy to this matrix the values of another one
+	         * @param {Matrix3} matToClone. Reference matrix
+	         */
+
+	    }, {
+	        key: "clone",
+	        value: function clone(matToClone) {
+	            var newMat = this.objectFactory.create("Matrix3");
+	            newMat.copy(this);
+	            return newMat;
 	        }
 
 	        /**
