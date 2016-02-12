@@ -9,8 +9,5 @@ describe("Engine initialization", function() {
         it('Resource manager exists', function() {
             assert.isDefined( engine.resourceMgr, ' Engine.resourceMgr not defined' );
         });
-        it('Has pepe', function() {
-            expect( engine.resourceMgr.pepe ).to.equal("pepe");
-        });
     });
 });

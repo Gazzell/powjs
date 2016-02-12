@@ -2,7 +2,7 @@
 var resourceManager = new(
     class ResourceManager {
         constructor(){
-            this.pepe = "pepe";
+
         }
     })();
 

@@ -5452,8 +5452,6 @@ var pow =
 
 	var resourceManager = new (function ResourceManager() {
 	    _classCallCheck(this, ResourceManager);
-
-	    this.pepe = "pepe";
 	})();
 
 	exports.default = resourceManager;
@@ -5618,10 +5616,11 @@ var pow =
 	        this.objectFactory = objectFactory;
 	        this._position = objectFactory.create("Vector");
 	        this._rotation = 0;
-	        this._scale = objectFactory.create("Vector").set(1, 1);
+	        this._scale = objectFactory.create("Vector");
+	        this._scale.set(1, 1);
 	        this._pivot = objectFactory.create("Vector");
 
-	        this.children = new Set();
+	        this.children = [];
 
 	        this._transformMatrix = objectFactory.create("Matrix3");
 	        this._boundingRect = objectFactory.create("Rect");
@@ -5646,8 +5645,19 @@ var pow =
 	            });
 	        }
 	    }, {
+	        key: "addChild",
+	        value: function addChild(child) {
+	            var index = arguments.length <= 1 || arguments[1] === undefined ? -1 : arguments[1];
+
+	            if (index !== -1 && index < this.children.length - 1) {
+	                this.children.splice(index, 0, child);
+	            } else {
+	                this.children.push(child);
+	            }
+	        }
+	    }, {
 	        key: "update",
-	        value: function update() {}
+	        value: function update(parentTransform) {}
 	    }, {
 	        key: "position",
 	        set: function set(pos) {
@@ -5656,6 +5666,24 @@ var pow =
 	        },
 	        get: function get() {
 	            return this._position;
+	        }
+	    }, {
+	        key: "rotation",
+	        set: function set(rotation) {
+	            this._rotation = rotation;
+	            this._dirty = true;
+	        },
+	        get: function get() {
+	            return this._rotation;
+	        }
+	    }, {
+	        key: "scale",
+	        set: function set(scale) {
+	            this._scale = scale;
+	            this._dirty = true;
+	        },
+	        get: function get() {
+	            return this._scale;
 	        }
 	    }]);
 
