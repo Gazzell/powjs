@@ -42,4 +42,6 @@ describe("Scene Object", function() {
         assert( root.children.length === 11, 'Expected 11 children and had ' + root.children.length );
         assert.equal( root.children[ 10 ], newElement, '5th not the same as new element');
     });
+
+    
 });

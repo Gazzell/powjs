@@ -12,7 +12,7 @@ var objectFactory = new (
 
         registerObjects( objects ){
             for( var key in objects ){
-                if( objects.hasOwnProperty( key ) ){
+                if( key !== "constants" && objects.hasOwnProperty( key ) ){
                     this.registerObjectType( key, objects[ key ] );
                 }
             }

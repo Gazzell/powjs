@@ -5335,7 +5335,7 @@ var pow =
 
 	var _core3 = _interopRequireDefault(_core2);
 
-	var _utils2 = __webpack_require__(203);
+	var _utils2 = __webpack_require__(204);
 
 	var _utils = _interopRequireWildcard(_utils2);
 
@@ -5423,7 +5423,7 @@ var pow =
 
 	var _renderables2 = _interopRequireDefault(_renderables);
 
-	var _math = __webpack_require__(199);
+	var _math = __webpack_require__(200);
 
 	var _math2 = _interopRequireDefault(_math);
 
@@ -5522,7 +5522,7 @@ var pow =
 	        key: "registerObjects",
 	        value: function registerObjects(objects) {
 	            for (var key in objects) {
-	                if (objects.hasOwnProperty(key)) {
+	                if (key !== "constants" && objects.hasOwnProperty(key)) {
 	                    this.registerObjectType(key, objects[key]);
 	                }
 	            }
@@ -5575,18 +5575,21 @@ var pow =
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
-	  value: true
+	    value: true
 	});
 	exports.default = undefined;
 
 	var _sceneObject = __webpack_require__(198);
 
-	var _sceneObject2 = _interopRequireDefault(_sceneObject);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	var _sprite = __webpack_require__(199);
 
 	var renderables = {
-	  SceneObject: _sceneObject2.default
+	    SceneObject: _sceneObject.SceneObject,
+	    Sprite: _sprite.Sprite,
+	    SpriteFrame: _sprite.SpriteFrame,
+	    constants: {
+	        AnchorTypes: _sceneObject.AnchorTypes
+	    }
 	};
 	exports.default = renderables;
 
@@ -5608,6 +5611,19 @@ var pow =
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+	var AnchorTypes = {
+	    "TOP_LEFT": 0,
+	    "TOP_CENTER": 1,
+	    "TOP_RIGHT": 2,
+	    "CENTER_LEFT": 3,
+	    "CENTER": 4,
+	    "CENTER_RIGHT": 5,
+	    "BOTTOM_LEFT": 6,
+	    "BOTTOM_CENTER": 7,
+	    "BOTTOM_RIGHT": 8,
+	    "CUSTOM": 9
+	};
+
 	var SceneObject = (function () {
 	    function SceneObject(objectFactory, params) {
 	        _classCallCheck(this, SceneObject);
@@ -5618,13 +5634,18 @@ var pow =
 	        this._rotation = 0;
 	        this._scale = objectFactory.create("Vector");
 	        this._scale.set(1, 1);
+	        this._alpha = 1.0;
 	        this._pivot = objectFactory.create("Vector");
+	        this._parent = undefined;
 
 	        this.children = [];
 
 	        this._transformMatrix = objectFactory.create("Matrix3");
+	        this._worldTransform = objectFactory.create("Matrix3");
+	        this._worldAlpha = 1.0;
 	        this._boundingRect = objectFactory.create("Rect");
 	        this._dirty = true;
+	        this._dirtyTransform = true;
 	    }
 
 	    _createClass(SceneObject, [{
@@ -5635,6 +5656,7 @@ var pow =
 	            this._position.reset();
 	            this._rotation = 0;
 	            this._scale.set(1, 1);
+	            this._alpha = 1.0;
 	            this._pivot.reset();
 
 	            this._transformMatrix.reset();
@@ -5643,6 +5665,9 @@ var pow =
 	            this.children.forEach(function (child) {
 	                return _this.objectFactory.dispose(child);
 	            });
+	            this._parent = undefined;
+	            this._dirty = true;
+	            this._dirtyTransform = true;
 	        }
 	    }, {
 	        key: "addChild",
@@ -5652,17 +5677,83 @@ var pow =
 	            if (index !== -1 && index < this.children.length - 1) {
 	                this.children.splice(index, 0, child);
 	            } else {
+	                child._parent = this;
 	                this.children.push(child);
 	            }
 	        }
 	    }, {
 	        key: "update",
-	        value: function update(parentTransform) {}
+	        value: function update(time, delta) {
+	            if (this._parent._dirty || this._dirty) {
+	                //this.transform = new TWO.core.math.Matrix3();
+	                this._transformMatrix.makeTranslate(this._position.x, this._position.y);
+	                if (this._rotation) {
+	                    this._transformMatrix.rotate(this._rotation);
+	                }
+	                this._transformMatrix.scale(this._scale.x, this._scale.y);
+
+	                //this.transform.multiply( this.pivot );
+
+	                if (this._parent !== undefined && this._parent._worldTransform !== undefined) {
+	                    this._worldTransform.copy(this._parent._worldTransform).multiply(this._transformMatrix);
+	                } else {
+	                    this._worldTransform.copy(this._transformMatrix);
+	                }
+
+	                this._calculateTransformedBRect();
+
+	                this._dirtyTransform = false;
+	                this._dirty = true;
+	            }
+	            var alpha = this._parent._worldAlpha * this._alpha;
+	            if (this._worldAlpha !== alpha) {
+	                this._worldAlpha = alpha;
+	                this._dirty = true;
+	            }
+	        }
+	    }, {
+	        key: "_calculateTransformedBRect",
+	        value: function _calculateTransformedBRect() {
+	            var a = undefined,
+	                b = undefined,
+	                c = undefined,
+	                d = undefined;
+	            var p0 = this.objectFactory.create("Vector");
+	            var p1 = this.objectFactory.create("Vector");
+	            var p2 = this.objectFactory.create("Vector");
+	            var p3 = this.objectFactory.create("Vector");
+	            // p0 - p1
+	            // |    |
+	            // p2 - p3
+
+	            p0.x = p2.x = this._pivotX;
+	            p0.y = p1.y = this._pivotY;
+	            p1.x = p3.x = this._w + this._pivotX;
+	            p2.y = p3.y = this._h + this._pivotY;
+
+	            this._worldTransform.transformVector2(p0).transformVector2(p1).transformVector2(p2).transformVector2(p3);
+
+	            a = Math.min(p0.x, p1.x, p2.x, p3.x);
+	            a = a + (a < 0 ? -1 : 0) >> 0;
+	            b = Math.min(p0.y, p1.y, p2.y, p3.y);
+	            b = b + (b < 0 ? -1 : 0) >> 0;
+	            c = Math.max(p0.x, p1.x, p2.x, p3.x);
+	            c = c + (c < 0 ? 0 : 1) >> 0;
+	            d = Math.max(p0.y, p1.y, p2.y, p3.y);
+	            d = d + (d < 0 ? 0 : 1) >> 0;
+
+	            this._boundingRect.setPoints(a, b, c, d);
+	            this.objectFactory.dispose(p0);
+	            this.objectFactory.dispose(p1);
+	            this.objectFactory.dispose(p2);
+	            this.objectFactory.dispose(p3);
+	        }
 	    }, {
 	        key: "position",
 	        set: function set(pos) {
 	            this._position = pos;
 	            this._dirty = true;
+	            this._dirtyTransform = true;
 	        },
 	        get: function get() {
 	            return this._position;
@@ -5672,6 +5763,7 @@ var pow =
 	        set: function set(rotation) {
 	            this._rotation = rotation;
 	            this._dirty = true;
+	            this._dirtyTransform = true;
 	        },
 	        get: function get() {
 	            return this._rotation;
@@ -5681,19 +5773,139 @@ var pow =
 	        set: function set(scale) {
 	            this._scale = scale;
 	            this._dirty = true;
+	            this._dirtyTransform = true;
 	        },
 	        get: function get() {
 	            return this._scale;
+	        }
+	    }, {
+	        key: "alpha",
+	        set: function set(alpha) {
+	            this._alpha = alpha;
+	            this._dirty = true;
+	        },
+	        get: function get() {
+	            return this._alpha;
+	        }
+	    }, {
+	        key: "boundingRect",
+	        get: function get() {
+	            return this._boundingRect;
 	        }
 	    }]);
 
 	    return SceneObject;
 	})();
 
-	exports.default = SceneObject;
+	exports.SceneObject = SceneObject;
+	exports.AnchorTypes = AnchorTypes;
 
 /***/ },
 /* 199 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Created by joseba on 16/2/16.
+	 */
+
+	"use strict";
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.SpriteFrame = exports.Sprite = undefined;
+
+	var _sceneObject = __webpack_require__(198);
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var SpriteFrame = function SpriteFrame(rect, duration) {
+	    _classCallCheck(this, SpriteFrame);
+
+	    this.rect = rect;
+	    this.duration = duration;
+	};
+
+	var Animation = (function () {
+	    function Animation(objectFactory, params) {
+	        _classCallCheck(this, Animation);
+
+	        this.objectFactory = objectFactory;
+	        this.frames = new Set();
+	        this.frameCount = 0;
+	        this.currentFrame = 0;
+	    }
+
+	    _createClass(Animation, [{
+	        key: "reset",
+	        value: function reset() {}
+	    }]);
+
+	    return Animation;
+	})();
+
+	var Sprite = (function (_SceneObject) {
+	    _inherits(Sprite, _SceneObject);
+
+	    function Sprite(objectFactory, params) {
+	        _classCallCheck(this, Sprite);
+
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Sprite).call(this, objectFactory, params));
+
+	        _this._spriteDef = undefined;
+	        _this._spriteSheet = undefined;
+	        _this._rect = objectFactory.create("Rect");
+	        _this._fps = 0;
+	        _this._currentFrame = 0;
+	        _this._totalDuration = 0;
+	        return _this;
+	    }
+
+	    _createClass(Sprite, [{
+	        key: "image",
+	        set: function set(image) {},
+	        get: function get() {
+	            return this._image;
+	        }
+	    }, {
+	        key: "fps",
+	        set: function set(fps) {
+	            this._fps = fps;
+	            this._dirty = true;
+	        },
+	        get: function get() {
+	            return this._fps;
+	        }
+	    }, {
+	        key: "frame",
+	        set: function set(frame) {
+	            this._currentFrame = frame;
+	            this._dirty = true;
+	        },
+	        get: function get() {
+	            return this._currentFrame;
+	        }
+	    }, {
+	        key: "duration",
+	        get: function get() {
+	            return this._totalDuration;
+	        }
+	    }]);
+
+	    return Sprite;
+	})(_sceneObject.SceneObject);
+
+	exports.Sprite = Sprite;
+	exports.SpriteFrame = SpriteFrame;
+
+/***/ },
+/* 200 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -5707,15 +5919,15 @@ var pow =
 	});
 	exports.default = undefined;
 
-	var _vector = __webpack_require__(200);
+	var _vector = __webpack_require__(201);
 
 	var _vector2 = _interopRequireDefault(_vector);
 
-	var _rect = __webpack_require__(201);
+	var _rect = __webpack_require__(202);
 
 	var _rect2 = _interopRequireDefault(_rect);
 
-	var _matrix = __webpack_require__(202);
+	var _matrix = __webpack_require__(203);
 
 	var _matrix2 = _interopRequireDefault(_matrix);
 
@@ -5729,7 +5941,7 @@ var pow =
 	exports.default = math;
 
 /***/ },
-/* 200 */
+/* 201 */
 /***/ function(module, exports) {
 
 	/**
@@ -5976,7 +6188,7 @@ var pow =
 	exports.default = Vector;
 
 /***/ },
-/* 201 */
+/* 202 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -5991,7 +6203,7 @@ var pow =
 	});
 	exports.default = undefined;
 
-	var _vector = __webpack_require__(200);
+	var _vector = __webpack_require__(201);
 
 	var _vector2 = _interopRequireDefault(_vector);
 
@@ -6153,7 +6365,7 @@ var pow =
 	exports.default = Rect;
 
 /***/ },
-/* 202 */
+/* 203 */
 /***/ function(module, exports) {
 
 	/**
@@ -6200,6 +6412,7 @@ var pow =
 	            val[3] = m01;
 	            val[4] = m11;
 	            val[5] = m21;
+	            return this;
 	        }
 
 	        /**
@@ -6210,6 +6423,7 @@ var pow =
 	        key: "reset",
 	        value: function reset() {
 	            this.identity();
+	            return this;
 	        }
 
 	        /**
@@ -6226,16 +6440,16 @@ var pow =
 	            do {
 	                val[i] = valM[i];
 	            } while (i--);
+	            return this;
 	        }
 
 	        /**
 	         * Copy to this matrix the values of another one
-	         * @param {Matrix3} matToClone. Reference matrix
 	         */
 
 	    }, {
 	        key: "clone",
-	        value: function clone(matToClone) {
+	        value: function clone() {
 	            var newMat = this.objectFactory.create("Matrix3");
 	            newMat.copy(this);
 	            return newMat;
@@ -6256,6 +6470,7 @@ var pow =
 	            val[3] = 0;
 	            val[4] = 1;
 	            val[5] = 0;
+	            return this;
 	        }
 
 	        /**
@@ -6276,6 +6491,7 @@ var pow =
 	            val[3] = v0;
 	            val[4] = v1;
 	            val[5] = 0;
+	            return this;
 	        }
 
 	        /**
@@ -6302,6 +6518,7 @@ var pow =
 	            val[1] = t1;
 	            val[3] = t3;
 	            val[4] = t4;
+	            return this;
 	        }
 
 	        /**
@@ -6321,6 +6538,19 @@ var pow =
 	            val[3] = 0;
 	            val[4] = sy;
 	            val[5] = 0;
+	            return this;
+	        }
+
+	        /**
+	         * Set matrix as a scale matrix
+	         * @param {Vector} v. Scale
+	         */
+
+	    }, {
+	        key: "makeScaleFromVector",
+	        value: function makeScaleFromVector(v) {
+	            this.makeScale(v.x, v.y);
+	            return this;
 	        }
 
 	        /**
@@ -6338,6 +6568,19 @@ var pow =
 	            val[1] *= sy;
 	            val[3] *= sx;
 	            val[4] *= sy;
+	            return this;
+	        }
+
+	        /**
+	         * Apply a scale to this matrix
+	         * @param {Vector} v. Scale
+	         */
+
+	    }, {
+	        key: "scaleFromVector",
+	        value: function scaleFromVector(v) {
+	            this.scale(v.x, v.y);
+	            return this;
 	        }
 
 	        /**
@@ -6356,7 +6599,19 @@ var pow =
 	            val[2] = x;
 	            val[3] = 0;
 	            val[4] = 1;
-	            val[5] = y;
+	            return this;
+	        }
+
+	        /**
+	         * Set matrix as a translation matrix
+	         * @param {Vector} v. Translation vector
+	         */
+
+	    }, {
+	        key: "makeTranslateFromVector",
+	        value: function makeTranslateFromVector(v) {
+	            this.makeTranslate(v.x, v.y);
+	            return this;
 	        }
 
 	        /**
@@ -6370,6 +6625,19 @@ var pow =
 	        value: function translate(x, y) {
 	            this.value[2] += x;
 	            this.value[5] += y;
+	            return this;
+	        }
+
+	        /**
+	         * Apply a translation to this matrix matrix
+	         * @param {Vector} v. Translation vector
+	         */
+
+	    }, {
+	        key: "translateFromVector",
+	        value: function translateFromVector(v) {
+	            this.translate(v.x, v.y);
+	            return this;
 	        }
 
 	        /**
@@ -6395,6 +6663,7 @@ var pow =
 	            val[3] = a3 * matVal[0] + a4 * matVal[3];
 	            val[4] = a3 * matVal[1] + a4 * matVal[4];
 	            val[5] = a3 * matVal[2] + a4 * matVal[5] + a5;
+	            return this;
 	        }
 
 	        /**
@@ -6413,6 +6682,7 @@ var pow =
 	            v1 = v.x * val[3] + v.y * val[4] + val[5];
 	            v.x = v0;
 	            v.y = v1;
+	            return this;
 	        }
 
 	        /**
@@ -6491,7 +6761,7 @@ var pow =
 	exports.default = Matrix3;
 
 /***/ },
-/* 203 */
+/* 204 */
 /***/ function(module, exports) {
 
 	/**

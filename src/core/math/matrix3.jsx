@@ -29,6 +29,7 @@ class Matrix3 {
         val[3] = m01;
         val[4] = m11;
         val[5] = m21;
+        return this;
     }
 
     /**
@@ -36,6 +37,7 @@ class Matrix3 {
      */
     reset(){
         this.identity();
+        return this;
     }
 
     /**
@@ -49,14 +51,13 @@ class Matrix3 {
         do {
             val[i] = valM[i];
         } while( i-- )
-
+        return this;
     }
 
     /**
      * Copy to this matrix the values of another one
-     * @param {Matrix3} matToClone. Reference matrix
      */
-    clone ( matToClone ){
+    clone ( ){
         var newMat = this.objectFactory.create( "Matrix3" );
         newMat.copy( this );
         return newMat;
@@ -74,6 +75,7 @@ class Matrix3 {
         val[3] = 0;
         val[4] = 1;
         val[5] = 0;
+        return this;
     }
 
     /**
@@ -91,6 +93,7 @@ class Matrix3 {
         val[3] = v0;
         val[4] = v1;
         val[5] = 0;
+        return this;
     }
 
     /**
@@ -111,6 +114,7 @@ class Matrix3 {
         val[1] = t1;
         val[3] = t3;
         val[4] = t4;
+        return this;
     }
 
     /**
@@ -127,6 +131,16 @@ class Matrix3 {
         val[3] = 0;
         val[4] = sy;
         val[5] = 0;
+        return this;
+    }
+
+    /**
+     * Set matrix as a scale matrix
+     * @param {Vector} v. Scale
+     */
+    makeScaleFromVector ( v ){
+        this.makeScale( v.x, v.y );
+        return this;
     }
 
     /**
@@ -141,6 +155,16 @@ class Matrix3 {
         val[1] *= sy;
         val[3] *= sx;
         val[4] *= sy;
+        return this;
+    }
+
+    /**
+     * Apply a scale to this matrix
+     * @param {Vector} v. Scale
+     */
+    scaleFromVector ( v ){
+        this.scale( v.x, v.y );
+        return this;
     }
 
     /**
@@ -156,7 +180,16 @@ class Matrix3 {
         val[2] = x;
         val[3] = 0;
         val[4] = 1;
-        val[5] = y;
+        return this;
+    }
+
+    /**
+     * Set matrix as a translation matrix
+     * @param {Vector} v. Translation vector
+     */
+    makeTranslateFromVector ( v ){
+        this.makeTranslate( v.x, v.y );
+        return this;
     }
 
     /**
@@ -167,6 +200,16 @@ class Matrix3 {
     translate ( x, y ){
         this.value[2] += x;
         this.value[5] += y;
+        return this;
+    }
+
+    /**
+     * Apply a translation to this matrix matrix
+     * @param {Vector} v. Translation vector
+     */
+    translateFromVector ( v ){
+        this.translate( v.x, v.y );
+        return this;
     }
 
     /**
@@ -184,6 +227,7 @@ class Matrix3 {
         val[3] = a3 * matVal[0] + a4 * matVal[3];
         val[4] = a3 * matVal[1] + a4 * matVal[4];
         val[5] = a3 * matVal[2] + a4 * matVal[5] + a5;
+        return this;
     }
 
     /**
@@ -198,6 +242,7 @@ class Matrix3 {
         v1 = v.x*val[3] + v.y*val[4] + val[5];
         v.x = v0;
         v.y = v1;
+        return this;
     }
 
     /**
