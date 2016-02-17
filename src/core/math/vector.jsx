@@ -3,8 +3,11 @@
  */
 "use strict";
 
-class Vector{
-    constructor( ){
+import { default as FactoryObject } from "../factoryObject.jsx";
+
+class Vector extends FactoryObject{
+    constructor( objectFactory ){
+        super( objectFactory );
         this.x = 0;
         this.y = 0;
     }

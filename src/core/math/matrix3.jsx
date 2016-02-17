@@ -2,12 +2,13 @@
  * Created by joseba on 18/1/16.
  */
 "use strict";
+import { default as FactoryObject } from "../factoryObject.jsx";
 
 const ARR_TYPE = (typeof Float32Array !== 'undefined') ? Float32Array : Array;
 
-class Matrix3 {
+class Matrix3 extends FactoryObject {
     constructor( objectFactory ){
-        this.objectFactory = objectFactory;
+        super( objectFactory );
         this.value = new ARR_TYPE( 6 );
         this.value = [1, 0, 0, 0, 1, 0];
     }

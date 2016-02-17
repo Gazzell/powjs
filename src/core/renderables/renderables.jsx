@@ -12,8 +12,6 @@ var renderables = {
     SceneObject: SceneObject,
     Sprite: Sprite,
     SpriteFrame: SpriteFrame,
-    constants: {
-        AnchorTypes: AnchorTypes
-    }
+    AnchorTypes: AnchorTypes
 };
 export { renderables as default };

@@ -5335,7 +5335,7 @@ var pow =
 
 	var _core3 = _interopRequireDefault(_core2);
 
-	var _utils2 = __webpack_require__(204);
+	var _utils2 = __webpack_require__(205);
 
 	var _utils = _interopRequireWildcard(_utils2);
 
@@ -5423,7 +5423,7 @@ var pow =
 
 	var _renderables2 = _interopRequireDefault(_renderables);
 
-	var _math = __webpack_require__(200);
+	var _math = __webpack_require__(201);
 
 	var _math2 = _interopRequireDefault(_math);
 
@@ -5522,7 +5522,7 @@ var pow =
 	        key: "registerObjects",
 	        value: function registerObjects(objects) {
 	            for (var key in objects) {
-	                if (key !== "constants" && objects.hasOwnProperty(key)) {
+	                if (objects.hasOwnProperty(key) && ObjectFactory.isFactorizableClass(objects[key])) {
 	                    this.registerObjectType(key, objects[key]);
 	                }
 	            }
@@ -5557,6 +5557,20 @@ var pow =
 	                this.objectPool.get(object.type).push(object);
 	            }
 	        }
+	    }], [{
+	        key: "isFactorizableClass",
+	        value: function isFactorizableClass(classToCheck) {
+	            var found = false,
+	                proto = Object.getPrototypeOf(classToCheck);
+	            while (proto !== null && !found) {
+	                if (proto.name !== 'FactoryObject') {
+	                    proto = Object.getPrototypeOf(proto);
+	                } else {
+	                    found = true;
+	                }
+	            }
+	            return found;
+	        }
 	    }]);
 
 	    return ObjectFactory;
@@ -5581,21 +5595,19 @@ var pow =
 
 	var _sceneObject = __webpack_require__(198);
 
-	var _sprite = __webpack_require__(199);
+	var _sprite = __webpack_require__(200);
 
 	var renderables = {
 	    SceneObject: _sceneObject.SceneObject,
 	    Sprite: _sprite.Sprite,
 	    SpriteFrame: _sprite.SpriteFrame,
-	    constants: {
-	        AnchorTypes: _sceneObject.AnchorTypes
-	    }
+	    AnchorTypes: _sceneObject.AnchorTypes
 	};
 	exports.default = renderables;
 
 /***/ },
 /* 198 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	/**
 	 * Created by joseba on 14/1/16.
@@ -5608,8 +5620,19 @@ var pow =
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
+	exports.AnchorTypes = exports.SceneObject = undefined;
+
+	var _factoryObject = __webpack_require__(199);
+
+	var _factoryObject2 = _interopRequireDefault(_factoryObject);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	var AnchorTypes = {
 	    "TOP_LEFT": 0,
@@ -5624,34 +5647,38 @@ var pow =
 	    "CUSTOM": 9
 	};
 
-	var SceneObject = (function () {
+	var SceneObject = (function (_FactoryObject) {
+	    _inherits(SceneObject, _FactoryObject);
+
 	    function SceneObject(objectFactory, params) {
 	        _classCallCheck(this, SceneObject);
 
-	        this.type = 'SceneObject';
-	        this.objectFactory = objectFactory;
-	        this._position = objectFactory.create("Vector");
-	        this._rotation = 0;
-	        this._scale = objectFactory.create("Vector");
-	        this._scale.set(1, 1);
-	        this._alpha = 1.0;
-	        this._pivot = objectFactory.create("Vector");
-	        this._parent = undefined;
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(SceneObject).call(this, objectFactory));
 
-	        this.children = [];
+	        _this.type = 'SceneObject';
+	        _this._position = objectFactory.create("Vector");
+	        _this._rotation = 0;
+	        _this._scale = objectFactory.create("Vector");
+	        _this._scale.set(1, 1);
+	        _this._alpha = 1.0;
+	        _this._pivot = objectFactory.create("Vector");
+	        _this._parent = undefined;
 
-	        this._transformMatrix = objectFactory.create("Matrix3");
-	        this._worldTransform = objectFactory.create("Matrix3");
-	        this._worldAlpha = 1.0;
-	        this._boundingRect = objectFactory.create("Rect");
-	        this._dirty = true;
-	        this._dirtyTransform = true;
+	        _this.children = [];
+
+	        _this._transformMatrix = objectFactory.create("Matrix3");
+	        _this._worldTransform = objectFactory.create("Matrix3");
+	        _this._worldAlpha = 1.0;
+	        _this._boundingRect = objectFactory.create("Rect");
+	        _this._dirty = true;
+	        _this._dirtyTransform = true;
+	        return _this;
 	    }
 
 	    _createClass(SceneObject, [{
 	        key: "reset",
 	        value: function reset() {
-	            var _this = this;
+	            var _this2 = this;
 
 	            this._position.reset();
 	            this._rotation = 0;
@@ -5663,7 +5690,7 @@ var pow =
 	            this._boundingRect.reset();
 
 	            this.children.forEach(function (child) {
-	                return _this.objectFactory.dispose(child);
+	                return _this2.objectFactory.dispose(child);
 	            });
 	            this._parent = undefined;
 	            this._dirty = true;
@@ -5795,13 +5822,37 @@ var pow =
 	    }]);
 
 	    return SceneObject;
-	})();
+	})(_factoryObject2.default);
 
 	exports.SceneObject = SceneObject;
 	exports.AnchorTypes = AnchorTypes;
 
 /***/ },
 /* 199 */
+/***/ function(module, exports) {
+
+	/**
+	 * Created by joseba on 17/2/16.
+	 */
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var FactoryObject = function FactoryObject(objectFactory) {
+	    _classCallCheck(this, FactoryObject);
+
+	    this.objectFactroy = objectFactory;
+	};
+
+	exports.default = FactoryObject;
+
+/***/ },
+/* 200 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -5810,45 +5861,80 @@ var pow =
 
 	"use strict";
 
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
 	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	exports.SpriteFrame = exports.Sprite = undefined;
+	exports.Animation = exports.SpriteFrame = exports.Sprite = undefined;
+
+	var _factoryObject = __webpack_require__(199);
+
+	var _factoryObject2 = _interopRequireDefault(_factoryObject);
 
 	var _sceneObject = __webpack_require__(198);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	var SpriteFrame = (function (_FactoryObject) {
+	    _inherits(SpriteFrame, _FactoryObject);
 
-	var SpriteFrame = function SpriteFrame(rect, duration) {
-	    _classCallCheck(this, SpriteFrame);
+	    function SpriteFrame(objectFactory, params) {
+	        _classCallCheck(this, SpriteFrame);
 
-	    this.rect = rect;
-	    this.duration = duration;
-	};
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(SpriteFrame).call(this, objectFactory));
 
-	var Animation = (function () {
-	    function Animation(objectFactory, params) {
-	        _classCallCheck(this, Animation);
-
-	        this.objectFactory = objectFactory;
-	        this.frames = new Set();
-	        this.frameCount = 0;
-	        this.currentFrame = 0;
+	        _this.rect = objectFactory.create('Rect');
+	        _this.duration = duration;
+	        return _this;
 	    }
 
-	    _createClass(Animation, [{
+	    _createClass(SpriteFrame, [{
 	        key: "reset",
 	        value: function reset() {}
 	    }]);
 
+	    return SpriteFrame;
+	})(_factoryObject2.default);
+
+	var Animation = (function (_FactoryObject2) {
+	    _inherits(Animation, _FactoryObject2);
+
+	    function Animation(objectFactory, params) {
+	        _classCallCheck(this, Animation);
+
+	        var _this2 = _possibleConstructorReturn(this, Object.getPrototypeOf(Animation).call(this, objectFactory));
+
+	        _this2.frames = new Set();
+	        _this2.frameCount = 0;
+	        _this2.currentFrame = 0;
+	        return _this2;
+	    }
+
+	    _createClass(Animation, [{
+	        key: "reset",
+	        value: function reset() {
+	            var _this3 = this;
+
+	            this.frameCount = 0;
+	            this.currentFrame = 0;
+	            this.frames.forEach(function (frame) {
+	                return _this3.objectFactory.dispose(frame);
+	            });
+	            this.frames.clear();
+	        }
+	    }]);
+
 	    return Animation;
-	})();
+	})(_factoryObject2.default);
 
 	var Sprite = (function (_SceneObject) {
 	    _inherits(Sprite, _SceneObject);
@@ -5856,22 +5942,31 @@ var pow =
 	    function Sprite(objectFactory, params) {
 	        _classCallCheck(this, Sprite);
 
-	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Sprite).call(this, objectFactory, params));
+	        var _this4 = _possibleConstructorReturn(this, Object.getPrototypeOf(Sprite).call(this, objectFactory, params));
 
-	        _this._spriteDef = undefined;
-	        _this._spriteSheet = undefined;
-	        _this._rect = objectFactory.create("Rect");
-	        _this._fps = 0;
-	        _this._currentFrame = 0;
-	        _this._totalDuration = 0;
-	        return _this;
+	        _this4._spriteDef = undefined;
+	        _this4._material = undefined;
+	        _this4._spriteSheet = undefined;
+	        _this4._rect = objectFactory.create("Rect");
+	        _this4._fps = 0;
+	        _this4._currentFrame = 0;
+	        _this4._totalDuration = 0;
+	        return _this4;
 	    }
 
 	    _createClass(Sprite, [{
-	        key: "image",
-	        set: function set(image) {},
+	        key: "reset",
+	        value: function reset() {
+	            _get(Object.getPrototypeOf(Sprite.prototype), "reset", this).call(this);
+	        }
+	    }, {
+	        key: "material",
+	        set: function set(material) {
+	            this._material = material;
+	            this._dirty = true;
+	        },
 	        get: function get() {
-	            return this._image;
+	            return this._material;
 	        }
 	    }, {
 	        key: "fps",
@@ -5903,9 +5998,10 @@ var pow =
 
 	exports.Sprite = Sprite;
 	exports.SpriteFrame = SpriteFrame;
+	exports.Animation = Animation;
 
 /***/ },
-/* 200 */
+/* 201 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -5919,15 +6015,15 @@ var pow =
 	});
 	exports.default = undefined;
 
-	var _vector = __webpack_require__(201);
+	var _vector = __webpack_require__(202);
 
 	var _vector2 = _interopRequireDefault(_vector);
 
-	var _rect = __webpack_require__(202);
+	var _rect = __webpack_require__(203);
 
 	var _rect2 = _interopRequireDefault(_rect);
 
-	var _matrix = __webpack_require__(203);
+	var _matrix = __webpack_require__(204);
 
 	var _matrix2 = _interopRequireDefault(_matrix);
 
@@ -5941,8 +6037,8 @@ var pow =
 	exports.default = math;
 
 /***/ },
-/* 201 */
-/***/ function(module, exports) {
+/* 202 */
+/***/ function(module, exports, __webpack_require__) {
 
 	/**
 	 * Created by joseba on 18/1/16.
@@ -5954,15 +6050,31 @@ var pow =
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
+	exports.default = undefined;
+
+	var _factoryObject = __webpack_require__(199);
+
+	var _factoryObject2 = _interopRequireDefault(_factoryObject);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var Vector = (function () {
-	    function Vector() {
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Vector = (function (_FactoryObject) {
+	    _inherits(Vector, _FactoryObject);
+
+	    function Vector(objectFactory) {
 	        _classCallCheck(this, Vector);
 
-	        this.x = 0;
-	        this.y = 0;
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Vector).call(this, objectFactory));
+
+	        _this.x = 0;
+	        _this.y = 0;
+	        return _this;
 	    }
 
 	    /**
@@ -6183,12 +6295,12 @@ var pow =
 	    }]);
 
 	    return Vector;
-	})();
+	})(_factoryObject2.default);
 
 	exports.default = Vector;
 
 /***/ },
-/* 202 */
+/* 203 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -6203,7 +6315,11 @@ var pow =
 	});
 	exports.default = undefined;
 
-	var _vector = __webpack_require__(201);
+	var _factoryObject = __webpack_require__(199);
+
+	var _factoryObject2 = _interopRequireDefault(_factoryObject);
+
+	var _vector = __webpack_require__(202);
 
 	var _vector2 = _interopRequireDefault(_vector);
 
@@ -6211,15 +6327,23 @@ var pow =
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var Rect = (function () {
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Rect = (function (_FactoryObject) {
+	    _inherits(Rect, _FactoryObject);
+
 	    function Rect(objectFactory) {
 	        _classCallCheck(this, Rect);
 
-	        this.objectFactory = objectFactory;
-	        this.x = 0;
-	        this.y = 0;
-	        this.w = 0;
-	        this.h = 0;
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Rect).call(this, objectFactory));
+
+	        _this.x = 0;
+	        _this.y = 0;
+	        _this.w = 0;
+	        _this.h = 0;
+	        return _this;
 	    }
 
 	    /**
@@ -6360,13 +6484,13 @@ var pow =
 	    }]);
 
 	    return Rect;
-	})();
+	})(_factoryObject2.default);
 
 	exports.default = Rect;
 
 /***/ },
-/* 203 */
-/***/ function(module, exports) {
+/* 204 */
+/***/ function(module, exports, __webpack_require__) {
 
 	/**
 	 * Created by joseba on 18/1/16.
@@ -6378,18 +6502,33 @@ var pow =
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
+	exports.default = undefined;
+
+	var _factoryObject = __webpack_require__(199);
+
+	var _factoryObject2 = _interopRequireDefault(_factoryObject);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 	var ARR_TYPE = typeof Float32Array !== 'undefined' ? Float32Array : Array;
 
-	var Matrix3 = (function () {
+	var Matrix3 = (function (_FactoryObject) {
+	    _inherits(Matrix3, _FactoryObject);
+
 	    function Matrix3(objectFactory) {
 	        _classCallCheck(this, Matrix3);
 
-	        this.objectFactory = objectFactory;
-	        this.value = new ARR_TYPE(6);
-	        this.value = [1, 0, 0, 0, 1, 0];
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Matrix3).call(this, objectFactory));
+
+	        _this.value = new ARR_TYPE(6);
+	        _this.value = [1, 0, 0, 0, 1, 0];
+	        return _this;
 	    }
 
 	    /**
@@ -6756,12 +6895,12 @@ var pow =
 	    }]);
 
 	    return Matrix3;
-	})();
+	})(_factoryObject2.default);
 
 	exports.default = Matrix3;
 
 /***/ },
-/* 204 */
+/* 205 */
 /***/ function(module, exports) {
 
 	/**

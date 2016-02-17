@@ -3,32 +3,44 @@
  */
 
 "use strict";
+import { default as FactoryObject } from "../factoryObject.jsx";
 import { SceneObject as SceneObject } from "./sceneObject.jsx";
 
-class SpriteFrame {
-    constructor( rect, duration ){
-        this.rect = rect;
+class SpriteFrame extends FactoryObject {
+    constructor( objectFactory, params ){
+        super( objectFactory );
+        this.rect = objectFactory.create('Rect');
         this.duration = duration;
+    }
+
+    reset(){
+        
     }
 }
 
-class Animation{
+class Animation extends FactoryObject{
     constructor( objectFactory, params ){
-        this.objectFactory = objectFactory;
+        super( objectFactory );
         this.frames = new Set();
         this.frameCount = 0;
         this.currentFrame = 0;
     }
 
     reset(){
-
+        this.frameCount = 0;
+        this.currentFrame = 0;
+        this.frames.forEach( frame => this.objectFactory.dispose( frame ) );
+        this.frames.clear();
     }
+
+
 }
 
 class Sprite extends SceneObject{
     constructor( objectFactory, params ){
         super( objectFactory, params );
         this._spriteDef = undefined;
+        this._material = undefined;
         this._spriteSheet = undefined;
         this._rect = objectFactory.create( "Rect" );
         this._fps = 0;
@@ -36,12 +48,17 @@ class Sprite extends SceneObject{
         this._totalDuration = 0;
     }
 
-    set image( image ){
-
+    reset(){
+        super.reset();
     }
 
-    get image( ){
-        return this._image;
+    set material( material ){
+        this._material = material;
+        this._dirty = true;
+    }
+
+    get material( ){
+        return this._material;
     }
 
     set fps( fps ){
@@ -69,3 +86,4 @@ class Sprite extends SceneObject{
 
 export { Sprite as Sprite };
 export { SpriteFrame as SpriteFrame };
+export { Animation as Animation };

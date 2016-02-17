@@ -2,11 +2,12 @@
  * Created by joseba on 18/1/16.
  */
 "use strict";
+import { default as FactoryObject } from "../factoryObject.jsx";
 import { default as Vector } from "./vector.jsx";
 
-class Rect {
+class Rect extends FactoryObject{
     constructor( objectFactory ) {
-        this.objectFactory = objectFactory;
+        super( objectFactory );
         this.x = 0;
         this.y = 0;
         this.w = 0;

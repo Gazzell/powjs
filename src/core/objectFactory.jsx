@@ -12,7 +12,7 @@ var objectFactory = new (
 
         registerObjects( objects ){
             for( var key in objects ){
-                if( key !== "constants" && objects.hasOwnProperty( key ) ){
+                if( objects.hasOwnProperty( key ) && ObjectFactory.isFactorizableClass( objects[ key ])){
                     this.registerObjectType( key, objects[ key ] );
                 }
             }
@@ -44,6 +44,20 @@ var objectFactory = new (
                 this.objectPool.get( object.type ).push( object );
             }
         }
+
+        static isFactorizableClass( classToCheck ){
+            let found = false,
+                proto = Object.getPrototypeOf( classToCheck );
+            while( proto !== null && !found){
+                if( proto.name !== 'FactoryObject'){
+                    proto = Object.getPrototypeOf( proto );
+                } else {
+                    found = true;
+                }
+            }
+            return found;
+        }
+
     })();
 
 export { objectFactory as default };

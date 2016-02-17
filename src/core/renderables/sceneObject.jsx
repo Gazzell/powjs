@@ -3,6 +3,8 @@
  */
 
 "use strict";
+import { default as FactoryObject } from "../factoryObject.jsx";
+
 const AnchorTypes = {
         "TOP_LEFT": 0,
         "TOP_CENTER": 1,
@@ -16,10 +18,10 @@ const AnchorTypes = {
         "CUSTOM": 9
     }
 
-class SceneObject {
+class SceneObject extends FactoryObject{
     constructor( objectFactory, params ){
+        super( objectFactory );
         this.type = 'SceneObject';
-        this.objectFactory = objectFactory;
         this._position = objectFactory.create("Vector");
         this._rotation = 0;
         this._scale = objectFactory.create("Vector");
