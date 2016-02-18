@@ -5600,7 +5600,8 @@ var pow =
 	var renderables = {
 	    SceneObject: _sceneObject.SceneObject,
 	    Sprite: _sprite.Sprite,
-	    SpriteFrame: _sprite.SpriteFrame,
+	    AnimationFrame: _sprite.AnimationFrame,
+	    Animation: _sprite.Animation,
 	    AnchorTypes: _sceneObject.AnchorTypes
 	};
 	exports.default = renderables;
@@ -5868,7 +5869,7 @@ var pow =
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	exports.Animation = exports.SpriteFrame = exports.Sprite = undefined;
+	exports.Animation = exports.AnimationFrame = exports.Sprite = undefined;
 
 	var _factoryObject = __webpack_require__(199);
 
@@ -5884,25 +5885,28 @@ var pow =
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var SpriteFrame = (function (_FactoryObject) {
-	    _inherits(SpriteFrame, _FactoryObject);
+	var AnimationFrame = (function (_FactoryObject) {
+	    _inherits(AnimationFrame, _FactoryObject);
 
-	    function SpriteFrame(objectFactory, params) {
-	        _classCallCheck(this, SpriteFrame);
+	    function AnimationFrame(objectFactory, params) {
+	        _classCallCheck(this, AnimationFrame);
 
-	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(SpriteFrame).call(this, objectFactory));
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(AnimationFrame).call(this, objectFactory));
 
 	        _this.rect = objectFactory.create('Rect');
-	        _this.duration = duration;
+	        _this.duration = 0;
 	        return _this;
 	    }
 
-	    _createClass(SpriteFrame, [{
+	    _createClass(AnimationFrame, [{
 	        key: "reset",
-	        value: function reset() {}
+	        value: function reset() {
+	            this.rect.reset();
+	            this.duration = 0;
+	        }
 	    }]);
 
-	    return SpriteFrame;
+	    return AnimationFrame;
 	})(_factoryObject2.default);
 
 	var Animation = (function (_FactoryObject2) {
@@ -5997,7 +6001,7 @@ var pow =
 	})(_sceneObject.SceneObject);
 
 	exports.Sprite = Sprite;
-	exports.SpriteFrame = SpriteFrame;
+	exports.AnimationFrame = AnimationFrame;
 	exports.Animation = Animation;
 
 /***/ },

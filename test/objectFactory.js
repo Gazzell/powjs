@@ -10,36 +10,54 @@ describe("ObjectFactory tests", function() {
             assert.isDefined( engine.objectFactory, ' Engine.objectFactory not defined' );
         });
 
-        var obj = engine.objectFactory.create( "SceneObject" );
+        var obj;
         it('Scene object creation', function() {
-            expect( obj ).not.to.be.an("undefined");
-            assert.equal( obj.type, 'SceneObject' );
+            obj = engine.objectFactory.create( "SceneObject" );
+            expect( obj ).to.be.an.instanceof( pow.core.renderables.SceneObject );
+        });
+
+        it('Sprite creation', function() {
+            obj = engine.objectFactory.create( "Sprite" );
+            expect( obj ).to.be.an.instanceof( pow.core.renderables.Sprite );
         });
     });
-    describe(" - Object Factory create math Vector -->", function(){
-        var obj = engine.objectFactory.create( "Vector" );
-        it('Scene object creation', function() {
-            expect( obj ).not.to.be.an("undefined");
+    describe(" - Object Factory create Aux types -->", function(){
+        var obj;
+        it('Animation frame creation', function() {
+            obj = engine.objectFactory.create( "AnimationFrame" );
+            expect( obj ).to.be.an.instanceof( pow.core.renderables.AnimationFrame );
+        });
+
+        it('Animation creation', function() {
+            obj = engine.objectFactory.create( "Animation" );
+            expect( obj ).to.be.an.instanceof( pow.core.renderables.Animation );
+        });
+
+        it('Anchor Types should not create', function() {
+            obj = engine.objectFactory.create( "AnchorType" );
+            expect( obj ).to.be.undefined;
+        });
+    });
+    describe(" - Object Factory create Math types -->", function(){
+        var obj;
+        it('Vector creation', function() {
+            obj = engine.objectFactory.create( "Vector" );
+            expect( obj ).to.be.an.instanceof( pow.core.math.Vector );
             assert.propertyVal( obj, 'x', 0, "Property x does not exists or has value different to 0" );
             assert.propertyVal( obj, 'y', 0, "Property y does not exists or has value different to 0" );
         });
-    });
-    describe(" - Object Factory create math Vector -->", function(){
-        var obj = engine.objectFactory.create( "Rect" );
-        it('Scene object creation', function() {
-            expect( obj ).not.to.be.an("undefined");
+        it('Rect creation', function() {
+            obj = engine.objectFactory.create( "Rect" );
+            expect( obj ).to.be.an.instanceof( pow.core.math.Rect );
             assert.propertyVal( obj, 'x', 0, "Property x does not exists or has value different to 0" );
             assert.propertyVal( obj, 'y', 0, "Property y does not exists or has value different to 0" );
             assert.propertyVal( obj, 'w', 0, "Property w does not exists or has value different to 0" );
             assert.propertyVal( obj, 'h', 0, "Property h does not exists or has value different to 0" );
         });
-    });
-    describe(" - Object Factory create math Vector -->", function(){
-        var obj = engine.objectFactory.create( "Matrix3" );
-        it('Scene object creation', function() {
-            expect( obj ).not.to.be.an("undefined");
-            assert.property( obj, 'value', "Property value does not exists" );
-            assert.lengthOf( obj.value, 6, "Matrix value has 6 length" );
+        it('Matrix creation', function() {
+            obj = engine.objectFactory.create( "Matrix3" );
+            expect( obj ).to.be.an.instanceof( pow.core.math.Matrix3 );
+            assert.isArray( obj.value, "Matrix has not value array" );
         });
     });
 });

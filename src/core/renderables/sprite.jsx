@@ -6,15 +6,16 @@
 import { default as FactoryObject } from "../factoryObject.jsx";
 import { SceneObject as SceneObject } from "./sceneObject.jsx";
 
-class SpriteFrame extends FactoryObject {
+class AnimationFrame extends FactoryObject {
     constructor( objectFactory, params ){
         super( objectFactory );
         this.rect = objectFactory.create('Rect');
-        this.duration = duration;
+        this.duration = 0;
     }
 
     reset(){
-        
+        this.rect.reset();
+        this.duration = 0;
     }
 }
 
@@ -85,5 +86,5 @@ class Sprite extends SceneObject{
 }
 
 export { Sprite as Sprite };
-export { SpriteFrame as SpriteFrame };
+export { AnimationFrame as AnimationFrame };
 export { Animation as Animation };
