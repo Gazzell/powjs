@@ -7,12 +7,16 @@ import { default as renderManager } from "./renderManager.jsx";
 import { default as objectFactory } from "./objectFactory.jsx";
 import { default as renderables } from "./renderables/renderables.jsx";
 import { default as math } from "./math/math.jsx"
+import { default as renderer } from "./renderer/renderer.jsx";
+import { default as materials } from "./materials/materials.jsx";
 
 var core = {
     resourceManager: resourceManager,
     renderManager: renderManager,
     objectFactory: objectFactory,
     renderables: renderables,
+    renderer: renderer,
+    materials: materials,
     math: math
 };
 export { core as default };
