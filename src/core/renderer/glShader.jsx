@@ -12,6 +12,8 @@ class GlShader extends FactoryObject{
         this.vertexShader = undefined;
         this.fragmentShader = undefined;
         this.program = undefined;
+        this.attribs = {};
+        this.uniforms = {};
     }
 
     compile(){
@@ -57,6 +59,18 @@ class GlShader extends FactoryObject{
         }
 
         return ok;
+    }
+
+    addAttribute( name, type ){
+        this.attribs[ name ] = type;
+    }
+
+    addUniform( name, type ){
+        this.uniforms[ name ] = type;
+    }
+
+    setAttributeAndUniformLocations(){
+
     }
 }
 

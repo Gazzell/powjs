@@ -5375,6 +5375,8 @@ var pow =
 	    this.objectFactory = _core2.default.objectFactory;
 	    this.objectFactory.registerObjects(_core2.default.math);
 	    this.objectFactory.registerObjects(_core2.default.renderables);
+	    this.objectFactory.registerObjects(_core2.default.renderer);
+	    this.objectFactory.registerObjects(_core2.default.materials);
 
 	    if (!params) {
 	        params = {};
@@ -7066,6 +7068,8 @@ var pow =
 	        _this.vertexShader = undefined;
 	        _this.fragmentShader = undefined;
 	        _this.program = undefined;
+	        _this.attribs = {};
+	        _this.uniforms = {};
 	        return _this;
 	    }
 
@@ -7114,6 +7118,19 @@ var pow =
 
 	            return ok;
 	        }
+	    }, {
+	        key: "addAttribute",
+	        value: function addAttribute(name, type) {
+	            this.attribs[name] = type;
+	        }
+	    }, {
+	        key: "addUniform",
+	        value: function addUniform(name, type) {
+	            this.uniforms[name] = type;
+	        }
+	    }, {
+	        key: "setAttributeAndUniformLocations",
+	        value: function setAttributeAndUniformLocations() {}
 	    }]);
 
 	    return GlShader;

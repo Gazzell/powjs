@@ -9,6 +9,8 @@ class Engine {
         this.objectFactory = core.objectFactory;
         this.objectFactory.registerObjects( core.math );
         this.objectFactory.registerObjects( core.renderables );
+        this.objectFactory.registerObjects( core.renderer );
+        this.objectFactory.registerObjects( core.materials );
 
         if(!params){
             params = {};
