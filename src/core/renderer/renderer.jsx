@@ -4,11 +4,11 @@
 
 "use strict";
 
-import { default as GlRenderer} from "./glRenderer.jsx";
+import { glBasicRenderer as glBasicRenderer} from "./glBasicRenderer.jsx";
 import { default as RenderPass} from "./renderPass.jsx";
 
 var renderer = {
-    GlRenderer: GlRenderer,
+    glBasicRenderer: glBasicRenderer,
     RenderPass: RenderPass
 };
 

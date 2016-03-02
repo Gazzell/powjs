@@ -4,7 +4,6 @@ import { default as core } from "./core/core.jsx";
 class Engine {
     constructor( params ){
         this.htmlContainer = undefined;
-        this.renderMgr = core.renderManager;
         this.resourceMgr = core.resourceManager;
         this.objectFactory = core.objectFactory;
         this.objectFactory.registerObjects( core.math );

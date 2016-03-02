@@ -5370,7 +5370,6 @@ var pow =
 	    _classCallCheck(this, Engine);
 
 	    this.htmlContainer = undefined;
-	    this.renderMgr = _core2.default.renderManager;
 	    this.resourceMgr = _core2.default.resourceManager;
 	    this.objectFactory = _core2.default.objectFactory;
 	    this.objectFactory.registerObjects(_core2.default.math);
@@ -5413,15 +5412,15 @@ var pow =
 
 	var _resourceManager2 = _interopRequireDefault(_resourceManager);
 
-	var _renderManager = __webpack_require__(195);
+	var _viewport = __webpack_require__(195);
 
-	var _renderManager2 = _interopRequireDefault(_renderManager);
+	var _viewport2 = _interopRequireDefault(_viewport);
 
-	var _objectFactory = __webpack_require__(196);
+	var _objectFactory = __webpack_require__(197);
 
 	var _objectFactory2 = _interopRequireDefault(_objectFactory);
 
-	var _renderables = __webpack_require__(197);
+	var _renderables = __webpack_require__(198);
 
 	var _renderables2 = _interopRequireDefault(_renderables);
 
@@ -5441,12 +5440,12 @@ var pow =
 
 	var core = {
 	    resourceManager: _resourceManager2.default,
-	    renderManager: _renderManager2.default,
 	    objectFactory: _objectFactory2.default,
 	    renderables: _renderables2.default,
 	    renderer: _renderer2.default,
 	    materials: _materials2.default,
-	    math: _math2.default
+	    math: _math2.default,
+	    Viewport: _viewport2.default
 	};
 	exports.default = core;
 
@@ -5470,7 +5469,7 @@ var pow =
 
 /***/ },
 /* 195 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	/**
 	 * Created by joseba on 12/12/15.
@@ -5482,31 +5481,118 @@ var pow =
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
+	exports.default = undefined;
+
+	var _factoryObject = __webpack_require__(196);
+
+	var _factoryObject2 = _interopRequireDefault(_factoryObject);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var renderManager = new ((function () {
-	    function RenderManager(params) {
-	        _classCallCheck(this, RenderManager);
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-	        this._scene = undefined;
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Viewport = (function (_FactoryObject) {
+	    _inherits(Viewport, _FactoryObject);
+
+	    function Viewport(objectFactory, params) {
+	        _classCallCheck(this, Viewport);
+
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Viewport).call(this, objectFactory));
+
+	        _this._renderer = undefined;
+	        _this._rect = _this.objectFactory.create("Rect");
+	        _this._renderTarget = document.createElement('canvas');
+
+	        // force render target and rect initialization
+	        _this.renderer = params.renderer | undefined;
+	        if (params.rect !== undefined) {
+	            _this.setRect(rect.x, rect.y, rect.w, rect.h);
+	        }
+	        return _this;
 	    }
 
-	    _createClass(RenderManager, [{
-	        key: "scene",
-	        get: function get() {
-	            return this._scene;
+	    _createClass(Viewport, [{
+	        key: "draw",
+	        value: function draw(time, delta, node, camera) {
+	            if (renderer !== undefined && camera.rect.intersects(this.rect)) {
+	                renderer.draw(time, delta, this, camera, node);
+	            }
+	        }
+	    }, {
+	        key: "setRect",
+	        value: function setRect(x, y, w, h) {
+	            this._rect.set(x, y, w, h);
+	        }
+	    }, {
+	        key: "resize",
+
+	        /**
+	         * Handle game resize event
+	         * @param {number} width
+	         * @param {number} height
+	         */
+	        value: function resize(width, height) {
+	            // force recalculation
+	            this.rect = this._rect;
+	        }
+	    }, {
+	        key: "renderer",
+	        set: function set(renderer) {
+	            this._renderer = renderer;
+	            if (this._renderer !== undefined) {
+	                this._renderer.initRenderTarget(this._renderTarget);
+	            }
 	        },
-	        set: function set(value) {}
+	        get: function get() {
+	            return this._renderer;
+	        }
+	    }, {
+	        key: "rect",
+	        set: function set(rect) {
+	            this._rect.copy(rect);
+	        },
+	        get: function get() {
+	            return this._rect;
+	        }
 	    }]);
 
-	    return RenderManager;
-	})())();
+	    return Viewport;
+	})(_factoryObject2.default);
 
-	exports.default = renderManager;
+	;
+
+	exports.default = Viewport;
 
 /***/ },
 /* 196 */
+/***/ function(module, exports) {
+
+	/**
+	 * Created by joseba on 17/2/16.
+	 */
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var FactoryObject = function FactoryObject(objectFactory) {
+	    _classCallCheck(this, FactoryObject);
+
+	    this.objectFactroy = objectFactory;
+	};
+
+	exports.default = FactoryObject;
+
+/***/ },
+/* 197 */
 /***/ function(module, exports) {
 
 	/**
@@ -5591,7 +5677,7 @@ var pow =
 	exports.default = objectFactory;
 
 /***/ },
-/* 197 */
+/* 198 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -5605,7 +5691,7 @@ var pow =
 	});
 	exports.default = undefined;
 
-	var _sceneObject = __webpack_require__(198);
+	var _sceneObject = __webpack_require__(199);
 
 	var _sprite = __webpack_require__(200);
 
@@ -5619,7 +5705,7 @@ var pow =
 	exports.default = renderables;
 
 /***/ },
-/* 198 */
+/* 199 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -5635,7 +5721,7 @@ var pow =
 	});
 	exports.AnchorTypes = exports.SceneObject = undefined;
 
-	var _factoryObject = __webpack_require__(199);
+	var _factoryObject = __webpack_require__(196);
 
 	var _factoryObject2 = _interopRequireDefault(_factoryObject);
 
@@ -5841,30 +5927,6 @@ var pow =
 	exports.AnchorTypes = AnchorTypes;
 
 /***/ },
-/* 199 */
-/***/ function(module, exports) {
-
-	/**
-	 * Created by joseba on 17/2/16.
-	 */
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	var FactoryObject = function FactoryObject(objectFactory) {
-	    _classCallCheck(this, FactoryObject);
-
-	    this.objectFactroy = objectFactory;
-	};
-
-	exports.default = FactoryObject;
-
-/***/ },
 /* 200 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -5883,11 +5945,11 @@ var pow =
 	});
 	exports.Animation = exports.AnimationFrame = exports.Sprite = undefined;
 
-	var _factoryObject = __webpack_require__(199);
+	var _factoryObject = __webpack_require__(196);
 
 	var _factoryObject2 = _interopRequireDefault(_factoryObject);
 
-	var _sceneObject = __webpack_require__(198);
+	var _sceneObject = __webpack_require__(199);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -6068,7 +6130,7 @@ var pow =
 	});
 	exports.default = undefined;
 
-	var _factoryObject = __webpack_require__(199);
+	var _factoryObject = __webpack_require__(196);
 
 	var _factoryObject2 = _interopRequireDefault(_factoryObject);
 
@@ -6331,7 +6393,7 @@ var pow =
 	});
 	exports.default = undefined;
 
-	var _factoryObject = __webpack_require__(199);
+	var _factoryObject = __webpack_require__(196);
 
 	var _factoryObject2 = _interopRequireDefault(_factoryObject);
 
@@ -6520,7 +6582,7 @@ var pow =
 	});
 	exports.default = undefined;
 
-	var _factoryObject = __webpack_require__(199);
+	var _factoryObject = __webpack_require__(196);
 
 	var _factoryObject2 = _interopRequireDefault(_factoryObject);
 
@@ -6930,9 +6992,7 @@ var pow =
 	});
 	exports.default = undefined;
 
-	var _glRenderer = __webpack_require__(206);
-
-	var _glRenderer2 = _interopRequireDefault(_glRenderer);
+	var _glBasicRenderer = __webpack_require__(206);
 
 	var _renderPass = __webpack_require__(207);
 
@@ -6941,7 +7001,7 @@ var pow =
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var renderer = {
-	  GlRenderer: _glRenderer2.default,
+	  glBasicRenderer: _glBasicRenderer.glBasicRenderer,
 	  RenderPass: _renderPass2.default
 	};
 
@@ -6964,20 +7024,20 @@ var pow =
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var GlRenderer = (function () {
-	    function GlRenderer() {
-	        _classCallCheck(this, GlRenderer);
+	var glBasicRenderer = new ((function () {
+	    function GlBasicRenderer() {
+	        _classCallCheck(this, GlBasicRenderer);
 	    }
 
-	    _createClass(GlRenderer, [{
+	    _createClass(GlBasicRenderer, [{
 	        key: "updateAndDraw",
 	        value: function updateAndDraw(time, delta, camera, root) {}
 	    }]);
 
-	    return GlRenderer;
-	})();
+	    return GlBasicRenderer;
+	})())();
 
-	exports.default = GlRenderer;
+	exports.glBasicRenderer = glBasicRenderer;
 
 /***/ },
 /* 207 */
@@ -6994,7 +7054,7 @@ var pow =
 	});
 	exports.default = undefined;
 
-	var _factoryObject = __webpack_require__(199);
+	var _factoryObject = __webpack_require__(196);
 
 	var _factoryObject2 = _interopRequireDefault(_factoryObject);
 
@@ -7044,7 +7104,7 @@ var pow =
 	});
 	exports.default = undefined;
 
-	var _factoryObject = __webpack_require__(199);
+	var _factoryObject = __webpack_require__(196);
 
 	var _factoryObject2 = _interopRequireDefault(_factoryObject);
 
@@ -7180,7 +7240,7 @@ var pow =
 	});
 	exports.default = undefined;
 
-	var _factoryObject = __webpack_require__(199);
+	var _factoryObject = __webpack_require__(196);
 
 	var _factoryObject2 = _interopRequireDefault(_factoryObject);
 
