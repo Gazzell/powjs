@@ -5557,7 +5557,7 @@ var pow =
 	        }
 	    }, {
 	        key: "obtainResource",
-	        value: function obtainResource(url, id, type) {
+	        value: function obtainResource(url, id, type, onResObtained) {
 	            var _this = this;
 
 	            if (id !== undefined) {
@@ -5568,12 +5568,20 @@ var pow =
 	                } else {
 	                    if (this._resourceTypes[type].download === undefined) {
 	                        // download
-	                        fetch(url).then(function (response) {
-	                            _this._resourceTypes[type].parse(response);
+	                        var p = fetch(url).then(function (response) {
+	                            _this._resourceTypes[type].parse(response).then(function (resource) {
+	                                if (_this._resources[type] === undefined) {
+	                                    _this._resources[type] = {};
+	                                }
+	                                _this._resources[type][id] = resource;
+	                                if (onResObtained !== undefined && typeof onResObtained === 'function') {
+	                                    onResObtained(resource);
+	                                }
+	                            }).catch(function (e) {
+	                                console.warn("Pow ResourceManager - obtainResource: There was an error obtaining resource ${id} ( ${url} ): ${e} ");
+	                            });
 	                        }, function (err) {
 	                            console.warn("Pow ResourceManager - obtainResource: There was an error obtaining resource ${id} ( ${url} ): ${err} ");
-	                        }).then(function (resource) {
-	                            _this._resources[type][id] = resource;
 	                        }).catch(function (e) {
 	                            console.warn("Pow ResourceManager - obtainResource: There was an error obtaining resource ${id} ( ${url} ): ${e} ");
 	                        });
@@ -7532,14 +7540,14 @@ var pow =
 	var ImageResource = {
 	    type: 'image',
 	    parse: function parse(response) {
-	        new Promise(function (resolve) {
-	            return resolve(response);
-	        }).then(function (res) {
-	            return res.blob();
+	        return new Promise(function (resolve, reject) {
+	            resolve(response.blob());
 	        }).then(function (imgBlob) {
 	            var HTMLImage = new Image();
 	            HTMLImage.src = URL.createObjectURL(imgBlob);
 	            return HTMLImage;
+	        }).catch(function (e) {
+	            throw e;
 	        });
 	    }
 	};

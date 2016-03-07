@@ -42,7 +42,7 @@ var resourceManager = new(
             }
         }
 
-        obtainResource( url, id, type ){
+        obtainResource( url, id, type, onResObtained ){
             if( id !== undefined ){
                 if( this._resourcesById[ id ] !== undefined ){
                     console.warn( "Pow ResourceManager - obtainResource: ID ${id} already in use." );
@@ -51,19 +51,31 @@ var resourceManager = new(
                 } else {
                     if( this._resourceTypes[ type ].download === undefined ){
                         // download
-                        fetch( url ).then(
-                            response => {
-                                this._resourceTypes[ type ].parse( response );
-                            },
-                            err => {
-                                console.warn( "Pow ResourceManager - obtainResource: There was an error obtaining resource ${id} ( ${url} ): ${err} " );
-                            })
-                            .then( resource => {
-                                this._resources[ type ][ id ] = resource;
-                            })
+                        let p = fetch( url )
+                            .then(
+                                response => {
+                                    this._resourceTypes[ type ].parse( response )
+                                    .then( resource => {
+                                        if( this._resources[ type ] === undefined ){
+                                            this._resources[ type ] = {};
+                                        }
+                                        this._resources[ type ][ id ] = resource;
+                                        if( onResObtained !== undefined && typeof onResObtained === 'function' ){
+                                            onResObtained( resource );
+                                        }
+                                    })
+                                    .catch(
+                                        e => { console.warn( "Pow ResourceManager - obtainResource: There was an error obtaining resource ${id} ( ${url} ): ${e} " ); }
+                                    );
+                                },
+                                err => {
+                                    console.warn( "Pow ResourceManager - obtainResource: There was an error obtaining resource ${id} ( ${url} ): ${err} " );
+                                })
                             .catch(
                                 e => { console.warn( "Pow ResourceManager - obtainResource: There was an error obtaining resource ${id} ( ${url} ): ${e} " ); }
                             );
+
+
                     }
                 }
             }

@@ -6,13 +6,15 @@
 var ImageResource = {
     type: 'image',
     parse: ( response ) => {
-        new Promise( resolve => resolve( response ) )
-        .then( res => { return res.blob(); } )
+        return new Promise( (resolve, reject ) => {
+            resolve( response.blob() );
+        })
         .then( imgBlob => {
             var HTMLImage = new Image();
             HTMLImage.src = URL.createObjectURL( imgBlob );
-            return HTMLImage;
+            return HTMLImage ;
         })
+        .catch( e => { throw e; });
     }
 };
 
