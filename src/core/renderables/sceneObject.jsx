@@ -16,17 +16,20 @@ const AnchorTypes = {
         "BOTTOM_CENTER": 7,
         "BOTTOM_RIGHT": 8,
         "CUSTOM": 9
-    }
+    };
 
 class SceneObject extends FactoryObject{
     constructor( objectFactory, params ){
         super( objectFactory );
         this.type = 'SceneObject';
+        this._lastUpdateTime = -1;
         this._position = objectFactory.create("Vector");
         this._rotation = 0;
         this._scale = objectFactory.create("Vector");
         this._scale.set(1, 1);
         this._alpha = 1.0;
+        this._w = 0;
+        this._h = 0;
         this._pivot = objectFactory.create("Vector");
         this._parent = undefined;
 
@@ -108,32 +111,35 @@ class SceneObject extends FactoryObject{
     }
 
     update( time, delta ){
-        if( this._parent._dirty || this._dirty ){
-            //this.transform = new TWO.core.math.Matrix3();
-            this._transformMatrix.makeTranslate( this._position.x, this._position.y );
-            if( this._rotation ) {
-                this._transformMatrix.rotate(this._rotation);
+        // update only once in a frame
+        if( time > this._lastUpdateTime ) {
+            if (this._parent._dirty || this._dirty) {
+                //this.transform = new TWO.core.math.Matrix3();
+                this._transformMatrix.makeTranslate(this._position.x, this._position.y);
+                if (this._rotation) {
+                    this._transformMatrix.rotate(this._rotation);
+                }
+                this._transformMatrix.scale(this._scale.x, this._scale.y);
+
+                //this.transform.multiply( this.pivot );
+
+                if (this._parent !== undefined && this._parent._worldTransform !== undefined) {
+                    this._worldTransform.copy(this._parent._worldTransform)
+                        .multiply(this._transformMatrix);
+                } else {
+                    this._worldTransform.copy(this._transformMatrix);
+                }
+
+                this._calculateTransformedBRect();
+
+                this._dirtyTransform = false;
+                this._dirty = true;
             }
-            this._transformMatrix.scale( this._scale.x, this._scale.y );
-
-            //this.transform.multiply( this.pivot );
-
-            if(this._parent !== undefined && this._parent._worldTransform !== undefined ){
-                this._worldTransform.copy( this._parent._worldTransform )
-                                    .multiply ( this._transformMatrix );
-            } else {
-                this._worldTransform.copy( this._transformMatrix );
+            let alpha = this._parent._worldAlpha * this._alpha;
+            if (this._worldAlpha !== alpha) {
+                this._worldAlpha = alpha;
+                this._dirty = true;
             }
-
-            this._calculateTransformedBRect();
-
-            this._dirtyTransform = false;
-            this._dirty = true;
-        }
-        let alpha = this._parent._worldAlpha * this._alpha;
-        if( this._worldAlpha !== alpha){
-            this._worldAlpha = alpha;
-            this._dirty = true;
         }
     }
 
@@ -147,10 +153,10 @@ class SceneObject extends FactoryObject{
         // |    |
         // p2 - p3
 
-        p0.x = p2.x = this._pivotX;
-        p0.y = p1.y = this._pivotY;
-        p1.x = p3.x = this._w + this._pivotX;
-        p2.y = p3.y =  this._h + this._pivotY;
+        p0.x = p2.x = this._pivot.x;
+        p0.y = p1.y = this._pivot.y;
+        p1.x = p3.x = this._w + this._pivot.x;
+        p2.y = p3.y =  this._h + this._pivot.y;
 
         this._worldTransform.transformVector2(p0)
                             .transformVector2(p1)

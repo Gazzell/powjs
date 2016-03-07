@@ -5335,7 +5335,7 @@ var pow =
 
 	var _core3 = _interopRequireDefault(_core2);
 
-	var _utils2 = __webpack_require__(211);
+	var _utils2 = __webpack_require__(195);
 
 	var _utils = _interopRequireWildcard(_utils2);
 
@@ -5353,6 +5353,8 @@ var pow =
 
 	"use strict";
 
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
@@ -5366,31 +5368,61 @@ var pow =
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var Engine = function Engine(params) {
-	    _classCallCheck(this, Engine);
+	var Engine = (function () {
+	    function Engine(params) {
+	        _classCallCheck(this, Engine);
 
-	    this.htmlContainer = undefined;
-	    this.resourceMgr = _core2.default.resourceManager;
-	    this.objectFactory = _core2.default.objectFactory;
-	    this.objectFactory.registerObjects(_core2.default.math);
-	    this.objectFactory.registerObjects(_core2.default.renderables);
-	    this.objectFactory.registerObjects(_core2.default.renderer);
-	    this.objectFactory.registerObjects(_core2.default.materials);
+	        this._viewports = [];
+	        this.htmlContainer = undefined;
+	        this.resourceMgr = _core2.default.resourceManager;
+	        this.objectFactory = _core2.default.objectFactory;
+	        this.objectFactory.registerObjects(_core2.default.math);
+	        this.objectFactory.registerObjects(_core2.default.renderables);
+	        this.objectFactory.registerObjects(_core2.default.renderer);
+	        this.objectFactory.registerObjects(_core2.default.materials);
 
-	    if (!params) {
-	        params = {};
+	        if (!params) {
+	            params = {};
+	        }
+
+	        if (!params.container) {
+	            this.htmlContainer = document.createElement('div');
+	            this.htmlContainer.name = 'POW_Div';
+	            this.htmlContainer.id = 'POW_Div';
+	            this.htmlContainer.setAttribute("style", "position:absolute;top:0px;left:0px;");
+	            params.container = this.htmlContainer;
+	        } else {
+	            this.htmlContainer = params.container;
+	        }
 	    }
 
-	    if (!params.container) {
-	        this.htmlContainer = document.createElement('div');
-	        this.htmlContainer.name = 'POW_Div';
-	        this.htmlContainer.id = 'POW_Div';
-	        this.htmlContainer.setAttribute("style", "position:absolute;top:0px;left:0px;");
-	        params.container = this.htmlContainer;
-	    } else {
-	        this.htmlContainer = params.container;
-	    }
-	};
+	    _createClass(Engine, [{
+	        key: "addViewport",
+	        value: function addViewport(viewport) {
+	            if (this._viewports.indexOf(viewport) === -1) {
+	                this._viewports.push(viewport);
+	            }
+	        }
+	    }, {
+	        key: "removeViewport",
+	        value: function removeViewport(viewport) {
+	            var index = this._viewports.indexOf(viewport);
+	            if (index !== -1) {
+	                this._viewports.slice(index, 1);
+	            }
+	        }
+	    }, {
+	        key: "updateAndDraw",
+	        value: function updateAndDraw(time, delta) {
+	            var i = 0;
+	            while (i < this._viewports.length) {
+	                this._viewports[i].updateAndDraw(time, delta);
+	            }
+	        }
+	    }]);
+
+	    return Engine;
+	})();
 
 	exports.default = Engine;
 
@@ -5412,31 +5444,38 @@ var pow =
 
 	var _resourceManager2 = _interopRequireDefault(_resourceManager);
 
-	var _viewport = __webpack_require__(195);
+	var _viewport = __webpack_require__(196);
 
 	var _viewport2 = _interopRequireDefault(_viewport);
 
-	var _objectFactory = __webpack_require__(197);
+	var _objectFactory = __webpack_require__(198);
 
 	var _objectFactory2 = _interopRequireDefault(_objectFactory);
 
-	var _renderables = __webpack_require__(198);
+	var _renderables = __webpack_require__(199);
 
 	var _renderables2 = _interopRequireDefault(_renderables);
 
-	var _math = __webpack_require__(201);
+	var _math = __webpack_require__(202);
 
 	var _math2 = _interopRequireDefault(_math);
 
-	var _renderer = __webpack_require__(205);
+	var _renderer = __webpack_require__(206);
 
 	var _renderer2 = _interopRequireDefault(_renderer);
 
-	var _materials = __webpack_require__(209);
+	var _materials = __webpack_require__(210);
 
 	var _materials2 = _interopRequireDefault(_materials);
 
+	var _imageResource = __webpack_require__(212);
+
+	var _imageResource2 = _interopRequireDefault(_imageResource);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	// register resourceTypes
+	_resourceManager2.default.registerResourceType(_imageResource2.default);
 
 	var core = {
 	    resourceManager: _resourceManager2.default,
@@ -5451,24 +5490,224 @@ var pow =
 
 /***/ },
 /* 194 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
+	exports.default = undefined;
+
+	var _utils = __webpack_require__(195);
+
+	var utils = _interopRequireWildcard(_utils);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var resourceManager = new (function ResourceManager() {
-	    _classCallCheck(this, ResourceManager);
-	})();
+	var resourceManager = new ((function () {
+	    function ResourceManager(objectFactory) {
+	        _classCallCheck(this, ResourceManager);
+
+	        this._objectFactory = objectFactory;
+	        this._resources = {};
+	        this._resourcesById = {};
+	        this._resourceTypes = {};
+	    }
+
+	    _createClass(ResourceManager, [{
+	        key: "registerResourceType",
+	        value: function registerResourceType(typeDescriptor) {
+	            if (typeDescriptor.type === undefined) {
+	                console.warn("Pow ResourceManager - registerResourceType: Invalid type descriptor. Descriptors must have a 'type' key.");
+	            } else if (this._resourceTypes[typeDescriptor.type] !== undefined) {
+	                console.warn("Pow ResourceManager - registerResourceType: TYPE ${type} already registered.");
+	            } else if (typeDescriptor.parse === undefined) {
+	                console.warn("Pow ResourceManager - registerResourceType: Parse function can be undefined for type ${typeDescriptor.type}.");
+	            } else {
+	                this._resourceTypes[typeDescriptor.type] = typeDescriptor;
+	            }
+	        }
+	    }, {
+	        key: "addResource",
+	        value: function addResource(id, type, resource) {
+	            if (this._resourcesById[id] !== undefined) {
+	                console.warn("Pow ResourceManager - addResource: ID ${id} already in use.");
+	            } else {
+	                if (this._resources[type] === undefined) {
+	                    this._resources[type] = {};
+	                }
+	                this._resources[type][id] = resource;
+	                this._resourcesById[id] = resource;
+	            }
+	        }
+	    }, {
+	        key: "removeResource",
+	        value: function removeResource(id, type) {
+	            if (this._resourcesById[id] === undefined || this._resources[type] === undefined || this._resources[type][id] === undefined) {
+	                console.warn("Pow ResourceManager - removeResource: resource ID ${id} TYPE ${type} not found.");
+	            } else {
+	                this._resourcesById[id] = undefined;
+	                this._resources[type][id] = undefined;
+	            }
+	        }
+	    }, {
+	        key: "obtainResource",
+	        value: function obtainResource(url, id, type) {
+	            var _this = this;
+
+	            if (id !== undefined) {
+	                if (this._resourcesById[id] !== undefined) {
+	                    console.warn("Pow ResourceManager - obtainResource: ID ${id} already in use.");
+	                } else if (this._resourceTypes[type] === undefined) {
+	                    console.warn("Pow ResourceManager - obtainResource: TYPE ${type} not registered for resource ${id} ( ${url} ).");
+	                } else {
+	                    if (this._resourceTypes[type].download === undefined) {
+	                        // download
+	                        fetch(url).then(function (response) {
+	                            _this._resourceTypes[type].parse(response);
+	                        }, function (err) {
+	                            console.warn("Pow ResourceManager - obtainResource: There was an error obtaining resource ${id} ( ${url} ): ${err} ");
+	                        }).then(function (resource) {
+	                            _this._resources[type][id] = resource;
+	                        }).catch(function (e) {
+	                            console.warn("Pow ResourceManager - obtainResource: There was an error obtaining resource ${id} ( ${url} ): ${e} ");
+	                        });
+	                    }
+	                }
+	            }
+	        }
+	    }]);
+
+	    return ResourceManager;
+	})())();
 
 	exports.default = resourceManager;
 
 /***/ },
 /* 195 */
+/***/ function(module, exports) {
+
+	/**
+	 * Created by joseba on 11/12/15.
+	 */
+	"use strict"
+
+	/**
+	 * Extracts base path from an URL
+	 * @param {string} url. URL to parse
+	 * @returns {string}. Base URL
+	 */
+	;
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.extractUrlBase = extractUrlBase;
+	exports.normalizeUrl = normalizeUrl;
+	exports.generateGUID = generateGUID;
+	exports.computePowerOfTwo = computePowerOfTwo;
+	function extractUrlBase(url) {
+	    var parts = url.split('/');
+	    parts.pop();
+	    return parts.length < 1 ? '' : parts.join('/') + '/';
+	}
+
+	/**
+	 * Extracts fileName from an URL
+	 * @param {string} url. Complete URL
+	 * @returns {string} [fileName]. File name
+	 */
+	var extractFileName = exports.extractFileName = function extractFileName(url) {
+	    return url.split('/').pop();
+	};
+
+	/**
+	 * Very basic func to extract a file extension from its name
+	 * @param {string} url. File URL, assuming the file has only a '.' separating file extension
+	 * @returns {string} file extension
+	 */
+	var extractExt = exports.extractExt = function extractExt(url) {
+	    return url.split('.').pop();
+	};
+
+	/**
+	 * Normalize URL, removing '//' and other chars
+	 * @param {string} url. URL to normalize
+	 * @returns {string} Normalized URL
+	 */
+	function normalizeUrl(url) {
+	    var newUrl = url,
+	        len = undefined,
+	        tag = undefined;
+
+	    var httpHead = "";
+	    if (newUrl.substr(0, 7) == 'http://') {
+	        httpHead = 'http://';
+	        newUrl = newUrl.substring(7, newUrl.length);
+	    }
+	    // remove extra slashes
+	    var tags = newUrl.split('/');
+	    newUrl = '';
+
+	    len = tags.length;
+	    while (len > 0) {
+	        tag = tags.pop();
+	        if (tag != '') {
+	            if (newUrl == '') {
+	                newUrl = tag;
+	            } else {
+	                newUrl = tag + '/' + newUrl;
+	            }
+	        }
+	        len--;
+	        if (len == 0 && url[0] == '/') {
+	            newUrl = '/' + newUrl;
+	        }
+	    }
+
+	    return httpHead + newUrl;
+	}
+
+	/**
+	 * Generates a random UID
+	 * @returns {number} generated UID
+	 */
+	function generateGUID() {
+	    var newGuid = undefined;
+
+	    var S4 = function S4() {
+	        return ((1 + Math.random()) * 0x10000 | 0).toString(16).substring(1);
+	    };
+
+	    newGuid = S4() + S4() + S4() + S4();
+
+	    return newGuid;
+	}
+
+	/**
+	 * Normalize URL, removing '//' and other chars
+	 * @param {number} num. Number to find the nearest power of two
+	 * @returns {number} power of two
+	 */
+	function computePowerOfTwo(num) {
+	    // brute force solution
+	    var poweroftwo = 2;
+
+	    // while power of two is smaller
+	    while (poweroftwo < num) {
+	        // compute next one
+	        poweroftwo *= 2;
+	    }
+
+	    return poweroftwo;
+	}
+
+/***/ },
+/* 196 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -5483,7 +5722,7 @@ var pow =
 	});
 	exports.default = undefined;
 
-	var _factoryObject = __webpack_require__(196);
+	var _factoryObject = __webpack_require__(197);
 
 	var _factoryObject2 = _interopRequireDefault(_factoryObject);
 
@@ -5568,7 +5807,7 @@ var pow =
 	exports.default = Viewport;
 
 /***/ },
-/* 196 */
+/* 197 */
 /***/ function(module, exports) {
 
 	/**
@@ -5592,7 +5831,7 @@ var pow =
 	exports.default = FactoryObject;
 
 /***/ },
-/* 197 */
+/* 198 */
 /***/ function(module, exports) {
 
 	/**
@@ -5677,7 +5916,7 @@ var pow =
 	exports.default = objectFactory;
 
 /***/ },
-/* 198 */
+/* 199 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -5691,9 +5930,9 @@ var pow =
 	});
 	exports.default = undefined;
 
-	var _sceneObject = __webpack_require__(199);
+	var _sceneObject = __webpack_require__(200);
 
-	var _sprite = __webpack_require__(200);
+	var _sprite = __webpack_require__(201);
 
 	var renderables = {
 	    SceneObject: _sceneObject.SceneObject,
@@ -5705,7 +5944,7 @@ var pow =
 	exports.default = renderables;
 
 /***/ },
-/* 199 */
+/* 200 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -5721,7 +5960,7 @@ var pow =
 	});
 	exports.AnchorTypes = exports.SceneObject = undefined;
 
-	var _factoryObject = __webpack_require__(196);
+	var _factoryObject = __webpack_require__(197);
 
 	var _factoryObject2 = _interopRequireDefault(_factoryObject);
 
@@ -5755,11 +5994,14 @@ var pow =
 	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(SceneObject).call(this, objectFactory));
 
 	        _this.type = 'SceneObject';
+	        _this._lastUpdateTime = -1;
 	        _this._position = objectFactory.create("Vector");
 	        _this._rotation = 0;
 	        _this._scale = objectFactory.create("Vector");
 	        _this._scale.set(1, 1);
 	        _this._alpha = 1.0;
+	        _this._w = 0;
+	        _this._h = 0;
 	        _this._pivot = objectFactory.create("Vector");
 	        _this._parent = undefined;
 
@@ -5810,31 +6052,34 @@ var pow =
 	    }, {
 	        key: "update",
 	        value: function update(time, delta) {
-	            if (this._parent._dirty || this._dirty) {
-	                //this.transform = new TWO.core.math.Matrix3();
-	                this._transformMatrix.makeTranslate(this._position.x, this._position.y);
-	                if (this._rotation) {
-	                    this._transformMatrix.rotate(this._rotation);
+	            // update only once in a frame
+	            if (time > this._lastUpdateTime) {
+	                if (this._parent._dirty || this._dirty) {
+	                    //this.transform = new TWO.core.math.Matrix3();
+	                    this._transformMatrix.makeTranslate(this._position.x, this._position.y);
+	                    if (this._rotation) {
+	                        this._transformMatrix.rotate(this._rotation);
+	                    }
+	                    this._transformMatrix.scale(this._scale.x, this._scale.y);
+
+	                    //this.transform.multiply( this.pivot );
+
+	                    if (this._parent !== undefined && this._parent._worldTransform !== undefined) {
+	                        this._worldTransform.copy(this._parent._worldTransform).multiply(this._transformMatrix);
+	                    } else {
+	                        this._worldTransform.copy(this._transformMatrix);
+	                    }
+
+	                    this._calculateTransformedBRect();
+
+	                    this._dirtyTransform = false;
+	                    this._dirty = true;
 	                }
-	                this._transformMatrix.scale(this._scale.x, this._scale.y);
-
-	                //this.transform.multiply( this.pivot );
-
-	                if (this._parent !== undefined && this._parent._worldTransform !== undefined) {
-	                    this._worldTransform.copy(this._parent._worldTransform).multiply(this._transformMatrix);
-	                } else {
-	                    this._worldTransform.copy(this._transformMatrix);
+	                var alpha = this._parent._worldAlpha * this._alpha;
+	                if (this._worldAlpha !== alpha) {
+	                    this._worldAlpha = alpha;
+	                    this._dirty = true;
 	                }
-
-	                this._calculateTransformedBRect();
-
-	                this._dirtyTransform = false;
-	                this._dirty = true;
-	            }
-	            var alpha = this._parent._worldAlpha * this._alpha;
-	            if (this._worldAlpha !== alpha) {
-	                this._worldAlpha = alpha;
-	                this._dirty = true;
 	            }
 	        }
 	    }, {
@@ -5852,10 +6097,10 @@ var pow =
 	            // |    |
 	            // p2 - p3
 
-	            p0.x = p2.x = this._pivotX;
-	            p0.y = p1.y = this._pivotY;
-	            p1.x = p3.x = this._w + this._pivotX;
-	            p2.y = p3.y = this._h + this._pivotY;
+	            p0.x = p2.x = this._pivot.x;
+	            p0.y = p1.y = this._pivot.y;
+	            p1.x = p3.x = this._w + this._pivot.x;
+	            p2.y = p3.y = this._h + this._pivot.y;
 
 	            this._worldTransform.transformVector2(p0).transformVector2(p1).transformVector2(p2).transformVector2(p3);
 
@@ -5927,7 +6172,7 @@ var pow =
 	exports.AnchorTypes = AnchorTypes;
 
 /***/ },
-/* 200 */
+/* 201 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -5945,11 +6190,11 @@ var pow =
 	});
 	exports.Animation = exports.AnimationFrame = exports.Sprite = undefined;
 
-	var _factoryObject = __webpack_require__(196);
+	var _factoryObject = __webpack_require__(197);
 
 	var _factoryObject2 = _interopRequireDefault(_factoryObject);
 
-	var _sceneObject = __webpack_require__(199);
+	var _sceneObject = __webpack_require__(200);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -6079,7 +6324,7 @@ var pow =
 	exports.Animation = Animation;
 
 /***/ },
-/* 201 */
+/* 202 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -6093,15 +6338,15 @@ var pow =
 	});
 	exports.default = undefined;
 
-	var _vector = __webpack_require__(202);
+	var _vector = __webpack_require__(203);
 
 	var _vector2 = _interopRequireDefault(_vector);
 
-	var _rect = __webpack_require__(203);
+	var _rect = __webpack_require__(204);
 
 	var _rect2 = _interopRequireDefault(_rect);
 
-	var _matrix = __webpack_require__(204);
+	var _matrix = __webpack_require__(205);
 
 	var _matrix2 = _interopRequireDefault(_matrix);
 
@@ -6115,7 +6360,7 @@ var pow =
 	exports.default = math;
 
 /***/ },
-/* 202 */
+/* 203 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -6130,7 +6375,7 @@ var pow =
 	});
 	exports.default = undefined;
 
-	var _factoryObject = __webpack_require__(196);
+	var _factoryObject = __webpack_require__(197);
 
 	var _factoryObject2 = _interopRequireDefault(_factoryObject);
 
@@ -6378,7 +6623,7 @@ var pow =
 	exports.default = Vector;
 
 /***/ },
-/* 203 */
+/* 204 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -6393,11 +6638,11 @@ var pow =
 	});
 	exports.default = undefined;
 
-	var _factoryObject = __webpack_require__(196);
+	var _factoryObject = __webpack_require__(197);
 
 	var _factoryObject2 = _interopRequireDefault(_factoryObject);
 
-	var _vector = __webpack_require__(202);
+	var _vector = __webpack_require__(203);
 
 	var _vector2 = _interopRequireDefault(_vector);
 
@@ -6567,7 +6812,7 @@ var pow =
 	exports.default = Rect;
 
 /***/ },
-/* 204 */
+/* 205 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -6582,7 +6827,7 @@ var pow =
 	});
 	exports.default = undefined;
 
-	var _factoryObject = __webpack_require__(196);
+	var _factoryObject = __webpack_require__(197);
 
 	var _factoryObject2 = _interopRequireDefault(_factoryObject);
 
@@ -6978,7 +7223,7 @@ var pow =
 	exports.default = Matrix3;
 
 /***/ },
-/* 205 */
+/* 206 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -6992,9 +7237,9 @@ var pow =
 	});
 	exports.default = undefined;
 
-	var _glBasicRenderer = __webpack_require__(206);
+	var _glBasicRenderer = __webpack_require__(207);
 
-	var _renderPass = __webpack_require__(207);
+	var _renderPass = __webpack_require__(208);
 
 	var _renderPass2 = _interopRequireDefault(_renderPass);
 
@@ -7008,7 +7253,7 @@ var pow =
 	exports.default = renderer;
 
 /***/ },
-/* 206 */
+/* 207 */
 /***/ function(module, exports) {
 
 	/**
@@ -7030,8 +7275,11 @@ var pow =
 	    }
 
 	    _createClass(GlBasicRenderer, [{
-	        key: "updateAndDraw",
-	        value: function updateAndDraw(time, delta, camera, root) {}
+	        key: "draw",
+	        value: function draw(time, delta, viewport, camera, node) {}
+	    }, {
+	        key: "initRenderTarget",
+	        value: function initRenderTarget(renderTarget) {}
 	    }]);
 
 	    return GlBasicRenderer;
@@ -7040,7 +7288,7 @@ var pow =
 	exports.glBasicRenderer = glBasicRenderer;
 
 /***/ },
-/* 207 */
+/* 208 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -7054,11 +7302,11 @@ var pow =
 	});
 	exports.default = undefined;
 
-	var _factoryObject = __webpack_require__(196);
+	var _factoryObject = __webpack_require__(197);
 
 	var _factoryObject2 = _interopRequireDefault(_factoryObject);
 
-	var _glShader = __webpack_require__(208);
+	var _glShader = __webpack_require__(209);
 
 	var _glShader2 = _interopRequireDefault(_glShader);
 
@@ -7088,7 +7336,7 @@ var pow =
 	exports.default = RenderPass;
 
 /***/ },
-/* 208 */
+/* 209 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -7104,7 +7352,7 @@ var pow =
 	});
 	exports.default = undefined;
 
-	var _factoryObject = __webpack_require__(196);
+	var _factoryObject = __webpack_require__(197);
 
 	var _factoryObject2 = _interopRequireDefault(_factoryObject);
 
@@ -7199,7 +7447,7 @@ var pow =
 	exports.default = GlShader;
 
 /***/ },
-/* 209 */
+/* 210 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -7213,7 +7461,7 @@ var pow =
 	});
 	exports.default = undefined;
 
-	var _basicMaterial = __webpack_require__(210);
+	var _basicMaterial = __webpack_require__(211);
 
 	var _basicMaterial2 = _interopRequireDefault(_basicMaterial);
 
@@ -7226,7 +7474,7 @@ var pow =
 	exports.default = materials;
 
 /***/ },
-/* 210 */
+/* 211 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -7240,7 +7488,7 @@ var pow =
 	});
 	exports.default = undefined;
 
-	var _factoryObject = __webpack_require__(196);
+	var _factoryObject = __webpack_require__(197);
 
 	var _factoryObject2 = _interopRequireDefault(_factoryObject);
 
@@ -7270,122 +7518,33 @@ var pow =
 	exports.default = BasicMaterial;
 
 /***/ },
-/* 211 */
+/* 212 */
 /***/ function(module, exports) {
 
 	/**
-	 * Created by joseba on 11/12/15.
+	 * Created by joseba on 7/3/16.
 	 */
-	"use strict"
+	"use strict";
 
-	/**
-	 * Extracts base path from an URL
-	 * @param {string} url. URL to parse
-	 * @returns {string}. Base URL
-	 */
-	;
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	exports.extractUrlBase = extractUrlBase;
-	exports.normalizeUrl = normalizeUrl;
-	exports.generateGUID = generateGUID;
-	exports.computePowerOfTwo = computePowerOfTwo;
-	function extractUrlBase(url) {
-	    var parts = url.split('/');
-	    parts.pop();
-	    return parts.length < 1 ? '' : parts.join('/') + '/';
-	}
-
-	/**
-	 * Extracts fileName from an URL
-	 * @param {string} url. Complete URL
-	 * @returns {string} [fileName]. File name
-	 */
-	var extractFileName = exports.extractFileName = function extractFileName(url) {
-	    return url.split('/').pop();
+	var ImageResource = {
+	    type: 'image',
+	    parse: function parse(response) {
+	        new Promise(function (resolve) {
+	            return resolve(response);
+	        }).then(function (res) {
+	            return res.blob();
+	        }).then(function (imgBlob) {
+	            var HTMLImage = new Image();
+	            HTMLImage.src = URL.createObjectURL(imgBlob);
+	            return HTMLImage;
+	        });
+	    }
 	};
 
-	/**
-	 * Very basic func to extract a file extension from its name
-	 * @param {string} url. File URL, assuming the file has only a '.' separating file extension
-	 * @returns {string} file extension
-	 */
-	var extractExt = exports.extractExt = function extractExt(url) {
-	    return url.split('.').pop();
-	};
-
-	/**
-	 * Normalize URL, removing '//' and other chars
-	 * @param {string} url. URL to normalize
-	 * @returns {string} Normalized URL
-	 */
-	function normalizeUrl(url) {
-	    var newUrl = url,
-	        len = undefined,
-	        tag = undefined;
-
-	    var httpHead = "";
-	    if (newUrl.substr(0, 7) == 'http://') {
-	        httpHead = 'http://';
-	        newUrl = newUrl.substring(7, newUrl.length);
-	    }
-	    // remove extra slashes
-	    var tags = newUrl.split('/');
-	    newUrl = '';
-
-	    len = tags.length;
-	    while (len > 0) {
-	        tag = tags.pop();
-	        if (tag != '') {
-	            if (newUrl == '') {
-	                newUrl = tag;
-	            } else {
-	                newUrl = tag + '/' + newUrl;
-	            }
-	        }
-	        len--;
-	        if (len == 0 && url[0] == '/') {
-	            newUrl = '/' + newUrl;
-	        }
-	    }
-
-	    return httpHead + newUrl;
-	}
-
-	/**
-	 * Generates a random UID
-	 * @returns {number} generated UID
-	 */
-	function generateGUID() {
-	    var newGuid = undefined;
-
-	    var S4 = function S4() {
-	        return ((1 + Math.random()) * 0x10000 | 0).toString(16).substring(1);
-	    };
-
-	    newGuid = S4() + S4() + S4() + S4();
-
-	    return newGuid;
-	}
-
-	/**
-	 * Normalize URL, removing '//' and other chars
-	 * @param {number} num. Number to find the nearest power of two
-	 * @returns {number} power of two
-	 */
-	function computePowerOfTwo(num) {
-	    // brute force solution
-	    var poweroftwo = 2;
-
-	    // while power of two is smaller
-	    while (poweroftwo < num) {
-	        // compute next one
-	        poweroftwo *= 2;
-	    }
-
-	    return poweroftwo;
-	}
+	exports.default = ImageResource;
 
 /***/ }
 /******/ ]);

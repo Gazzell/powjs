@@ -9,6 +9,10 @@ import { default as renderables } from "./renderables/renderables.jsx";
 import { default as math } from "./math/math.jsx"
 import { default as renderer } from "./renderer/renderer.jsx";
 import { default as materials } from "./materials/materials.jsx";
+import { default as imageResourceType } from "./resourceTypes/imageResource.jsx";
+
+// register resourceTypes
+resourceManager.registerResourceType( imageResourceType );
 
 var core = {
     resourceManager: resourceManager,

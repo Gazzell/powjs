@@ -9,7 +9,11 @@ var glBasicRenderer = new (
 
         }
 
-        updateAndDraw(time, delta, camera, root) {
+        draw( time, delta, viewport, camera, node ){
+
+        }
+
+        initRenderTarget( renderTarget ){
 
         }
     })();

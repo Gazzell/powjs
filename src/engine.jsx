@@ -3,6 +3,7 @@ import { default as core } from "./core/core.jsx";
 
 class Engine {
     constructor( params ){
+        this._viewports = [];
         this.htmlContainer = undefined;
         this.resourceMgr = core.resourceManager;
         this.objectFactory = core.objectFactory;
@@ -23,6 +24,25 @@ class Engine {
             params.container = this.htmlContainer;
         } else {
             this.htmlContainer = params.container;
+        }
+    }
+
+    addViewport( viewport ){
+        if( this._viewports.indexOf( viewport ) === -1 ){
+            this._viewports.push( viewport );
+        }
+    }
+    removeViewport( viewport ){
+        let index = this._viewports.indexOf( viewport );
+        if( index !== -1 ){
+            this._viewports.slice( index, 1 );
+        }
+    }
+
+    updateAndDraw( time, delta ){
+        let i = 0;
+        while( i < this._viewports.length ){
+            this._viewports[i].updateAndDraw( time, delta );
         }
     }
 }

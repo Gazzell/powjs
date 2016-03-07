@@ -1,8 +1,72 @@
 "use strict";
+import * as utils from "../utils/utils.jsx";
 var resourceManager = new(
     class ResourceManager {
-        constructor(){
+        constructor( objectFactory ){
+            this._objectFactory = objectFactory;
+            this._resources = {};
+            this._resourcesById = {};
+            this._resourceTypes = {};
+        }
 
+        registerResourceType( typeDescriptor ){
+            if( typeDescriptor.type === undefined ){
+                console.warn( "Pow ResourceManager - registerResourceType: Invalid type descriptor. Descriptors must have a 'type' key." );
+            } else if( this._resourceTypes[ typeDescriptor.type ] !== undefined ){
+                console.warn( "Pow ResourceManager - registerResourceType: TYPE ${type} already registered." );
+            } else if( typeDescriptor.parse === undefined) {
+                console.warn( "Pow ResourceManager - registerResourceType: Parse function can be undefined for type ${typeDescriptor.type}." );
+            } else {
+                this._resourceTypes[ typeDescriptor.type ] = typeDescriptor;
+            }
+        }
+
+        addResource( id, type, resource ){
+            if( this._resourcesById[ id ] !== undefined ){
+                console.warn( "Pow ResourceManager - addResource: ID ${id} already in use." );
+            } else {
+                if (this._resources[ type ] === undefined) {
+                    this._resources[ type ] = {};
+                }
+                this._resources[ type ][ id ] = resource;
+                this._resourcesById[ id ] = resource;
+            }
+        }
+
+        removeResource( id, type ){
+            if( this._resourcesById[ id ] === undefined || this._resources[ type ] === undefined || this._resources[ type ][ id ] === undefined ){
+                console.warn( "Pow ResourceManager - removeResource: resource ID ${id} TYPE ${type} not found." );
+            } else {
+                this._resourcesById[ id ] = undefined;
+                this._resources[ type ][ id ] = undefined;
+            }
+        }
+
+        obtainResource( url, id, type ){
+            if( id !== undefined ){
+                if( this._resourcesById[ id ] !== undefined ){
+                    console.warn( "Pow ResourceManager - obtainResource: ID ${id} already in use." );
+                } else if( this._resourceTypes[ type ] === undefined ) {
+                    console.warn( "Pow ResourceManager - obtainResource: TYPE ${type} not registered for resource ${id} ( ${url} )." );
+                } else {
+                    if( this._resourceTypes[ type ].download === undefined ){
+                        // download
+                        fetch( url ).then(
+                            response => {
+                                this._resourceTypes[ type ].parse( response );
+                            },
+                            err => {
+                                console.warn( "Pow ResourceManager - obtainResource: There was an error obtaining resource ${id} ( ${url} ): ${err} " );
+                            })
+                            .then( resource => {
+                                this._resources[ type ][ id ] = resource;
+                            })
+                            .catch(
+                                e => { console.warn( "Pow ResourceManager - obtainResource: There was an error obtaining resource ${id} ( ${url} ): ${e} " ); }
+                            );
+                    }
+                }
+            }
         }
     })();
 
