@@ -37,14 +37,13 @@ describe("ResourceManager tests", function() {
 
     });
 
-    //TODO: this test only works with chrome, have to make them run in travis with chrome
-    //describe(" - Asset Manager download image -->", function(){
-    //    it('Download valid image', function( done ) {
-    //        engine.resourceMgr.obtainResource('/base/test/resourceManagerRes/star.png', 'star', 'image',
-    //        function( res ){
-    //            expect( res ).to.be.an.instanceof( Image );
-    //            done();
-    //        });
-    //    });
-    //});
+    describe(" - Asset Manager download image -->", function(){
+        it('Download valid image', function( done ) {
+            engine.resourceMgr.obtainResource('/base/test/resourceManagerRes/star.png', 'star', 'image',
+            function( res ){
+                expect( res ).to.be.an.instanceof( Image );
+                done();
+            });
+        });
+    });
 });
