@@ -1,3 +1,4 @@
+var webpack = require('webpack');
 module.exports = {
     entry: ['babel-polyfill', './src/pow.js'],
     output: {
@@ -17,6 +18,13 @@ module.exports = {
             }
         ]
     },
+
+    plugins: [
+        new webpack.ProvidePlugin({
+            'fetch': 'imports?this=>global!exports?global.fetch!whatwg-fetch'
+        })
+    ],
+
     resolve: {
         extensions: ["", ".js", ".jsx"]
     },
