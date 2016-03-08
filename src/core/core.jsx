@@ -10,9 +10,11 @@ import { default as math } from "./math/math.jsx"
 import { default as renderer } from "./renderer/renderer.jsx";
 import { default as materials } from "./materials/materials.jsx";
 import { default as imageResourceType } from "./resourceTypes/imageResource.jsx";
+import { default as jsonResourceType } from "./resourceTypes/jsonResource.jsx";
 
 // register resourceTypes
 resourceManager.registerResourceType( imageResourceType );
+resourceManager.registerResourceType( jsonResourceType );
 
 var core = {
     resourceManager: resourceManager,

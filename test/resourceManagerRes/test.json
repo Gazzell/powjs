@@ -1,0 +1,68 @@
+{
+    "type": "Scene",
+    "name": "Test Scene",
+    "images":
+            [
+                { "name": "guybrush", "url": "../gb_walk.png"},
+                { "name": "cloud", "url": "../cartoon-cloud-md.png"}
+            ],
+    "spriteDefs":
+            [
+                {
+                    "name" :"guybrush",
+                    "image":"guybrush",
+                    "defaultAnimation": "walkLeft",
+                    "defaultFps": 10,
+                    "animations":
+                    {
+                        "walkRight":{ "offset":[0, 0],   "frameWidth": 104, "frameHeight": 150, "frameNumber": 6, "loop": true},
+                        "walkLeft" :{ "offset":[0,150], "frameWidth": 104, "frameHeight": 150, "frameNumber": 6, "loop": false},
+                        "standRight":{ "offset":[0, 301], "frameWidth": 104, "frameHeight": 149, "frameNumber": 1, "loop": false},
+                        "standLeft":{ "offset":[104, 301], "frameWidth": 104, "frameHeight": 149, "frameNumber": 1, "loop": false}
+                    }
+                }
+            ],
+    "layers":
+            [
+                {
+                    "name": "background",
+                    "type": "Layer",
+                    "children": [
+                        "parent"
+                    ],
+                    "objects":{
+                        "parent": {
+                            "id": "parent",
+                            "name":"parent",
+                            "type": "Object2d",
+                            "position": [400, 400],
+                            "children":[
+                                "cloud1",
+                                "guy1"
+                            ]
+                        },
+                        "cloud1": {
+                            "id": "cloud1",
+                            "name": "cloud1",
+                            "type": "Bitmap",
+                            "image": "cloud",
+                            "anchor": {
+                                "type": "CENTER"
+                            },
+                            "scale": [0.5, 0.3],
+                            "position": [100, 0]
+                        },
+                        "guy1": {
+                            "id": "guy1",
+                            "name": "guy1",
+                            "type": "Sprite",
+                            "spriteDef": "guybrush",
+                            "anchor": {
+                                "type": "CENTER"
+                            },
+                            "position": [-100, 0]
+                        }
+                    }
+                }
+            ]
+}

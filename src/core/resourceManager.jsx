@@ -42,50 +42,62 @@ var resourceManager = new(
             }
         }
 
-        obtainResource( url, id, type, onResObtained ){
-            if( id !== undefined ){
-                if( this._resourcesById[ id ] !== undefined ){
-                    console.warn( "Pow ResourceManager - obtainResource: ID ${id} already in use." );
-                } else if( this._resourceTypes[ type ] === undefined ) {
-                    console.warn( "Pow ResourceManager - obtainResource: TYPE ${type} not registered for resource ${id} ( ${url} )." );
-                } else {
-                    if( this._resourceTypes[ type ].download === undefined ){
-                        // download
-                        let p = fetch( url )
-                            .then(
-                                response => {
-                                    if (response.status >= 200 && response.status < 300) {
-                                        this._resourceTypes[ type ].parse( response )
-                                            .then( resource => {
-                                                if( this._resources[ type ] === undefined ){
-                                                    this._resources[ type ] = {};
-                                                }
-                                                this._resources[ type ][ id ] = resource;
-                                                if( onResObtained !== undefined && typeof onResObtained === 'function' ){
-                                                    onResObtained( resource );
-                                                }
-                                            })
-                                            .catch(
-                                                e => { console.warn( "Pow ResourceManager - obtainResource: There was an error obtaining resource ${id} ( ${url} ): ${e} " ); }
-                                            );
+        obtainResource( url, id, type ){
+            return new Promise( ( resolve, reject ) => {
+                let fireOnResObtained = function fireOnResObtained ( resource, warnMessage ){
+                    if( warnMessage !== undefined ){
+                        console.warn( warnMessage );
+                    }
+                    resolve( resource );
+                };
 
-                                    } else {
-                                        var error = new Error(response.statusText);
-                                        error.response = response;
-                                        throw error;
+                if( id !== undefined ){
+                    if( this._resourcesById[ id ] !== undefined ){
+                        fireOnResObtained( undefined, "Pow ResourceManager - obtainResource: ID ${id} already in use." );
+                    } else if( this._resourceTypes[ type ] === undefined ) {
+                        fireOnResObtained( undefined, "Pow ResourceManager - obtainResource: TYPE ${type} not registered for resource ${id} ( ${url} )." );
+                    } else {
+                        if( this._resourceTypes[ type ].download === undefined ){
+                            // download
+                            let p = fetch( url )
+                                .then(
+                                    response => {
+                                        if (response.status >= 200 && response.status < 300) {
+                                            this._resourceTypes[ type ].parse( response )
+                                                .then( resource => {
+                                                    if( this._resources[ type ] === undefined ){
+                                                        this._resources[ type ] = {};
+                                                    }
+                                                    this._resources[ type ][ id ] = resource;
+                                                    fireOnResObtained( resource );
+                                                })
+                                                .catch(
+                                                    e => {
+                                                        fireOnResObtained( undefined, "Pow ResourceManager - obtainResource: There was an error parsing resource ${id} ( ${url} ): ${e} " );
+                                                    }
+                                                );
+
+                                        } else {
+                                            var error = new Error(response.statusText);
+                                            error.response = response;
+                                            throw error;
+                                        }
+                                    },
+                                    err => {
+                                        fireOnResObtained( undefined, "Pow ResourceManager - obtainResource: There was an error obtaining resource ${id} ( ${url} ): ${err} " );
+                                    })
+                                .catch(
+                                    e => {
+                                        fireOnResObtained( undefined, "Pow ResourceManager - obtainResource: There was an error obtaining resource ${id} ( ${url} ): ${e} " );
                                     }
-                                },
-                                err => {
-                                    console.warn( "Pow ResourceManager - obtainResource: There was an error obtaining resource ${id} ( ${url} ): ${err} " );
-                                })
-                            .catch(
-                                e => { console.warn( "Pow ResourceManager - obtainResource: There was an error obtaining resource ${id} ( ${url} ): ${e} " ); }
-                            );
+                                );
 
 
+                        }
                     }
                 }
-            }
+            });
+
         }
     })();
 

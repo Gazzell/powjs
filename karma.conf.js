@@ -17,7 +17,8 @@ module.exports = function(config) {
     files: [
       'bin/pow.js',
       'test/**/*.js',
-      { pattern: 'test/**/*.png', watched: false, included: false, served: true, nocache: false}
+      { pattern: 'test/**/*.png', watched: false, included: false, served: true, nocache: false},
+      { pattern: 'test/**/*.json', watched: false, included: false, served: true, nocache: false}
     ],
 
 
