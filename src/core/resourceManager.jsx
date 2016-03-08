@@ -78,9 +78,7 @@ var resourceManager = new(
                                                 );
 
                                         } else {
-                                            var error = new Error(response.statusText);
-                                            error.response = response;
-                                            throw error;
+                                            fireOnResObtained( undefined, "Pow ResourceManager - obtainResource: " + response.statusText);
                                         }
                                     },
                                     err => {

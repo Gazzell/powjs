@@ -7888,9 +7888,7 @@ var pow =
 	                                        fireOnResObtained(undefined, "Pow ResourceManager - obtainResource: There was an error parsing resource ${id} ( ${url} ): ${e} ");
 	                                    });
 	                                } else {
-	                                    var error = new Error(response.statusText);
-	                                    error.response = response;
-	                                    throw error;
+	                                    fireOnResObtained(undefined, "Pow ResourceManager - obtainResource: " + response.statusText);
 	                                }
 	                            }, function (err) {
 	                                fireOnResObtained(undefined, "Pow ResourceManager - obtainResource: There was an error obtaining resource ${id} ( ${url} ): ${err} ");
