@@ -13,4 +13,4 @@ class BasicMaterial extends FactoryObject{
     }
 }
 
-export {BasicMaterial as default };
+export { BasicMaterial as default };

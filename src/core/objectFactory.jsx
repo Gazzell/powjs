@@ -28,13 +28,16 @@ var objectFactory = new (
         }
 
         create( objectType, params ){
+            var obj;
             if( this.objectPool.has( objectType ) && this.typeConstructors.has( objectType ) ){
                 let objectArray = this.objectPool.get( objectType );
                 if(  objectArray.length > 0) {
-                    return objectArray.pop();
+                    obj = objectArray.pop();
                 } else {
-                    return new ( this.typeConstructors.get( objectType ) )( this, params );
+                    obj = new ( this.typeConstructors.get( objectType ) )( this );
                 }
+                obj.init( params );
+                return obj;
             }
         }
 

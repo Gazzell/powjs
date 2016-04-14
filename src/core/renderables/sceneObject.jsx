@@ -19,7 +19,7 @@ const AnchorTypes = {
     };
 
 class SceneObject extends FactoryObject{
-    constructor( objectFactory, params ){
+    constructor( objectFactory ){
         super( objectFactory );
         this.type = 'SceneObject';
         this._lastUpdateTime = -1;
@@ -41,6 +41,16 @@ class SceneObject extends FactoryObject{
         this._boundingRect = objectFactory.create("Rect");
         this._dirty = true;
         this._dirtyTransform = true;
+
+        // pre & post hooks
+        this._preUpdateCbks = [];
+        this._postUpdateCbks = [];
+        this._preDrawCbks = [];
+        this._postDrawCbks = [];
+    }
+
+    init( params ){
+
     }
 
     reset(){
@@ -54,9 +64,14 @@ class SceneObject extends FactoryObject{
         this._boundingRect.reset();
 
         this.children.forEach( child => this.objectFactory.dispose( child ) );
+        this.children.length = 0;
+
         this._parent = undefined;
         this._dirty = true;
         this._dirtyTransform = true;
+
+        this._preDrawCbks.length = 0;
+        this._postDrawCbks.length = 0;
     }
 
     set position( pos ){
@@ -113,6 +128,14 @@ class SceneObject extends FactoryObject{
     update( time, delta ){
         // update only once in a frame
         if( time > this._lastUpdateTime ) {
+            // pre update hooks
+            if( this._preUpdateCbks.length > 0 ){
+                for( let i = 0; i < this._preUpdateCbks.length; i++ ){
+                    this._preUpdateCbks[i]( this );
+                }
+            }
+
+            // update
             if (this._parent._dirty || this._dirty) {
                 //this.transform = new TWO.core.math.Matrix3();
                 this._transformMatrix.makeTranslate(this._position.x, this._position.y);
@@ -140,6 +163,14 @@ class SceneObject extends FactoryObject{
                 this._worldAlpha = alpha;
                 this._dirty = true;
             }
+
+            // post update hooks
+            if( this._postUpdateCbks.length > 0 ){
+                for( let i = 0; i < this._postUpdateCbks.length; i++ ){
+                    this._postUpdateCbks[i]( this );
+                }
+            }
+            this._lastUpdateTime = time;
         }
     }
 

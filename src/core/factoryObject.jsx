@@ -7,6 +7,10 @@ class FactoryObject{
     constructor( objectFactory ){
         this.objectFactroy = objectFactory;
     }
+
+    init( params ){}
+
+    reset(){}
 }
 
 export { FactoryObject as default };

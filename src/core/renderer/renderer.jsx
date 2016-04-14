@@ -4,7 +4,7 @@
 
 "use strict";
 
-import { glBasicRenderer as glBasicRenderer} from "./glBasicRenderer.jsx";
+import { glBasicRenderer as glBasicRenderer} from "./gl/glBasicRenderer.jsx";
 import { default as RenderPass} from "./renderPass.jsx";
 
 var renderer = {

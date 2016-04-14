@@ -5,7 +5,7 @@
 "use strict";
 
 import { default as FactoryObject } from "../factoryObject.jsx";
-import { default as GlShader } from "./glShader.jsx";
+import { default as GlShader } from "./gl/glShader.jsx";
 
 class RenderPass extends FactoryObject{
     constructor( objectFactory, params ){

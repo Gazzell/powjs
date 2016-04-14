@@ -7,10 +7,14 @@ import { default as FactoryObject } from "../factoryObject.jsx";
 import { SceneObject as SceneObject } from "./sceneObject.jsx";
 
 class AnimationFrame extends FactoryObject {
-    constructor( objectFactory, params ){
+    constructor( objectFactory ){
         super( objectFactory );
         this.rect = objectFactory.create('Rect');
         this.duration = 0;
+    }
+
+    init( params ){
+
     }
 
     reset(){

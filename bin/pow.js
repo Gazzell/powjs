@@ -8543,13 +8543,27 @@ var pow =
 	    value: true
 	});
 
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var FactoryObject = function FactoryObject(objectFactory) {
-	    _classCallCheck(this, FactoryObject);
+	var FactoryObject = (function () {
+	    function FactoryObject(objectFactory) {
+	        _classCallCheck(this, FactoryObject);
 
-	    this.objectFactroy = objectFactory;
-	};
+	        this.objectFactroy = objectFactory;
+	    }
+
+	    _createClass(FactoryObject, [{
+	        key: "init",
+	        value: function init(params) {}
+	    }, {
+	        key: "reset",
+	        value: function reset() {}
+	    }]);
+
+	    return FactoryObject;
+	})();
 
 	exports.default = FactoryObject;
 
@@ -8600,13 +8614,16 @@ var pow =
 	    }, {
 	        key: "create",
 	        value: function create(objectType, params) {
+	            var obj;
 	            if (this.objectPool.has(objectType) && this.typeConstructors.has(objectType)) {
 	                var objectArray = this.objectPool.get(objectType);
 	                if (objectArray.length > 0) {
-	                    return objectArray.pop();
+	                    obj = objectArray.pop();
 	                } else {
-	                    return new (this.typeConstructors.get(objectType))(this, params);
+	                    obj = new (this.typeConstructors.get(objectType))(this);
 	                }
+	                obj.init(params);
+	                return obj;
 	            }
 	        }
 	    }, {
@@ -8711,7 +8728,7 @@ var pow =
 	var SceneObject = (function (_FactoryObject) {
 	    _inherits(SceneObject, _FactoryObject);
 
-	    function SceneObject(objectFactory, params) {
+	    function SceneObject(objectFactory) {
 	        _classCallCheck(this, SceneObject);
 
 	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(SceneObject).call(this, objectFactory));
@@ -8736,10 +8753,19 @@ var pow =
 	        _this._boundingRect = objectFactory.create("Rect");
 	        _this._dirty = true;
 	        _this._dirtyTransform = true;
+
+	        // pre & post hooks
+	        _this._preUpdateCbks = [];
+	        _this._postUpdateCbks = [];
+	        _this._preDrawCbks = [];
+	        _this._postDrawCbks = [];
 	        return _this;
 	    }
 
 	    _createClass(SceneObject, [{
+	        key: "init",
+	        value: function init(params) {}
+	    }, {
 	        key: "reset",
 	        value: function reset() {
 	            var _this2 = this;
@@ -8756,9 +8782,14 @@ var pow =
 	            this.children.forEach(function (child) {
 	                return _this2.objectFactory.dispose(child);
 	            });
+	            this.children.length = 0;
+
 	            this._parent = undefined;
 	            this._dirty = true;
 	            this._dirtyTransform = true;
+
+	            this._preDrawCbks.length = 0;
+	            this._postDrawCbks.length = 0;
 	        }
 	    }, {
 	        key: "addChild",
@@ -8777,6 +8808,14 @@ var pow =
 	        value: function update(time, delta) {
 	            // update only once in a frame
 	            if (time > this._lastUpdateTime) {
+	                // pre update hooks
+	                if (this._preUpdateCbks.length > 0) {
+	                    for (var i = 0; i < this._preUpdateCbks.length; i++) {
+	                        this._preUpdateCbks[i](this);
+	                    }
+	                }
+
+	                // update
 	                if (this._parent._dirty || this._dirty) {
 	                    //this.transform = new TWO.core.math.Matrix3();
 	                    this._transformMatrix.makeTranslate(this._position.x, this._position.y);
@@ -8803,6 +8842,14 @@ var pow =
 	                    this._worldAlpha = alpha;
 	                    this._dirty = true;
 	                }
+
+	                // post update hooks
+	                if (this._postUpdateCbks.length > 0) {
+	                    for (var _i = 0; _i < this._postUpdateCbks.length; _i++) {
+	                        this._postUpdateCbks[_i](this);
+	                    }
+	                }
+	                this._lastUpdateTime = time;
 	            }
 	        }
 	    }, {
@@ -8930,7 +8977,7 @@ var pow =
 	var AnimationFrame = (function (_FactoryObject) {
 	    _inherits(AnimationFrame, _FactoryObject);
 
-	    function AnimationFrame(objectFactory, params) {
+	    function AnimationFrame(objectFactory) {
 	        _classCallCheck(this, AnimationFrame);
 
 	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(AnimationFrame).call(this, objectFactory));
@@ -8941,6 +8988,9 @@ var pow =
 	    }
 
 	    _createClass(AnimationFrame, [{
+	        key: "init",
+	        value: function init(params) {}
+	    }, {
 	        key: "reset",
 	        value: function reset() {
 	            this.rect.reset();
