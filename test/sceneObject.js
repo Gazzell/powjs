@@ -2,7 +2,7 @@
  * Created by joseba on 12/2/16.
  */
 describe("Scene Object", function() {
-    var engine = new pow.Engine(),
+    var engine = pow.engine,
         root = engine.objectFactory.create('SceneObject');
     beforeEach(function() {
         for( var i = 0; i < 10; i++ ){
@@ -43,5 +43,5 @@ describe("Scene Object", function() {
         assert.equal( root.children[ 10 ], newElement, '5th not the same as new element');
     });
 
-    
+
 });

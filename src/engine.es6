@@ -1,7 +1,7 @@
 "use strict";
 import { default as core } from "./core/core.es6";
 
-class Engine {
+var _engine = new ( class Engine {
     constructor( params ){
         this._viewports = [];
         this.htmlContainer = undefined;
@@ -45,6 +45,6 @@ class Engine {
             this._viewports[i].updateAndDraw( time, delta );
         }
     }
-}
+} )();
 
-export { Engine as default };
+export { _engine as default };

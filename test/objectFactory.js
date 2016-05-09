@@ -2,7 +2,7 @@
  * Created by joseba on 14/1/16.
  */
 describe("ObjectFactory tests", function() {
-    var engine = new pow.Engine();
+    var engine = pow.engine;
     beforeEach(function() { });
     afterEach(function() { });
     describe(" - Object Factory create SceneObject -->", function(){

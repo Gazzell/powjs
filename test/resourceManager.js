@@ -2,7 +2,7 @@
  * Created by joseba on 7/3/16.
  */
 describe("ResourceManager tests", function() {
-    var engine = new pow.Engine();
+    var engine = pow.engine;
     beforeEach(function() { });
     afterEach(function() { });
     describe(" - Asset Manager register resource type -->", function(){

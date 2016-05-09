@@ -7620,7 +7620,7 @@ var pow =
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.utils = exports.core = exports.Engine = undefined;
+	exports.utils = exports.core = exports.engine = undefined;
 
 	var _engine2 = __webpack_require__(287);
 
@@ -7638,7 +7638,7 @@ var pow =
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var Engine = exports.Engine = _engine3.default;
+	var engine = exports.engine = _engine3.default;
 	var core = exports.core = _core3.default;
 	var utils = exports.utils = _utils;
 
@@ -7663,7 +7663,7 @@ var pow =
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var Engine = (function () {
+	var _engine = new ((function () {
 	    function Engine(params) {
 	        _classCallCheck(this, Engine);
 
@@ -7717,9 +7717,9 @@ var pow =
 	    }]);
 
 	    return Engine;
-	})();
+	})())();
 
-	exports.default = Engine;
+	exports.default = _engine;
 
 /***/ },
 /* 288 */
