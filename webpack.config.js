@@ -1,6 +1,6 @@
 var webpack = require('webpack');
 module.exports = {
-    entry: ['babel-polyfill', './src/pow.js'],
+    entry: ['babel-polyfill', './src/pow.es6'],
     output: {
         filename: 'pow.js',
         path: __dirname +'/bin',
@@ -9,7 +9,7 @@ module.exports = {
     module: {
         loaders: [
             {
-                test: /\.jsx?$/,
+                test: /\.es6?$/,
                 exclude: /node_modules/,
                 loader: 'babel',
                 query: {
@@ -26,7 +26,7 @@ module.exports = {
     ],
 
     resolve: {
-        extensions: ["", ".js", ".jsx"]
+        extensions: ["", ".js", ".es6"]
     },
     externals: {
         'pow': 'pow'

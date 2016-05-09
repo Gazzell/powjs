@@ -3,9 +3,9 @@
  */
 
 "use strict";
-import { default as Vector } from "./vector.jsx";
-import { default as Rect } from "./rect.jsx";
-import { default as Matrix3 } from "./matrix3.jsx";
+import { default as Vector } from "./vector.es6";
+import { default as Rect } from "./rect.es6";
+import { default as Matrix3 } from "./matrix3.es6";
 
 var math = {
     Vector: Vector,

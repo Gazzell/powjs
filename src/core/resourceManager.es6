@@ -1,5 +1,5 @@
 "use strict";
-import * as utils from "../utils/utils.jsx";
+import * as utils from "../utils/utils.es6";
 var resourceManager = new(
     class ResourceManager {
         constructor( objectFactory ){

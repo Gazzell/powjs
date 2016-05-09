@@ -2,7 +2,7 @@
  * Created by joseba on 14/4/16.
  */
 "use strict";
-import { default as FactoryObject } from "../factoryObject.jsx";
+import { default as FactoryObject } from "../factoryObject.es6";
 
 class RenderTarget extends FactoryObject {
     constructor(objectFactory) {

@@ -2,8 +2,8 @@
  * Created by joseba on 18/1/16.
  */
 "use strict";
-import { default as FactoryObject } from "../factoryObject.jsx";
-import { default as Vector } from "./vector.jsx";
+import { default as FactoryObject } from "../factoryObject.es6";
+import { default as Vector } from "./vector.es6";
 
 class Rect extends FactoryObject{
     constructor( objectFactory ) {

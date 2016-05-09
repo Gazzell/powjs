@@ -7759,15 +7759,15 @@ var pow =
 
 	var _renderer2 = _interopRequireDefault(_renderer);
 
-	var _materials = __webpack_require__(306);
+	var _materials = __webpack_require__(304);
 
 	var _materials2 = _interopRequireDefault(_materials);
 
-	var _imageResource = __webpack_require__(308);
+	var _imageResource = __webpack_require__(307);
 
 	var _imageResource2 = _interopRequireDefault(_imageResource);
 
-	var _jsonResource = __webpack_require__(309);
+	var _jsonResource = __webpack_require__(308);
 
 	var _jsonResource2 = _interopRequireDefault(_jsonResource);
 
@@ -10010,17 +10010,10 @@ var pow =
 	});
 	exports.default = undefined;
 
-	var _glBasicRenderer = __webpack_require__(303);
-
-	var _renderPass = __webpack_require__(304);
-
-	var _renderPass2 = _interopRequireDefault(_renderPass);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	var _glRenderer = __webpack_require__(303);
 
 	var renderer = {
-	  glBasicRenderer: _glBasicRenderer.glBasicRenderer,
-	  RenderPass: _renderPass2.default
+	  glRenderer: _glRenderer.glRenderer
 	};
 
 	exports.default = renderer;
@@ -10042,23 +10035,26 @@ var pow =
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var glBasicRenderer = new ((function () {
-	    function GlBasicRenderer() {
-	        _classCallCheck(this, GlBasicRenderer);
+	var gl = undefined;
+	var glRenderer = new ((function () {
+	    function GlRenderer(objectFactory) {
+	        _classCallCheck(this, GlRenderer);
+
+	        this.objectFactory = objectFactory;
+	        this.renderTarget = undefined;
 	    }
 
-	    _createClass(GlBasicRenderer, [{
+	    _createClass(GlRenderer, [{
 	        key: "draw",
-	        value: function draw(time, delta, viewport, camera, node) {}
-	    }, {
-	        key: "initRenderTarget",
-	        value: function initRenderTarget(renderTarget) {}
+	        value: function draw(time, delta, viewport, camera, node) {
+	            this.renderTarget = viewport.renderTarget;
+	        }
 	    }]);
 
-	    return GlBasicRenderer;
+	    return GlRenderer;
 	})())();
 
-	exports.glBasicRenderer = glBasicRenderer;
+	exports.glRenderer = glRenderer;
 
 /***/ },
 /* 304 */
@@ -10075,38 +10071,22 @@ var pow =
 	});
 	exports.default = undefined;
 
-	var _factoryObject = __webpack_require__(293);
+	var _material = __webpack_require__(305);
 
-	var _factoryObject2 = _interopRequireDefault(_factoryObject);
+	var _material2 = _interopRequireDefault(_material);
 
-	var _glShader = __webpack_require__(305);
-
-	var _glShader2 = _interopRequireDefault(_glShader);
+	var _basicShader = __webpack_require__(306);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var RenderPass = (function (_FactoryObject) {
-	    _inherits(RenderPass, _FactoryObject);
-
-	    function RenderPass(objectFactory, params) {
-	        _classCallCheck(this, RenderPass);
-
-	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(RenderPass).call(this, objectFactory));
-
-	        _this._renderTarget = params.renderTarget | undefined;
-	        return _this;
+	var materials = {
+	    Material: _material2.default,
+	    shaders: {
+	        basicShader: _basicShader.basicShader
 	    }
+	};
 
-	    return RenderPass;
-	})(_factoryObject2.default);
-
-	exports.default = RenderPass;
+	exports.default = materials;
 
 /***/ },
 /* 305 */
@@ -10129,7 +10109,11 @@ var pow =
 
 	var _factoryObject2 = _interopRequireDefault(_factoryObject);
 
+	var _basicShader = __webpack_require__(306);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -10137,161 +10121,96 @@ var pow =
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var GlShader = (function (_FactoryObject) {
-	    _inherits(GlShader, _FactoryObject);
+	var shaders = {
+	    basicShader: _basicShader.basicShader
+	};
 
-	    function GlShader(factoryObject, params) {
-	        _classCallCheck(this, GlShader);
+	var Material = (function (_FactoryObject) {
+	    _inherits(Material, _FactoryObject);
 
-	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(GlShader).call(this, factoryObject));
+	    function Material(objectFactory) {
+	        _classCallCheck(this, Material);
 
-	        _this.gl = params.renderer ? params.renderer.glContext : undefined;
-	        _this.vertexShader = undefined;
-	        _this.fragmentShader = undefined;
-	        _this.program = undefined;
-	        _this.attribs = {};
-	        _this.uniforms = {};
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Material).call(this, objectFactory));
+
+	        _this._shaderProperties = {};
+	        _this._shaderDef = undefined;
+	        _this._shader = undefined;
 	        return _this;
 	    }
 
-	    _createClass(GlShader, [{
-	        key: "compile",
-	        value: function compile() {
-	            var ok = false,
-	                gl = this.gl;
-	            if (gl) {
-	                this.program = gl.createProgram();
-	                this.vertexShader = gl.createShader(gl.VERTEX_SHADER);
-	                gl.shaderSource(this.vertexShader, simpleVertexShader);
-	                gl.compileShader(this.vertexShader);
-	                ok = gl.getShaderParameter(this.vertexShader, gl.COMPILE_STATUS);
-
-	                if (ok) {
-	                    this.fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
-	                    gl.shaderSource(this.fragmentShader, simpleFragmentShader);
-	                    gl.compileShader(this.fragmentShader);
-	                    ok = gl.getShaderParameter(this.fragmentShader, gl.COMPILE_STATUS);
-
-	                    if (ok) {
-	                        gl.attachShader(this.program, this.vertexShader);
-	                        gl.attachShader(this.program, this.fragmentShader);
-	                        // link the program.
-	                        gl.linkProgram(this.program);
-
-	                        // Check if it linked.
-	                        ok = gl.getProgramParameter(this.program, gl.LINK_STATUS);
-
-	                        if (ok) {
-	                            gl.useProgram(this.program);
-	                        } else {
-	                            console.log(gl.getProgramInfoLog(this.program));
-	                            gl.deleteProgram(this.program);
-	                        }
-	                    } else {
-	                        console.log(gl.getShaderInfoLog(this.fragmentShader));
-	                        gl.deleteShader(this.fragmentShader);
-	                    }
+	    _createClass(Material, [{
+	        key: "init",
+	        value: function init(params) {
+	            if (params && params.shader) {
+	                if (_typeof(param.shader) === 'object') {
+	                    this._shaderDef = params.shader;
+	                } else if (shaders[params.shader] !== undefined) {
+	                    this._shaderDef = shaders[params.shader];
 	                } else {
-	                    console.log(gl.getShaderInfoLog(this.vertexShader));
-	                    gl.deleteShader(this.vertexShader);
+	                    this._shaderDef = _basicShader.basicShader;
 	                }
 	            }
-
-	            return ok;
+	            this._shader = this.objectFactory.create('GlShader', this._shaderDef);
 	        }
 	    }, {
-	        key: "addAttribute",
-	        value: function addAttribute(name, type) {
-	            this.attribs[name] = type;
+	        key: "reset",
+	        value: function reset() {
+	            if (this._shader !== undefined) {
+	                this.objectFactroy.dispose(this._shader);
+	                this._shader = undefined;
+	            }
 	        }
 	    }, {
-	        key: "addUniform",
-	        value: function addUniform(name, type) {
-	            this.uniforms[name] = type;
+	        key: "setProperty",
+	        value: function setProperty(propertyName, value) {
+	            if (this._shaderProperties[propertyName] !== undefined) {
+	                this._shaderProperties[propertyName] = value;
+	            }
 	        }
 	    }, {
-	        key: "setAttributeAndUniformLocations",
-	        value: function setAttributeAndUniformLocations() {}
+	        key: "use",
+	        value: function use() {
+	            for (var key in this._shaderProperties) {
+	                this._shader.setUniformValue();
+	            }
+	        }
 	    }]);
 
-	    return GlShader;
+	    return Material;
 	})(_factoryObject2.default);
 
-	exports.default = GlShader;
+	exports.default = Material;
 
 /***/ },
 /* 306 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * Created by joseba on 19/2/16.
-	 */
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = undefined;
-
-	var _basicMaterial = __webpack_require__(307);
-
-	var _basicMaterial2 = _interopRequireDefault(_basicMaterial);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var materials = {
-	  BasicMaterial: _basicMaterial2.default
-	};
-
-	exports.default = materials;
-
-/***/ },
-/* 307 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * Created by joseba on 19/2/16.
-	 */
+/***/ function(module, exports) {
 
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	exports.default = undefined;
+	/**
+	 * Created by joseba on 19/4/16.
+	 */
 
-	var _factoryObject = __webpack_require__(293);
+	var basicShader = {
+	    vs: "precision lowp float;" + "attribute vec2 pos;" + "uniform vec2 resolution;" + "attribute vec2 aTextureCoord;" + "attribute vec4 aColor;" + "varying vec2 vTextureCoord;" + "varying vec4 vColor;" + "void main() {" + "   vec2 fpos = (pos / resolution) * 2.0 - 1.0;" + "   gl_Position = vec4(fpos, 0.0, 1.0);" + "   vTextureCoord = aTextureCoord;" + "   vColor = aColor;" + "}",
+	    fs: "precision lowp float;" + "varying vec2 vTextureCoord;" + "varying vec4 vColor;" + "uniform sampler2D texture;" + "void main() {" + "   gl_FragColor = texture2D(texture, vTextureCoord) * vColor.a;" + "}",
+	    uniforms: [{
+	        name: 'texture',
+	        type: 'uniform1i'
+	    }, {
+	        name: 'resolution',
+	        type: 'uniform2f'
+	    }]
+	};
 
-	var _factoryObject2 = _interopRequireDefault(_factoryObject);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var BasicMaterial = (function (_FactoryObject) {
-	    _inherits(BasicMaterial, _FactoryObject);
-
-	    function BasicMaterial(objectFactory, params) {
-	        _classCallCheck(this, BasicMaterial);
-
-	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(BasicMaterial).call(this, objectFactory));
-
-	        _this._image = params.image | undefined;
-	        return _this;
-	    }
-
-	    return BasicMaterial;
-	})(_factoryObject2.default);
-
-	exports.default = BasicMaterial;
+	exports.basicShader = basicShader;
 
 /***/ },
-/* 308 */
+/* 307 */
 /***/ function(module, exports) {
 
 	/**
@@ -10320,7 +10239,7 @@ var pow =
 	exports.default = ImageResource;
 
 /***/ },
-/* 309 */
+/* 308 */
 /***/ function(module, exports) {
 
 	'use strict';

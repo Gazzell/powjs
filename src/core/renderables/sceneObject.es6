@@ -3,7 +3,7 @@
  */
 
 "use strict";
-import { default as FactoryObject } from "../factoryObject.jsx";
+import { default as FactoryObject } from "../factoryObject.es6";
 
 const AnchorTypes = {
         "TOP_LEFT": 0,

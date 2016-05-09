@@ -3,14 +3,12 @@
  */
 
 "use strict";
+import { default as renderer } from "./renderer/renderer.es6";
 
 var renderManager = new (
     class RenderManager {
         constructor( ){
-            this.registeredRenderers = {};
-            this.specializedRenderersMap = {};
-
-            this._currentRenderer = undefined;
+            this._renderer = undefined;
         }
 
         registerRenderer( renderer ){
@@ -33,14 +31,9 @@ var renderManager = new (
             }
         }
 
-        draw( time, delta, viewport ){
-            if( this.objectPool.has( objectType ) && this.typeConstructors.has( objectType ) ){
-                let objectArray = this.objectPool.get( objectType );
-                if(  objectArray.length > 0) {
-                    return objectArray.pop();
-                } else {
-                    return new ( this.typeConstructors.get( objectType ) )( this, params );
-                }
+        draw( time, delta, viewport, root ){
+            if( root.renderer === undefined ){
+
             }
         }
     })();

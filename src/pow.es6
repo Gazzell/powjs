@@ -3,9 +3,9 @@
  */
 
 "use strict";
-import _engine from "./engine.jsx";
-import _core from "./core/core.jsx";
-import * as _utils from "./utils/utils.jsx";
+import _engine from "./engine.es6";
+import _core from "./core/core.es6";
+import * as _utils from "./utils/utils.es6";
 
 export var Engine = _engine;
 export var  core = _core;

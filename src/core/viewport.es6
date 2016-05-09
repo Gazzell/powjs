@@ -2,7 +2,7 @@
  * Created by joseba on 12/12/15.
  */
 "use strict";
-import { default as FactoryObject } from "./factoryObject.jsx";
+import { default as FactoryObject } from "./factoryObject.es6";
 
 class Viewport extends FactoryObject {
     constructor( objectFactory, params ){

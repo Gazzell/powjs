@@ -2,7 +2,7 @@
  * Created by joseba on 18/1/16.
  */
 "use strict";
-import { default as FactoryObject } from "../factoryObject.jsx";
+import { default as FactoryObject } from "../factoryObject.es6";
 
 const ARR_TYPE = (typeof Float32Array !== 'undefined') ? Float32Array : Array;
 

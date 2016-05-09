@@ -3,8 +3,8 @@
  */
 
 "use strict";
-import { default as FactoryObject } from "../factoryObject.jsx";
-import { SceneObject as SceneObject } from "./sceneObject.jsx";
+import { default as FactoryObject } from "../factoryObject.es6";
+import { SceneObject as SceneObject } from "./sceneObject.es6";
 
 class AnimationFrame extends FactoryObject {
     constructor( objectFactory ){

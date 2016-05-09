@@ -1,5 +1,5 @@
 "use strict";
-import { default as core } from "./core/core.jsx";
+import { default as core } from "./core/core.es6";
 
 class Engine {
     constructor( params ){
