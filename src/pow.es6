@@ -4,9 +4,9 @@
 
 "use strict";
 import _engine from "./engine.es6";
-import _core from "./core/core.es6";
+import { coreObjects as _coreObjects } from "./engine.es6"
 import * as _utils from "./utils/utils.es6";
 
 export var engine = _engine;
-export var  core = _core;
+export var coreObjects = _coreObjects;
 export var utils = _utils;

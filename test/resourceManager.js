@@ -7,7 +7,7 @@ describe("ResourceManager tests", function() {
     afterEach(function() { });
     describe(" - Asset Manager register resource type -->", function(){
         it('Valid resource type', function() {
-            engine.resourceMgr.registerResourceType(
+            engine.resourceManager.registerResourceType(
                 {
                     type:'validType',
                     parse: function( elem ){
@@ -15,28 +15,28 @@ describe("ResourceManager tests", function() {
                     }
                 });
 
-            expect(engine.resourceMgr._resourceTypes).to.have.property('validType')
+            expect(engine.resourceManager._resourceTypes).to.have.property('validType')
                 .with.deep.property('parse')
                     .that.is.a('function');
         });
 
         it('Not valid resource type', function() {
-            engine.resourceMgr.registerResourceType(
+            engine.resourceManager.registerResourceType(
                 {
                     type: 'invalidType'
                 });
 
-            expect(engine.resourceMgr._resourceTypes).not.to.have.property('invalidType');
+            expect(engine.resourceManager._resourceTypes).not.to.have.property('invalidType');
         });
 
         it('Image resource type loaded', function() {
-            expect(engine.resourceMgr._resourceTypes).to.have.property('image')
+            expect(engine.resourceManager._resourceTypes).to.have.property('image')
                 .with.deep.property('parse')
                 .that.is.a('function');
         });
 
         it('Json resource type loaded', function() {
-            expect(engine.resourceMgr._resourceTypes).to.have.property('json')
+            expect(engine.resourceManager._resourceTypes).to.have.property('json')
                 .with.deep.property('parse')
                 .that.is.a('function');
         });
@@ -45,7 +45,7 @@ describe("ResourceManager tests", function() {
 
     describe(" - Asset Manager download image -->", function(){
         it('Download valid image', function( done ) {
-            engine.resourceMgr.obtainResource('/base/test/resourceManagerRes/star.png', 'star', 'image')
+            engine.resourceManager.obtainResource('/base/test/resourceManagerRes/star.png', 'star', 'image')
                 .then(
                     function (res) {
                         expect(res).to.be.an.instanceof(Image);
@@ -54,7 +54,7 @@ describe("ResourceManager tests", function() {
                 );
         });
         it('Download invalid image', function( done ) {
-            engine.resourceMgr.obtainResource('/base/test/resourceManagerRes/pepe.png', 'pepe', 'image' )
+            engine.resourceManager.obtainResource('/base/test/resourceManagerRes/pepe.png', 'pepe', 'image' )
                 .then(
                     function( res ){
                         expect( res ).to.be.undefined;
@@ -63,10 +63,10 @@ describe("ResourceManager tests", function() {
                 );
         });
         it('Ask for a valid image twice', function( done ) {
-            engine.resourceMgr.obtainResource('/base/test/resourceManagerRes/star.png', 'star', 'image' )
+            engine.resourceManager.obtainResource('/base/test/resourceManagerRes/star.png', 'star', 'image' )
                 .then(
                     function( res ){
-                        engine.resourceMgr.obtainResource('/base/test/resourceManagerRes/star.png', 'star', 'image')
+                        engine.resourceManager.obtainResource('/base/test/resourceManagerRes/star.png', 'star', 'image')
                             .then(
                                 function( res2 ) {
                                     expect( res2 ).to.be.an.instanceof( Image );
@@ -80,7 +80,7 @@ describe("ResourceManager tests", function() {
 
     describe(" - Asset Manager download json -->", function(){
         it('Download valid json', function( done ) {
-            engine.resourceMgr.obtainResource('/base/test/resourceManagerRes/test.json', 'test', 'json')
+            engine.resourceManager.obtainResource('/base/test/resourceManagerRes/test.json', 'test', 'json')
                 .then(
                     function( res ){
                         expect( res ).to.be.an( 'object' )
@@ -91,7 +91,7 @@ describe("ResourceManager tests", function() {
                 );
         });
         it('Download invalid json', function( done ) {
-            engine.resourceMgr.obtainResource('/base/test/resourceManagerRes/pepe.json', 'pepe', 'json')
+            engine.resourceManager.obtainResource('/base/test/resourceManagerRes/pepe.json', 'pepe', 'json')
                 .then(
                     function( res ){
                         expect( res ).to.be.undefined;
@@ -100,10 +100,10 @@ describe("ResourceManager tests", function() {
                 );
         });
         it('Ask for a valid json twice', function( done ) {
-            engine.resourceMgr.obtainResource('/base/test/resourceManagerRes/test.json', 'test', 'json')
+            engine.resourceManager.obtainResource('/base/test/resourceManagerRes/test.json', 'test', 'json')
                 .then(
                     function( res ) {
-                        engine.resourceMgr.obtainResource('/base/test/resourceManagerRes/test.json', 'test', 'json')
+                        engine.resourceManager.obtainResource('/base/test/resourceManagerRes/test.json', 'test', 'json')
                             .then(
                                 function (res2) {
                                     expect(res2).to.be.an('object')

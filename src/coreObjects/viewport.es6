@@ -5,7 +5,7 @@
 import { default as FactoryObject } from "./factoryObject.es6";
 
 class Viewport extends FactoryObject {
-    constructor( objectFactory, params ){
+    constructor( objectFactory ){
         super( objectFactory );
         this._renderer = undefined;
         this._rect = this.objectFactory.create("Rect");
@@ -13,8 +13,19 @@ class Viewport extends FactoryObject {
 
         // force render target and rect initialization
         this.renderer = params.renderer | undefined;
+
+    }
+
+    init( params ){
         if (params.rect !== undefined ){
             this.setRect( rect.x, rect.y, rect.w, rect.h );
+        }
+        if( params.camera !== undefined ){
+            if( !params.camera instanceof pow.core.Camera ){
+                this._camera = this.objectFactory.create('Camera', params.camera );
+            } else {
+                this._camera = params.camera;
+            }
         }
     }
 
@@ -42,6 +53,14 @@ class Viewport extends FactoryObject {
     }
     get rect(){
         return this._rect;
+    }
+
+    set camera( camera ){
+        this._camera = camera;
+    }
+
+    get camera(){
+        return this._camera;
     }
 
     /**

@@ -1,5 +1,4 @@
 "use strict";
-import * as utils from "../utils/utils.es6";
 var resourceManager = new(
     class ResourceManager {
         constructor( objectFactory ){
@@ -7,6 +6,14 @@ var resourceManager = new(
             this._resources = {};
             this._resourcesById = {};
             this._resourceTypes = {};
+        }
+
+        registerResourceTypes( typeDescriptors ){
+            for( var key in typeDescriptors ){
+                if( typeDescriptors.hasOwnProperty( key ) ){
+                    this.registerResourceType( typeDescriptors[ key ] );
+                }
+            }
         }
 
         registerResourceType( typeDescriptor ){

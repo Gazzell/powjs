@@ -3,11 +3,10 @@
  */
 
 "use strict";
-
-import { glRenderer as glRenderer} from "./glRenderer.es6";
+import {default as GlShader} from "./glShader.es6";
 
 var renderer = {
-    glRenderer: glRenderer
+    GlShader: GlShader
 };
 
 export { renderer as default };

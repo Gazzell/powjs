@@ -14,7 +14,7 @@ class GlShader extends FactoryObject{
         this.program = undefined;
         this.attribs = {};
         this.uniforms = {};
-        this.materialDef = undefined;
+        this.script = undefined;
     }
 
     init( materialDef ){
@@ -29,13 +29,13 @@ class GlShader extends FactoryObject{
         if( gl && this.materialDef ) {
             this.program = gl.createProgram();
             this.vertexShader = gl.createShader(gl.VERTEX_SHADER);
-            gl.shaderSource(this.vertexShader, this.materialDef.vertexShader);
+            gl.shaderSource(this.vertexShader, this.script.vertexShader);
             gl.compileShader(this.vertexShader);
             ok = gl.getShaderParameter(this.vertexShader, gl.COMPILE_STATUS);
 
             if (ok) {
                 this.fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
-                gl.shaderSource(this.fragmentShader, this.materialDef.fragmentShader);
+                gl.shaderSource(this.fragmentShader, this.script.fragmentShader);
                 gl.compileShader(this.fragmentShader);
                 ok = gl.getShaderParameter(this.fragmentShader, gl.COMPILE_STATUS);
 

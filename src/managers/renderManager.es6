@@ -3,7 +3,7 @@
  */
 
 "use strict";
-import { default as renderer } from "./renderer/renderer.es6";
+import { default as renderer } from "./renderer/glRenderer.es6";
 
 var renderManager = new (
     class RenderManager {
@@ -31,7 +31,7 @@ var renderManager = new (
             }
         }
 
-        draw( time, delta, viewport, root ){
+        draw( time, delta, viewport, camera, root ){
             if( root.renderer === undefined ){
 
             }

@@ -6,7 +6,7 @@ describe("Engine initialization", function() {
     afterEach(function() { });
     describe(" - ResourceManager initialization -->", function(){
         it('Resource manager exists', function() {
-            assert.isDefined( pow.engine.resourceMgr, ' Engine.resourceMgr not defined' );
+            assert.isDefined( pow.engine.resourceManager, ' Engine.resourceManager not defined' );
         });
     });
 });

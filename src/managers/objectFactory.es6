@@ -12,8 +12,12 @@ var objectFactory = new (
 
         registerObjects( objects ){
             for( var key in objects ){
-                if( objects.hasOwnProperty( key ) && ObjectFactory.isFactorizableClass( objects[ key ])){
-                    this.registerObjectType( key, objects[ key ] );
+                if( objects.hasOwnProperty( key ) ){
+                    if( ObjectFactory.isFactorizableClass( objects[ key ]) && key !== 'FactoryObject' ){
+                        this.registerObjectType( key, objects[ key ] );
+                    } else {
+                        this.registerObjects( objects[ key ] );
+                    }
                 }
             }
         }

@@ -1,16 +1,24 @@
 "use strict";
-import { default as core } from "./core/core.es6";
+// import { default as core } from "./core/core.es6";
+import { default as resourceManager } from "./managers/resourceManager.es6";
+import { default as renderManager } from "./managers/renderManager.es6";
+import { default as objectFactory } from "./managers/objectFactory.es6";
+import { default as coreObjects } from "./coreObjects/coreObjects.es6";
+import { default as scripts } from "./scripts/scripts.es6";
 
 var _engine = new ( class Engine {
     constructor( params ){
         this._viewports = [];
+        this._scenes = {};
         this.htmlContainer = undefined;
-        this.resourceMgr = core.resourceManager;
-        this.objectFactory = core.objectFactory;
-        this.objectFactory.registerObjects( core.math );
-        this.objectFactory.registerObjects( core.renderables );
-        this.objectFactory.registerObjects( core.renderer );
-        this.objectFactory.registerObjects( core.materials );
+        this.resourceManager = resourceManager;
+        this.objectFactory = objectFactory;
+        this.renderManager = renderManager;
+
+        this.objectFactory.registerObjects( coreObjects );
+        if( scripts.loaders !== undefined ){
+            this.resourceManager.registerResourceTypes( scripts.loaders );
+        }
 
         if(!params){
             params = {};
@@ -48,3 +56,4 @@ var _engine = new ( class Engine {
 } )();
 
 export { _engine as default };
+export { coreObjects as coreObjects };

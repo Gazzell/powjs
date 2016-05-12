@@ -2,7 +2,7 @@
  * Created by joseba on 19/4/16.
  */
 
-var basicShader = {
+var basicMaterial = {
     vs: "precision lowp float;" +
         "attribute vec2 pos;" +
         "uniform vec2 resolution;" +
@@ -26,13 +26,16 @@ var basicShader = {
     uniforms: [
         {
             name: 'texture',
-            type: 'uniform1i'
+            type: 'uniform1i',
         },
         {
             name: 'resolution',
             type: 'uniform2f'
         }
-    ]
+    ],
+    uniformHooks:{
+        'resolution': ['viewport._rect.w', 'viewport._rect.h']
+    }
 };
 
-export { basicShader as basicShader };
+export { basicmaterial as basicMaterial };
