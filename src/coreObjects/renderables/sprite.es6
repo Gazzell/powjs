@@ -17,8 +17,8 @@ class AnimationFrame extends FactoryObject {
 
     }
 
-    reset(){
-        this.rect.reset();
+    dispose(){
+        this.rect.dispose();
         this.duration = 0;
     }
 }
@@ -31,7 +31,7 @@ class Animation extends FactoryObject{
         this.currentFrame = 0;
     }
 
-    reset(){
+    dispose(){
         this.frameCount = 0;
         this.currentFrame = 0;
         this.frames.forEach( frame => this.objectFactory.dispose( frame ) );
@@ -53,8 +53,8 @@ class Sprite extends SceneObject{
         this._totalDuration = 0;
     }
 
-    reset(){
-        super.reset();
+    dispose(){
+        super.dispose();
     }
 
     set material( material ){

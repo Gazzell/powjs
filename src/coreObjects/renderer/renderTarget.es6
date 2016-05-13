@@ -19,7 +19,7 @@ class RenderTarget extends FactoryObject {
         this.canvas.height = height;
     }
 
-    reset(){
+    dispose(){
         this.canvas = undefined;
     }
 }

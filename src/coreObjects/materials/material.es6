@@ -22,7 +22,7 @@ class Material extends FactoryObject{
         }
     }
 
-    reset(){
+    dispose(){
         if( this._shader !== undefined ) {
             this.objectFactroy.dispose(this._shader);
             this._shader = undefined;

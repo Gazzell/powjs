@@ -11,7 +11,7 @@ var glRenderer = new (
             this.renderTarget = undefined;
         }
 
-        draw( time, delta, viewport, camera, node ){
+        draw( time, delta, viewport ){
             this.renderTarget = viewport.renderTarget;
 
         }

@@ -34,9 +34,9 @@ class Matrix3 extends FactoryObject {
     }
 
     /**
-     * Reset to default
+     * dispose to default
      */
-    reset(){
+    dispose(){
         this.identity();
         return this;
     }
@@ -65,7 +65,7 @@ class Matrix3 extends FactoryObject {
     }
 
     /**
-     * Reset this matrix
+     * dispose this matrix
      */
     identity ( ){
         let val = this.value;

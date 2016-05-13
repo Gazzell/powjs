@@ -7680,8 +7680,6 @@ var pow =
 	    function Engine(params) {
 	        _classCallCheck(this, Engine);
 
-	        this._viewports = [];
-	        this._scenes = {};
 	        this.htmlContainer = undefined;
 	        this.resourceManager = _resourceManager2.default;
 	        this.objectFactory = _objectFactory2.default;
@@ -7708,27 +7706,9 @@ var pow =
 	    }
 
 	    _createClass(Engine, [{
-	        key: "addViewport",
-	        value: function addViewport(viewport) {
-	            if (this._viewports.indexOf(viewport) === -1) {
-	                this._viewports.push(viewport);
-	            }
-	        }
-	    }, {
-	        key: "removeViewport",
-	        value: function removeViewport(viewport) {
-	            var index = this._viewports.indexOf(viewport);
-	            if (index !== -1) {
-	                this._viewports.slice(index, 1);
-	            }
-	        }
-	    }, {
 	        key: "updateAndDraw",
 	        value: function updateAndDraw(time, delta) {
-	            var i = 0;
-	            while (i < this._viewports.length) {
-	                this._viewports[i].updateAndDraw(time, delta);
-	            }
+	            this.renderManager.updateAndDraw(time, delta);
 	        }
 	    }]);
 
@@ -8293,34 +8273,85 @@ var pow =
 	        _classCallCheck(this, RenderManager);
 
 	        this._renderer = undefined;
+	        this._viewports = [];
+	        this.preUpdateCallbacks = [];
+	        this.postUpdateCallbacks = [];
+	        this.preRenderCallbacks = [];
+	        this.posrRenderCallbacks = [];
 	    }
 
 	    _createClass(RenderManager, [{
-	        key: "registerRenderer",
-	        value: function registerRenderer(renderer) {
-	            if (renderer !== undefined) {
-	                if (this.registeredRenderers[renderer.name] !== undefined) {
-	                    console.warn('Renderer ${renderer.name} already registered.');
-	                } else {
-	                    this.registeredRenderers[renderer.name] = renderer;
+	        key: "_chooseList",
+	        value: function _chooseList(cbkType) {
+	            switch (cbkType) {
+	                case "preUpdate":
+	                    return this.preUpdateCallbacks;
+	                case "postUpdate":
+	                    return this.postUpdateCallbacks;
+	                case "preDraw":
+	                    return this.postUpdateCallbacks;
+	                case "postDraw":
+	                    return this.postUpdateCallbacks;
+	                default:
+	                    return undefined;
+	            }
+	        }
+	    }, {
+	        key: "_fireCallbacks",
+	        value: function _fireCallbacks(cbkList, time, delta) {
+	            for (var i = 0; i < cbkList.length; i++) {
+	                cbkList[i](time, delta);
+	            }
+	        }
+	    }, {
+	        key: "registerCallback",
+	        value: function registerCallback(cbkType, callback) {
+	            var cbkList = this._chooseList(cbkType);
+	            if (cbkList !== undefined && cbkList.indexOf(callback) === -1) {
+	                cbkList.push(callback);
+	            }
+	        }
+	    }, {
+	        key: "unregisterCallback",
+	        value: function unregisterCallback(cbkType, callback) {
+	            var cbkList = this._chooseList(cbkType);
+	            var index = undefined;
+	            if (cbkList !== undefined) {
+	                index = cbkList.indexOf(callback);
+	                if (index !== -1) {
+	                    cbkList.splice(index, 1);
 	                }
 	            }
 	        }
 	    }, {
-	        key: "registerSpecializedRenderer",
-	        value: function registerSpecializedRenderer(rendererName, specializedRenderer) {
-	            if (specializedRenderer !== undefined) {
-	                if (this.registeredRenderers[rendererName] === undefined) {
-	                    console.warn('Could not register specialized renderer ${specializedRenderer.name}. Renderer ${rendererName} not registered.');
-	                } else {
-	                    this.registeredRenderers[rendererName].registerSpecializedRenderer(specializedRenderer);
-	                }
+	        key: "addViewport",
+	        value: function addViewport(viewport) {
+	            if (this._viewports.indexOf(viewport) === -1) {
+	                this._viewports.push(viewport);
 	            }
 	        }
 	    }, {
-	        key: "draw",
-	        value: function draw(time, delta, viewport, camera, root) {
-	            if (root.renderer === undefined) {}
+	        key: "removeViewport",
+	        value: function removeViewport(viewport) {
+	            var index = this._viewports.indexOf(viewport);
+	            if (index !== -1) {
+	                this._viewports.slice(index, 1);
+	            }
+	        }
+	    }, {
+	        key: "updateAndDraw",
+	        value: function updateAndDraw(time, delta) {
+	            for (var i = 0; i < this._viewports.length; i++) {
+	                // Update
+	                this._fireCallbacks(this.preUpdateCallbacks, time, delta);
+	                this._viewports[i].update(time, delta);
+	                this._fireCallbacks(this.postUpdateCallbacks, time, delta);
+
+	                // Render
+	                this._fireCallbacks(this.preDrawCallbacks, time, delta);
+	                this._renderer.draw(time, delta, this._viewports[i]);
+	                this._fireCallbacks(this.postDrawCallbacks, time, delta);
+	            }
 	        }
 	    }]);
 
@@ -8357,7 +8388,7 @@ var pow =
 
 	    _createClass(GlRenderer, [{
 	        key: "draw",
-	        value: function draw(time, delta, viewport, camera, node) {
+	        value: function draw(time, delta, viewport) {
 	            this.renderTarget = viewport.renderTarget;
 	        }
 	    }]);
@@ -8434,7 +8465,7 @@ var pow =
 	        key: 'dispose',
 	        value: function dispose(object) {
 	            if (this.objectPool.has(object.type)) {
-	                object.reset();
+	                object.dispose();
 	                this.objectPool.get(object.type).push(object);
 	            }
 	        }
@@ -8543,8 +8574,8 @@ var pow =
 	        key: "init",
 	        value: function init(params) {}
 	    }, {
-	        key: "reset",
-	        value: function reset() {}
+	        key: "dispose",
+	        value: function dispose() {}
 	    }]);
 
 	    return FactoryObject;
@@ -8591,6 +8622,9 @@ var pow =
 	        _this._renderer = undefined;
 	        _this._rect = _this.objectFactory.create("Rect");
 	        _this._renderTarget = document.createElement('canvas');
+	        _this._scene = undefined;
+	        _this._camera = undefined;
+	        _this._rendererSize = unedfined;
 
 	        // force render target and rect initialization
 	        _this.renderer = params.renderer | undefined;
@@ -8601,6 +8635,8 @@ var pow =
 	    _createClass(Viewport, [{
 	        key: "init",
 	        value: function init(params) {
+	            this._rendererSize = this.objectFactroy.create("Vector2", params.rendererSize);
+
 	            if (params.rect !== undefined) {
 	                this.setRect(rect.x, rect.y, rect.w, rect.h);
 	            }
@@ -8611,6 +8647,12 @@ var pow =
 	                    this._camera = params.camera;
 	                }
 	            }
+	        }
+	    }, {
+	        key: "dispose",
+	        value: function dispose() {
+	            this.objectFactroy.dispose(this._rendererSize);
+	            this._rendererSize = undefined;
 	        }
 	    }, {
 	        key: "draw",
@@ -8852,18 +8894,18 @@ var pow =
 	        key: "init",
 	        value: function init(params) {}
 	    }, {
-	        key: "reset",
-	        value: function reset() {
+	        key: "dispose",
+	        value: function dispose() {
 	            var _this2 = this;
 
-	            this._position.reset();
+	            this._position.dispose();
 	            this._rotation = 0;
 	            this._scale.set(1, 1);
 	            this._alpha = 1.0;
-	            this._pivot.reset();
+	            this._pivot.dispose();
 
-	            this._transformMatrix.reset();
-	            this._boundingRect.reset();
+	            this._transformMatrix.dispose();
+	            this._boundingRect.dispose();
 
 	            this.children.forEach(function (child) {
 	                return _this2.objectFactory.dispose(child);
@@ -9077,9 +9119,9 @@ var pow =
 	        key: "init",
 	        value: function init(params) {}
 	    }, {
-	        key: "reset",
-	        value: function reset() {
-	            this.rect.reset();
+	        key: "dispose",
+	        value: function dispose() {
+	            this.rect.dispose();
 	            this.duration = 0;
 	        }
 	    }]);
@@ -9102,8 +9144,8 @@ var pow =
 	    }
 
 	    _createClass(Animation, [{
-	        key: "reset",
-	        value: function reset() {
+	        key: "dispose",
+	        value: function dispose() {
 	            var _this3 = this;
 
 	            this.frameCount = 0;
@@ -9137,9 +9179,9 @@ var pow =
 	    }
 
 	    _createClass(Sprite, [{
-	        key: "reset",
-	        value: function reset() {
-	            _get(Object.getPrototypeOf(Sprite.prototype), "reset", this).call(this);
+	        key: "dispose",
+	        value: function dispose() {
+	            _get(Object.getPrototypeOf(Sprite.prototype), "dispose", this).call(this);
 	        }
 	    }, {
 	        key: "material",
@@ -9273,12 +9315,12 @@ var pow =
 	        }
 
 	        /**
-	         * Reset to default
+	         * dispose to default
 	         */
 
 	    }, {
-	        key: "reset",
-	        value: function reset() {
+	        key: "dispose",
+	        value: function dispose() {
 	            this.set(0, 0);
 	        }
 
@@ -9546,12 +9588,12 @@ var pow =
 	        }
 
 	        /**
-	         * Reset to default
+	         * dispose to default
 	         */
 
 	    }, {
-	        key: "reset",
-	        value: function reset() {
+	        key: "dispose",
+	        value: function dispose() {
 	            this.set(0, 0, 0, 0);
 	        }
 
@@ -9737,12 +9779,12 @@ var pow =
 	        }
 
 	        /**
-	         * Reset to default
+	         * dispose to default
 	         */
 
 	    }, {
-	        key: "reset",
-	        value: function reset() {
+	        key: "dispose",
+	        value: function dispose() {
 	            this.identity();
 	            return this;
 	        }
@@ -9777,7 +9819,7 @@ var pow =
 	        }
 
 	        /**
-	         * Reset this matrix
+	         * dispose this matrix
 	         */
 
 	    }, {
@@ -10322,8 +10364,8 @@ var pow =
 	            }
 	        }
 	    }, {
-	        key: "reset",
-	        value: function reset() {
+	        key: "dispose",
+	        value: function dispose() {
 	            if (this._shader !== undefined) {
 	                this.objectFactroy.dispose(this._shader);
 	                this._shader = undefined;

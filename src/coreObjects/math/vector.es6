@@ -23,9 +23,9 @@ class Vector extends FactoryObject{
     }
 
     /**
-     * Reset to default
+     * dispose to default
      */
-    reset(){
+    dispose(){
         this.set( 0, 0 );
     }
 

@@ -8,8 +8,6 @@ import { default as scripts } from "./scripts/scripts.es6";
 
 var _engine = new ( class Engine {
     constructor( params ){
-        this._viewports = [];
-        this._scenes = {};
         this.htmlContainer = undefined;
         this.resourceManager = resourceManager;
         this.objectFactory = objectFactory;
@@ -35,23 +33,8 @@ var _engine = new ( class Engine {
         }
     }
 
-    addViewport( viewport ){
-        if( this._viewports.indexOf( viewport ) === -1 ){
-            this._viewports.push( viewport );
-        }
-    }
-    removeViewport( viewport ){
-        let index = this._viewports.indexOf( viewport );
-        if( index !== -1 ){
-            this._viewports.slice( index, 1 );
-        }
-    }
-
     updateAndDraw( time, delta ){
-        let i = 0;
-        while( i < this._viewports.length ){
-            this._viewports[i].updateAndDraw( time, delta );
-        }
+        this.renderManager.updateAndDraw( time, delta );
     }
 } )();
 

@@ -10,6 +10,10 @@ class Viewport extends FactoryObject {
         this._renderer = undefined;
         this._rect = this.objectFactory.create("Rect");
         this._renderTarget = document.createElement('canvas');
+        this._scene = undefined;
+        this._camera = undefined;
+        this._rendererSize = unedfined;
+
 
         // force render target and rect initialization
         this.renderer = params.renderer | undefined;
@@ -17,6 +21,8 @@ class Viewport extends FactoryObject {
     }
 
     init( params ){
+        this._rendererSize = this.objectFactroy.create("Vector2", params.rendererSize );
+
         if (params.rect !== undefined ){
             this.setRect( rect.x, rect.y, rect.w, rect.h );
         }
@@ -27,6 +33,11 @@ class Viewport extends FactoryObject {
                 this._camera = params.camera;
             }
         }
+    }
+
+    dispose(){
+        this.objectFactroy.dispose( this._rendererSize );
+        this._rendererSize = undefined;
     }
 
     draw( time, delta, node, camera ){

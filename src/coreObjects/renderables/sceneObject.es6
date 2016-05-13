@@ -53,15 +53,15 @@ class SceneObject extends FactoryObject{
 
     }
 
-    reset(){
-        this._position.reset();
+    dispose(){
+        this._position.dispose();
         this._rotation = 0;
         this._scale.set( 1, 1 );
         this._alpha = 1.0;
-        this._pivot.reset();
+        this._pivot.dispose();
 
-        this._transformMatrix.reset();
-        this._boundingRect.reset();
+        this._transformMatrix.dispose();
+        this._boundingRect.dispose();
 
         this.children.forEach( child => this.objectFactory.dispose( child ) );
         this.children.length = 0;

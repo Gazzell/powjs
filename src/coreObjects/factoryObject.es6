@@ -10,7 +10,7 @@ class FactoryObject{
 
     init( params ){}
 
-    reset(){}
+    dispose(){}
 }
 
 export { FactoryObject as default };
