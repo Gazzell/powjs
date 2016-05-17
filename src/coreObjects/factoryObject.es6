@@ -5,7 +5,7 @@
 "use strict";
 class FactoryObject{
     constructor( objectFactory ){
-        this.objectFactroy = objectFactory;
+        this.objectFactory = objectFactory;
     }
 
     init( params ){}

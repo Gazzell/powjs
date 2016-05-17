@@ -3,17 +3,37 @@
  */
 
 "use strict";
-import { default as glRenderer } from "./renderer/glRenderer.es6";
+import { default as renderers } from "./renderers/renderers.es6";
 
 var renderManager = new (
     class RenderManager {
         constructor( ){
-            this._renderer = glRenderer;
-            this._viewports = [];
-            this.preUpdateCallbacks = [];
-            this.postUpdateCallbacks = [];
-            this.preDrawCallbacks = [];
-            this.postDrawCallbacks = [];
+            let defaultViewportParams =
+            this._objectFactory = undefined;
+            this._viewports = new Map();
+            this.preUpdateCallbacks = new Set();
+            this.postUpdateCallbacks = new Set();
+            this.preDrawCallbacks = new Set();
+            this.postDrawCallbacks = new Set();
+            this.registeredRenderers = new Map();
+        }
+
+        init( objectFactory ){
+            this._objectFactory = objectFactory;
+            this._viewports.set( "default", this._objectFactory.create("Viewport",
+                    {
+                        rect: { x: 0, y:0, w:1, h:1 }
+                    }
+                )
+            );
+            Object.keys( renderers ).forEach( rendererName => this.registerRenderer( rendererName,
+                new renderers[ rendererName ]( this._viewports.get( "default" ) ) ) );
+        }
+
+        registerRenderer( name, renderer ){
+            if( !this.registeredRenderers.has( name ) ){
+                this.registeredRenderers.set( name, renderer );
+            }
         }
 
         _chooseList( cbkType ){
@@ -31,62 +51,52 @@ var renderManager = new (
             }
         }
 
-        _fireCallbacks( cbkList, time, delta ){
-            for( let i = 0; i < cbkList.length; i++){
-                cbkList[i]( time, delta );
-            }
+        _fireCallbacks( cbkSet, time, delta ){
+            cbkSet.forEach( element => element( time, delta ) );
         }
 
         registerCallback( cbkType, callback ){
             let cbkList = this._chooseList( cbkType );
-            if( cbkList !== undefined && cbkList.indexOf(callback) === -1 ){
-                cbkList.push( callback );
+            if( cbkList !== undefined && !cbkList.has(callback) ){
+                cbkList.add( callback );
             }
         }
 
         unregisterCallback( cbkType, callback ){
             let cbkList = this._chooseList( cbkType);
-            let index;
             if( cbkList !== undefined ){
-                index = cbkList.indexOf(callback);
-                if( index !== -1 ) {
-                    cbkList.splice(index, 1);
-                }
+                cbkList.delete(callback);
             }
         }
 
-        addViewport( viewport ){
-            if( this._viewports.indexOf( viewport ) === -1 ){
-                this._viewports.push( viewport );
+        addViewport( name, viewport ){
+            if( !this._viewports.has( name ) ){
+                viewport.renderManager = this;
+                this._viewports.set( name, viewport );
             }
         }
-        removeViewport( viewport ){
-            let index = this._viewports.indexOf( viewport );
-            if( index !== -1 ){
-                this._viewports.slice( index, 1 );
+
+        removeViewport( name ){
+            if( this._viewports.has( name ) ) {
+                this._viewports.get(name).renderManager = undefined;
+                this._viewports.delete(name);
             }
         }
 
         updateAndDraw( time, delta ){
             // Update
             this._fireCallbacks( this.preUpdateCallbacks, time, delta );
-            for( let i = 0; i < this._viewports.length; i++ ) {
-                this._viewports[i].update(time, delta);
-            }
+            this._viewports.forEach( viewport => viewport.update( time, delta ) );
             this._fireCallbacks( this.postUpdateCallbacks, time, delta );
 
             // Render
             this._fireCallbacks( this.preDrawCallbacks, time, delta );
-            for( let i = 0; i < this._viewports.length; i++ ) {
-                this._renderer.draw( time, delta, this._viewports[i] );
-            }
+            this._viewports.forEach( viewport => viewport.draw( time, delta ) );
             this._fireCallbacks( this.postDrawCallbacks, time, delta );
         }
 
         resize( width, height ){
-            for( let i = 0; i < this._viewports.length; i++ ) {
-                this._viewports[i].resize( width, height );
-            }
+            this._viewports.forEach( viewport => viewport.resize( width, heightº ) );
         }
     })();
 

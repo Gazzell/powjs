@@ -8,10 +8,12 @@ class RenderTarget extends FactoryObject {
     constructor(objectFactory) {
         super(objectFactory);
         this.canvas = undefined;
+        this.glContext = undefined;
     }
 
     init( params ){
         this.canvas = document.createElement('canvas');
+        this.glContext = this.canvas.getContext("experimental-webgl");
     }
 
     resize( width, height ){

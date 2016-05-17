@@ -41,7 +41,7 @@ class Material extends FactoryObject{
         for( let key in this._shaderProperties ){
             switch ( key ){
                 case 'resolution':
-                    this.setProperty( viewport.innerSize );
+                    this.setProperty( 'resolution', viewport.innerSize );
                     break;
             }
             this._shader.setUniformValue( key, this._shaderProperties[ key ] );

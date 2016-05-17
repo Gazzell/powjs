@@ -13,10 +13,12 @@ var _engine = new ( class Engine {
         this.objectFactory = objectFactory;
         this.renderManager = renderManager;
 
+        // init managers
         this.objectFactory.registerObjects( coreObjects );
         if( scripts.loaders !== undefined ){
             this.resourceManager.registerResourceTypes( scripts.loaders );
         }
+        this.renderManager.init( this.objectFactory );
 
         if(!params){
             params = {};

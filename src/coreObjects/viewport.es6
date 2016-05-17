@@ -7,24 +7,20 @@ import { default as FactoryObject } from "./factoryObject.es6";
 class Viewport extends FactoryObject {
     constructor( objectFactory ){
         super( objectFactory );
+        this.renderManager = undefined;
         this._rect = undefined;
         this._renderTarget = undefined;
         this._scene = undefined;
         this._camera = undefined;
         this._innerSize = undefined;
-
-
-        // force render target and rect initialization
-        this.renderer = params.renderer | undefined;
-
     }
 
     init( params ){
         this._rect = this.objectFactory.create("Rect");
         if (params.rect !== undefined ){
-            this.setRect( rect.x, rect.y, rect.w, rect.h );
+            this.setRect( params.rect.x, params.rect.y, params.rect.w, params.rect.h );
         }
-        this._innerSize = this.objectFactroy.create("Vector2");
+        this._innerSize = this.objectFactory.create("Vector2");
         // TODO: calculate inner size
 
         if( params.camera !== undefined  && params.camera instanceof pow.core.Camera){
