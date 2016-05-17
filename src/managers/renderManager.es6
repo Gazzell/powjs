@@ -3,17 +3,17 @@
  */
 
 "use strict";
-import { default as renderer } from "./renderer/glRenderer.es6";
+import { default as glRenderer } from "./renderer/glRenderer.es6";
 
 var renderManager = new (
     class RenderManager {
         constructor( ){
-            this._renderer = undefined;
+            this._renderer = glRenderer;
             this._viewports = [];
             this.preUpdateCallbacks = [];
             this.postUpdateCallbacks = [];
-            this.preRenderCallbacks = [];
-            this.posrRenderCallbacks = [];
+            this.preDrawCallbacks = [];
+            this.postDrawCallbacks = [];
         }
 
         _chooseList( cbkType ){
@@ -23,9 +23,9 @@ var renderManager = new (
                 case "postUpdate":
                     return this.postUpdateCallbacks;
                 case "preDraw":
-                    return this.postUpdateCallbacks;
+                    return this.preDrawCallbacks;
                 case "postDraw":
-                    return this.postUpdateCallbacks;
+                    return this.postDrawCallbacks;
                 default:
                     return undefined;
             }
@@ -68,16 +68,24 @@ var renderManager = new (
         }
 
         updateAndDraw( time, delta ){
-            for( var i = 0; i < this._viewports.length; i++ ){
-                // Update
-                this._fireCallbacks( this.preUpdateCallbacks, time, delta );
-                this._viewports[i].update( time, delta );
-                this._fireCallbacks( this.postUpdateCallbacks, time, delta );
+            // Update
+            this._fireCallbacks( this.preUpdateCallbacks, time, delta );
+            for( let i = 0; i < this._viewports.length; i++ ) {
+                this._viewports[i].update(time, delta);
+            }
+            this._fireCallbacks( this.postUpdateCallbacks, time, delta );
 
-                // Render
-                this._fireCallbacks( this.preDrawCallbacks, time, delta );
+            // Render
+            this._fireCallbacks( this.preDrawCallbacks, time, delta );
+            for( let i = 0; i < this._viewports.length; i++ ) {
                 this._renderer.draw( time, delta, this._viewports[i] );
-                this._fireCallbacks( this.postDrawCallbacks, time, delta );
+            }
+            this._fireCallbacks( this.postDrawCallbacks, time, delta );
+        }
+
+        resize( width, height ){
+            for( let i = 0; i < this._viewports.length; i++ ) {
+                this._viewports[i].resize( width, height );
             }
         }
     })();

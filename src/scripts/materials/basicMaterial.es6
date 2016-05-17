@@ -23,10 +23,13 @@ var BasicMaterial = {
         "void main() {" +
         "   gl_FragColor = texture2D(texture, vTextureCoord) * vColor.a;" +
         "}",
+    attributes:[
+        "pos", "aTextureCoord", "aColor"
+    ],
     uniforms: [
         {
             name: 'texture',
-            type: 'uniform1i',
+            type: 'uniform1i'
         },
         {
             name: 'resolution',
@@ -34,7 +37,7 @@ var BasicMaterial = {
         }
     ],
     uniformHooks:{
-        'resolution': ['viewport._rect.w', 'viewport._rect.h']
+        'resolution': ['viewport.rect.w', 'viewport.rect.h']
     }
 };
 

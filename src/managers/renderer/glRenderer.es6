@@ -4,7 +4,7 @@
 "use strict";
 
 let gl = undefined;
-var glRenderer = new (
+var _glRenderer = new (
     class GlRenderer {
         constructor( objectFactory ) {
             this.objectFactory = objectFactory;
@@ -18,4 +18,4 @@ var glRenderer = new (
 
     })();
 
-export { glRenderer as glRenderer };
+export { _glRenderer as glRenderer };

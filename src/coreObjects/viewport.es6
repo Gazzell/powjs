@@ -7,12 +7,11 @@ import { default as FactoryObject } from "./factoryObject.es6";
 class Viewport extends FactoryObject {
     constructor( objectFactory ){
         super( objectFactory );
-        this._renderer = undefined;
-        this._rect = this.objectFactory.create("Rect");
-        this._renderTarget = document.createElement('canvas');
+        this._rect = undefined;
+        this._renderTarget = undefined;
         this._scene = undefined;
         this._camera = undefined;
-        this._rendererSize = unedfined;
+        this._innerSize = undefined;
 
 
         // force render target and rect initialization
@@ -21,40 +20,36 @@ class Viewport extends FactoryObject {
     }
 
     init( params ){
-        this._rendererSize = this.objectFactroy.create("Vector2", params.rendererSize );
-
+        this._rect = this.objectFactory.create("Rect");
         if (params.rect !== undefined ){
             this.setRect( rect.x, rect.y, rect.w, rect.h );
         }
-        if( params.camera !== undefined ){
-            if( !params.camera instanceof pow.core.Camera ){
-                this._camera = this.objectFactory.create('Camera', params.camera );
-            } else {
-                this._camera = params.camera;
-            }
+        this._innerSize = this.objectFactroy.create("Vector2");
+        // TODO: calculate inner size
+
+        if( params.camera !== undefined  && params.camera instanceof pow.core.Camera){
+            this._camera = params.camera;
         }
+        this._renderTarget = document.createElement('canvas');
     }
 
     dispose(){
-        this.objectFactroy.dispose( this._rendererSize );
+        this.objectFactroy.dispose( this._rect );
+        this.objectFactroy.dispose( this._innerSize );
+        this._rect = undefined;
         this._rendererSize = undefined;
+        this._renderTarget = undefined;
     }
 
-    draw( time, delta, node, camera ){
-        if( renderer !== undefined && camera.rect.intersects( this.rect ) ){
-            renderer.draw( time, delta, this, camera, node );
-        }
-    }
-
-    set renderer( renderer ){
-        this._renderer = renderer;
-        if ( this._renderer !== undefined ){
-            this._renderer.initRenderTarget( this._renderTarget );
-        }
-    }
-    get renderer(){
-        return this._renderer;
-    }
+    //set renderer( renderer ){
+    //    this._renderer = renderer;
+    //    if ( this._renderer !== undefined ){
+    //        this._renderer.initRenderTarget( this._renderTarget );
+    //    }
+    //}
+    //get renderer(){
+    //    return this._renderer;
+    //}
 
     setRect( x, y, w, h ){
         this._rect.set( x, y, w, h );
@@ -64,6 +59,10 @@ class Viewport extends FactoryObject {
     }
     get rect(){
         return this._rect;
+    }
+
+    get innerSize(){
+        return this._innerSize;
     }
 
     set camera( camera ){

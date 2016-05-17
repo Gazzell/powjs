@@ -12,6 +12,8 @@ class Material extends FactoryObject{
         this._shaderProperties = {};
         this._script = undefined;
         this._shader = undefined;
+        this._lastUpdateTime = -1;
+        this._hooks = {};
     }
 
     init( params ){
@@ -35,18 +37,20 @@ class Material extends FactoryObject{
         }
     }
 
-    use(time, viewport, camera ){
+    use( viewport ){
         for( let key in this._shaderProperties ){
-            this._shader.setUniformValue( )
+            switch ( key ){
+                case 'resolution':
+                    this.setProperty( viewport.innerSize );
+                    break;
+            }
+            this._shader.setUniformValue( key, this._shaderProperties[ key ] );
         }
     }
 
     set script( script ){
-        if( script !== this._script) {
-            if( this._shader !== undefined ){
-                this.objectFactory.dispose( this._shader );
-            }
-
+        if( script !== this._script && this._shader !== undefined ){
+            this.objectFactory.dispose( this._shader );
         }
         this._script = script;
         if( this._script !== undefined ){

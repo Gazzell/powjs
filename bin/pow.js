@@ -8272,12 +8272,12 @@ var pow =
 	    function RenderManager() {
 	        _classCallCheck(this, RenderManager);
 
-	        this._renderer = undefined;
+	        this._renderer = _glRenderer2.default;
 	        this._viewports = [];
 	        this.preUpdateCallbacks = [];
 	        this.postUpdateCallbacks = [];
-	        this.preRenderCallbacks = [];
-	        this.posrRenderCallbacks = [];
+	        this.preDrawCallbacks = [];
+	        this.postDrawCallbacks = [];
 	    }
 
 	    _createClass(RenderManager, [{
@@ -8289,9 +8289,9 @@ var pow =
 	                case "postUpdate":
 	                    return this.postUpdateCallbacks;
 	                case "preDraw":
-	                    return this.postUpdateCallbacks;
+	                    return this.preDrawCallbacks;
 	                case "postDraw":
-	                    return this.postUpdateCallbacks;
+	                    return this.postDrawCallbacks;
 	                default:
 	                    return undefined;
 	            }
@@ -8341,16 +8341,25 @@ var pow =
 	    }, {
 	        key: "updateAndDraw",
 	        value: function updateAndDraw(time, delta) {
+	            // Update
+	            this._fireCallbacks(this.preUpdateCallbacks, time, delta);
 	            for (var i = 0; i < this._viewports.length; i++) {
-	                // Update
-	                this._fireCallbacks(this.preUpdateCallbacks, time, delta);
 	                this._viewports[i].update(time, delta);
-	                this._fireCallbacks(this.postUpdateCallbacks, time, delta);
+	            }
+	            this._fireCallbacks(this.postUpdateCallbacks, time, delta);
 
-	                // Render
-	                this._fireCallbacks(this.preDrawCallbacks, time, delta);
-	                this._renderer.draw(time, delta, this._viewports[i]);
-	                this._fireCallbacks(this.postDrawCallbacks, time, delta);
+	            // Render
+	            this._fireCallbacks(this.preDrawCallbacks, time, delta);
+	            for (var _i = 0; _i < this._viewports.length; _i++) {
+	                this._renderer.draw(time, delta, this._viewports[_i]);
+	            }
+	            this._fireCallbacks(this.postDrawCallbacks, time, delta);
+	        }
+	    }, {
+	        key: "resize",
+	        value: function resize(width, height) {
+	            for (var i = 0; i < this._viewports.length; i++) {
+	                this._viewports[i].resize(width, height);
 	            }
 	        }
 	    }]);
@@ -8378,7 +8387,7 @@ var pow =
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	var gl = undefined;
-	var glRenderer = new ((function () {
+	var _glRenderer = new ((function () {
 	    function GlRenderer(objectFactory) {
 	        _classCallCheck(this, GlRenderer);
 
@@ -8396,7 +8405,7 @@ var pow =
 	    return GlRenderer;
 	})())();
 
-	exports.glRenderer = glRenderer;
+	exports.glRenderer = _glRenderer;
 
 /***/ },
 /* 292 */
@@ -8619,12 +8628,11 @@ var pow =
 
 	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Viewport).call(this, objectFactory));
 
-	        _this._renderer = undefined;
-	        _this._rect = _this.objectFactory.create("Rect");
-	        _this._renderTarget = document.createElement('canvas');
+	        _this._rect = undefined;
+	        _this._renderTarget = undefined;
 	        _this._scene = undefined;
 	        _this._camera = undefined;
-	        _this._rendererSize = unedfined;
+	        _this._innerSize = undefined;
 
 	        // force render target and rect initialization
 	        _this.renderer = params.renderer | undefined;
@@ -8635,32 +8643,38 @@ var pow =
 	    _createClass(Viewport, [{
 	        key: "init",
 	        value: function init(params) {
-	            this._rendererSize = this.objectFactroy.create("Vector2", params.rendererSize);
-
+	            this._rect = this.objectFactory.create("Rect");
 	            if (params.rect !== undefined) {
 	                this.setRect(rect.x, rect.y, rect.w, rect.h);
 	            }
-	            if (params.camera !== undefined) {
-	                if (!params.camera instanceof pow.core.Camera) {
-	                    this._camera = this.objectFactory.create('Camera', params.camera);
-	                } else {
-	                    this._camera = params.camera;
-	                }
+	            this._innerSize = this.objectFactroy.create("Vector2");
+	            // TODO: calculate inner size
+
+	            if (params.camera !== undefined && params.camera instanceof pow.core.Camera) {
+	                this._camera = params.camera;
 	            }
+	            this._renderTarget = document.createElement('canvas');
 	        }
 	    }, {
 	        key: "dispose",
 	        value: function dispose() {
-	            this.objectFactroy.dispose(this._rendererSize);
+	            this.objectFactroy.dispose(this._rect);
+	            this.objectFactroy.dispose(this._innerSize);
+	            this._rect = undefined;
 	            this._rendererSize = undefined;
+	            this._renderTarget = undefined;
 	        }
-	    }, {
-	        key: "draw",
-	        value: function draw(time, delta, node, camera) {
-	            if (renderer !== undefined && camera.rect.intersects(this.rect)) {
-	                renderer.draw(time, delta, this, camera, node);
-	            }
-	        }
+
+	        //set renderer( renderer ){
+	        //    this._renderer = renderer;
+	        //    if ( this._renderer !== undefined ){
+	        //        this._renderer.initRenderTarget( this._renderTarget );
+	        //    }
+	        //}
+	        //get renderer(){
+	        //    return this._renderer;
+	        //}
+
 	    }, {
 	        key: "setRect",
 	        value: function setRect(x, y, w, h) {
@@ -8679,23 +8693,17 @@ var pow =
 	            this.rect = this._rect;
 	        }
 	    }, {
-	        key: "renderer",
-	        set: function set(renderer) {
-	            this._renderer = renderer;
-	            if (this._renderer !== undefined) {
-	                this._renderer.initRenderTarget(this._renderTarget);
-	            }
-	        },
-	        get: function get() {
-	            return this._renderer;
-	        }
-	    }, {
 	        key: "rect",
 	        set: function set(rect) {
 	            this._rect.copy(rect);
 	        },
 	        get: function get() {
 	            return this._rect;
+	        }
+	    }, {
+	        key: "innerSize",
+	        get: function get() {
+	            return this._innerSize;
 	        }
 	    }, {
 	        key: "camera",
@@ -10193,16 +10201,27 @@ var pow =
 	        _this.program = undefined;
 	        _this.attribs = {};
 	        _this.uniforms = {};
-	        _this.script = undefined;
+	        _this._script = undefined;
 	        return _this;
 	    }
 
 	    _createClass(GlShader, [{
 	        key: "init",
-	        value: function init(materialDef) {
-	            if (materialDef) {
-	                this.materialDef = materialDef;
+	        value: function init(params) {
+	            if (params.script) {
+	                this.script = script;
 	            }
+	        }
+	    }, {
+	        key: "dispose",
+	        value: function dispose() {
+	            this.attribs = {};
+	            this.uniforms = {};
+	            this._script = undefined;
+	            this.program = undefined;
+	            this.vertexShader = undefined;
+	            this.fragmentShader = undefined;
+	            this.gl = undefined;
 	        }
 	    }, {
 	        key: "compile",
@@ -10212,13 +10231,13 @@ var pow =
 	            if (gl && this.materialDef) {
 	                this.program = gl.createProgram();
 	                this.vertexShader = gl.createShader(gl.VERTEX_SHADER);
-	                gl.shaderSource(this.vertexShader, this.script.vertexShader);
+	                gl.shaderSource(this.vertexShader, this._script.vertexShader);
 	                gl.compileShader(this.vertexShader);
 	                ok = gl.getShaderParameter(this.vertexShader, gl.COMPILE_STATUS);
 
 	                if (ok) {
 	                    this.fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
-	                    gl.shaderSource(this.fragmentShader, this.script.fragmentShader);
+	                    gl.shaderSource(this.fragmentShader, this._script.fragmentShader);
 	                    gl.compileShader(this.fragmentShader);
 	                    ok = gl.getShaderParameter(this.fragmentShader, gl.COMPILE_STATUS);
 
@@ -10264,17 +10283,65 @@ var pow =
 	        }
 	    }, {
 	        key: "addAttribute",
-	        value: function addAttribute(name, type) {
-	            this.attribs[name] = type;
+	        value: function addAttribute(name, attributeType) {
+	            this.attribs[name] = {
+	                aType: attributeType,
+	                attrib: undefined
+	            };
 	        }
 	    }, {
 	        key: "addUniform",
-	        value: function addUniform(name, type) {
-	            this.uniforms[name] = type;
+	        value: function addUniform(name, uniformType) {
+	            this.uniforms[name] = {
+	                uType: uniformType,
+	                uniform: undefined
+	            };
+	        }
+	    }, {
+	        key: "setUniformValue",
+	        value: function setUniformValue(name, value) {
+	            if (this.uniforms[name] !== undefined) {
+	                if (Array.isArray(value)) {
+	                    var length = value.length;
+	                    if (length === 1) {
+	                        this.gl[this.uniforms[name].uType](value[0]);
+	                    } else if (length === 2) {
+	                        this.gl[this.uniforms[name].uType](value[0], value[1]);
+	                    } else if (length === 3) {
+	                        this.gl[this.uniforms[name].uType](value[0], value[1], value[2]);
+	                    } else if (length === 4) {
+	                        this.gl[this.uniforms[name].uType](value[0], value[1], value[2], value[3]);
+	                    }
+	                } else {
+	                    this.gl[this.uniforms[name].uType](value);
+	                }
+	            }
 	        }
 	    }, {
 	        key: "setAttributeAndUniformLocations",
-	        value: function setAttributeAndUniformLocations() {}
+	        value: function setAttributeAndUniformLocations() {
+	            var gl = this.gl;
+	            if (this.program !== undefined) {
+	                for (var attribName in this.attribs) {
+	                    this.attribs[attribName].attrib = gl.getAttribLocation(this.program, attribName);
+	                    gl.enableVertexAttribArray(this.attribs[attribName].attrib);
+	                }
+
+	                for (var uniformName in this.uniforms) {
+	                    this.uniforms[uniformName].uniform = gl.getUniformLocation(this.program, uniformName);
+	                }
+	            }
+	        }
+	    }, {
+	        key: "script",
+	        set: function set(script) {
+	            if (this._script !== undefined) {
+	                this.attribs = {};
+	                this.uniforms = {};
+	            }
+	            this._script = script;
+	            if (this._script !== undefined) {}
+	        }
 	    }]);
 
 	    return GlShader;
@@ -10351,6 +10418,8 @@ var pow =
 	        _this._shaderProperties = {};
 	        _this._script = undefined;
 	        _this._shader = undefined;
+	        _this._lastUpdateTime = -1;
+	        _this._hooks = {};
 	        return _this;
 	    }
 
@@ -10380,18 +10449,21 @@ var pow =
 	        }
 	    }, {
 	        key: "use",
-	        value: function use(time, viewport, camera) {
+	        value: function use(viewport) {
 	            for (var key in this._shaderProperties) {
-	                this._shader.setUniformValue();
+	                switch (key) {
+	                    case 'resolution':
+	                        this.setProperty(viewport.innerSize);
+	                        break;
+	                }
+	                this._shader.setUniformValue(key, this._shaderProperties[key]);
 	            }
 	        }
 	    }, {
 	        key: "script",
 	        set: function set(script) {
-	            if (script !== this._script) {
-	                if (this._shader !== undefined) {
-	                    this.objectFactory.dispose(this._shader);
-	                }
+	            if (script !== this._script && this._shader !== undefined) {
+	                this.objectFactory.dispose(this._shader);
 	            }
 	            this._script = script;
 	            if (this._script !== undefined) {
@@ -10568,6 +10640,7 @@ var pow =
 	var BasicMaterial = {
 	    vs: "precision lowp float;" + "attribute vec2 pos;" + "uniform vec2 resolution;" + "attribute vec2 aTextureCoord;" + "attribute vec4 aColor;" + "varying vec2 vTextureCoord;" + "varying vec4 vColor;" + "void main() {" + "   vec2 fpos = (pos / resolution) * 2.0 - 1.0;" + "   gl_Position = vec4(fpos, 0.0, 1.0);" + "   vTextureCoord = aTextureCoord;" + "   vColor = aColor;" + "}",
 	    fs: "precision lowp float;" + "varying vec2 vTextureCoord;" + "varying vec4 vColor;" + "uniform sampler2D texture;" + "void main() {" + "   gl_FragColor = texture2D(texture, vTextureCoord) * vColor.a;" + "}",
+	    attributes: ["pos", "aTextureCoord", "aColor"],
 	    uniforms: [{
 	        name: 'texture',
 	        type: 'uniform1i'
@@ -10576,7 +10649,7 @@ var pow =
 	        type: 'uniform2f'
 	    }],
 	    uniformHooks: {
-	        'resolution': ['viewport._rect.w', 'viewport._rect.h']
+	        'resolution': ['viewport.rect.w', 'viewport.rect.h']
 	    }
 	};
 

@@ -14,12 +14,33 @@ class GlShader extends FactoryObject{
         this.program = undefined;
         this.attribs = {};
         this.uniforms = {};
-        this.script = undefined;
+        this._script = undefined;
     }
 
-    init( materialDef ){
-        if( materialDef ){
-            this.materialDef = materialDef;
+    init( params ){
+        if( params.script ){
+            this.script = script;
+        }
+    }
+
+    dispose() {
+        this.attribs = {};
+        this.uniforms = {};
+        this._script = undefined;
+        this.program = undefined;
+        this.vertexShader = undefined;
+        this.fragmentShader = undefined;
+        this.gl = undefined;
+    }
+
+    set script( script ){
+        if( this._script !== undefined ){
+            this.attribs = {};
+            this.uniforms = {};
+        }
+        this._script = script;
+        if( this._script !== undefined ){
+
         }
     }
 
@@ -29,13 +50,13 @@ class GlShader extends FactoryObject{
         if( gl && this.materialDef ) {
             this.program = gl.createProgram();
             this.vertexShader = gl.createShader(gl.VERTEX_SHADER);
-            gl.shaderSource(this.vertexShader, this.script.vertexShader);
+            gl.shaderSource(this.vertexShader, this._script.vertexShader);
             gl.compileShader(this.vertexShader);
             ok = gl.getShaderParameter(this.vertexShader, gl.COMPILE_STATUS);
 
             if (ok) {
                 this.fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
-                gl.shaderSource(this.fragmentShader, this.script.fragmentShader);
+                gl.shaderSource(this.fragmentShader, this._script.fragmentShader);
                 gl.compileShader(this.fragmentShader);
                 ok = gl.getShaderParameter(this.fragmentShader, gl.COMPILE_STATUS);
 
@@ -80,16 +101,51 @@ class GlShader extends FactoryObject{
         return false;
     }
 
-    addAttribute( name, type ){
-        this.attribs[ name ] = type;
+    addAttribute( name, attributeType ){
+        this.attribs[ name ] = {
+            aType: attributeType,
+            attrib: undefined
+        }
     }
 
-    addUniform( name, type ){
-        this.uniforms[ name ] = type;
+    addUniform( name, uniformType ){
+        this.uniforms[ name ] = {
+            uType: uniformType,
+            uniform: undefined
+        }
+    }
+
+    setUniformValue( name, value ){
+        if( this.uniforms[ name ] !== undefined ){
+            if( Array.isArray( value ) ){
+                let length = value.length;
+                if( length === 1 ){
+                    this.gl[ this.uniforms[ name ].uType ]( value[0] );
+                } else if( length === 2 ){
+                    this.gl[ this.uniforms[ name ].uType ]( value[0], value[1] );
+                } else if( length === 3 ) {
+                    this.gl[ this.uniforms[ name ].uType ]( value[0], value[1], value[2] );
+                } else if( length === 4 ) {
+                    this.gl[ this.uniforms[ name ].uType ]( value[0], value[1], value[2], value[3] );
+                }
+            } else {
+                this.gl[ this.uniforms[name].uType ]( value );
+            }
+        }
     }
 
     setAttributeAndUniformLocations(){
+        let gl = this.gl;
+        if( this.program !== undefined ) {
+            for( let attribName in this.attribs ){
+                this.attribs[ attribName ].attrib =  gl.getAttribLocation(this.program, attribName );
+                gl.enableVertexAttribArray( this.attribs[ attribName ].attrib );
+            }
 
+            for( let uniformName in this.uniforms ){
+                this.uniforms[ uniformName ].uniform =  gl.getUniformLocation(this.program, uniformName );
+            }
+        }
     }
 }
 
