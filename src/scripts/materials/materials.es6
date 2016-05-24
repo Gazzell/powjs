@@ -5,6 +5,8 @@
 "use strict";
 import { default as _basicMaterial } from "./basicMaterial.es6";
 
-var BasicMaterial = _basicMaterial;
+var materials = {
+    BasicMaterial: _basicMaterial
+};
 
-export { BasicMaterial as default };
+export { materials as default };

@@ -9,7 +9,7 @@ class Viewport extends FactoryObject {
         super( objectFactory );
         this.renderManager = undefined;
         this._rect = undefined;
-        this._renderTarget = undefined;
+        this.renderTarget = undefined;
         this._scene = undefined;
         this._camera = undefined;
         this._innerSize = undefined;
@@ -26,7 +26,7 @@ class Viewport extends FactoryObject {
         if( params.camera !== undefined  && params.camera instanceof pow.core.Camera){
             this._camera = params.camera;
         }
-        this._renderTarget = document.createElement('canvas');
+        this.renderTarget = document.createElement('canvas');
     }
 
     dispose(){
@@ -34,7 +34,7 @@ class Viewport extends FactoryObject {
         this.objectFactroy.dispose( this._innerSize );
         this._rect = undefined;
         this._rendererSize = undefined;
-        this._renderTarget = undefined;
+        this.renderTarget = undefined;
     }
 
     //set renderer( renderer ){

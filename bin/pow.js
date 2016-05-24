@@ -7660,15 +7660,15 @@ var pow =
 
 	var _renderManager2 = _interopRequireDefault(_renderManager);
 
-	var _objectFactory = __webpack_require__(293);
+	var _objectFactory = __webpack_require__(294);
 
 	var _objectFactory2 = _interopRequireDefault(_objectFactory);
 
-	var _coreObjects = __webpack_require__(294);
+	var _coreObjects = __webpack_require__(295);
 
 	var _coreObjects2 = _interopRequireDefault(_coreObjects);
 
-	var _scripts = __webpack_require__(309);
+	var _scripts = __webpack_require__(310);
 
 	var _scripts2 = _interopRequireDefault(_scripts);
 
@@ -8293,7 +8293,7 @@ var pow =
 	                rect: { x: 0, y: 0, w: 1, h: 1 }
 	            }));
 	            Object.keys(_renderers2.default).forEach(function (rendererName) {
-	                return _this.registerRenderer(rendererName, new _renderers2.default[rendererName](_this._viewports.get("default")));
+	                return _this.registerRenderer(rendererName, new _renderers2.default[rendererName](objectFactory, _this._viewports.get("default")));
 	            });
 	        }
 	    }, {
@@ -8414,7 +8414,7 @@ var pow =
 
 /***/ },
 /* 292 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	/**
 	 * Created by joseba on 19/2/16.
@@ -8424,20 +8424,56 @@ var pow =
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
+	exports.SpriteBatchRenderer = undefined;
 
 	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _basicMaterial = __webpack_require__(293);
+
+	var _basicMaterial2 = _interopRequireDefault(_basicMaterial);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	var gl = undefined;
+	var maxSize = 256;
 
 	var SpriteBatchRendererClass = (function () {
-	    function SpriteBatchRendererClass(defaultViewport) {
+	    function SpriteBatchRendererClass(objectFactory, defaultViewport) {
 	        _classCallCheck(this, SpriteBatchRendererClass);
 
+	        this.objectfactory = objectFactory;
 	        this.renderTarget = undefined;
-	        this.shader = undefined;
-	        //gl = defaultViewport.renderTarget.getContext("experimental-webgl");
+	        this.shader = this.objectfactory.create("GlShader", _basicMaterial2.default);
+	        gl = defaultViewport.renderTarget.getContext("experimental-webgl");
+
+	        this.vertexSize = 5; // x, y, u, v, packed rgba
+
+	        // vertex buffer, stores maxsize of quads (4 vertex)
+	        this.vertexBuffer = undefined;
+	        this.vertexArray = new ArrayBuffer(maxSize * 4 * 4 * this.vertexSize);
+
+	        // subview, storing positions and texture coords.
+	        this.positions = new Float32Array(this.vertexArray);
+
+	        // subview storing color as packed rgba
+	        this.colors = new Uint32Array(this.vertexArray);
+
+	        // index buffer, storing 6 indexes per quad (to draw 2 triangles)
+	        this.indexes = new Uint16Array(maxSize * 6);
+	        // fill the indexes with the quads to draw
+	        for (var i = 0, j = 0; i < maxSize * 6; i += 6, j += 4) {
+	            this.indexes[i + 0] = j + 0;
+	            this.indexes[i + 1] = j + 1;
+	            this.indexes[i + 2] = j + 2;
+	            this.indexes[i + 3] = j + 1;
+	            this.indexes[i + 4] = j + 3;
+	            this.indexes[i + 5] = j + 2;
+	        }
+
+	        //
+	        this._drawList = [];
 	    }
 
 	    _createClass(SpriteBatchRendererClass, [{
@@ -8457,6 +8493,37 @@ var pow =
 
 /***/ },
 /* 293 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	/**
+	 * Created by joseba on 19/4/16.
+	 */
+
+	var BasicMaterial = {
+	    vs: "precision lowp float;" + "attribute vec2 pos;" + "uniform vec2 resolution;" + "attribute vec2 aTextureCoord;" + "attribute vec4 aColor;" + "varying vec2 vTextureCoord;" + "varying vec4 vColor;" + "void main() {" + "   vec2 fpos = (pos / resolution) * 2.0 - 1.0;" + "   gl_Position = vec4(fpos, 0.0, 1.0);" + "   vTextureCoord = aTextureCoord;" + "   vColor = aColor;" + "}",
+	    fs: "precision lowp float;" + "varying vec2 vTextureCoord;" + "varying vec4 vColor;" + "uniform sampler2D texture;" + "void main() {" + "   gl_FragColor = texture2D(texture, vTextureCoord) * vColor.a;" + "}",
+	    attributes: ["pos", "aTextureCoord", "aColor"],
+	    uniforms: [{
+	        name: 'texture',
+	        type: 'uniform1i'
+	    }, {
+	        name: 'resolution',
+	        type: 'uniform2f'
+	    }],
+	    uniformHooks: {
+	        'resolution': ['viewport.rect.w', 'viewport.rect.h']
+	    }
+	};
+
+	exports.default = BasicMaterial;
+
+/***/ },
+/* 294 */
 /***/ function(module, exports) {
 
 	/**
@@ -8548,7 +8615,7 @@ var pow =
 	exports.default = objectFactory;
 
 /***/ },
-/* 294 */
+/* 295 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -8561,31 +8628,31 @@ var pow =
 	});
 	exports.default = undefined;
 
-	var _factoryObject = __webpack_require__(295);
+	var _factoryObject = __webpack_require__(296);
 
 	var _factoryObject2 = _interopRequireDefault(_factoryObject);
 
-	var _viewport = __webpack_require__(296);
+	var _viewport = __webpack_require__(297);
 
 	var _viewport2 = _interopRequireDefault(_viewport);
 
-	var _camera = __webpack_require__(297);
+	var _camera = __webpack_require__(298);
 
 	var _camera2 = _interopRequireDefault(_camera);
 
-	var _renderables = __webpack_require__(298);
+	var _renderables = __webpack_require__(299);
 
 	var _renderables2 = _interopRequireDefault(_renderables);
 
-	var _math = __webpack_require__(301);
+	var _math = __webpack_require__(302);
 
 	var _math2 = _interopRequireDefault(_math);
 
-	var _renderer = __webpack_require__(305);
+	var _renderer = __webpack_require__(306);
 
 	var _renderer2 = _interopRequireDefault(_renderer);
 
-	var _materials = __webpack_require__(307);
+	var _materials = __webpack_require__(308);
 
 	var _materials2 = _interopRequireDefault(_materials);
 
@@ -8603,7 +8670,7 @@ var pow =
 	exports.default = core;
 
 /***/ },
-/* 295 */
+/* 296 */
 /***/ function(module, exports) {
 
 	/**
@@ -8641,7 +8708,7 @@ var pow =
 	exports.default = FactoryObject;
 
 /***/ },
-/* 296 */
+/* 297 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -8656,7 +8723,7 @@ var pow =
 
 	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-	var _factoryObject = __webpack_require__(295);
+	var _factoryObject = __webpack_require__(296);
 
 	var _factoryObject2 = _interopRequireDefault(_factoryObject);
 
@@ -8678,7 +8745,7 @@ var pow =
 
 	        _this.renderManager = undefined;
 	        _this._rect = undefined;
-	        _this._renderTarget = undefined;
+	        _this.renderTarget = undefined;
 	        _this._scene = undefined;
 	        _this._camera = undefined;
 	        _this._innerSize = undefined;
@@ -8698,7 +8765,7 @@ var pow =
 	            if (params.camera !== undefined && params.camera instanceof pow.core.Camera) {
 	                this._camera = params.camera;
 	            }
-	            this._renderTarget = document.createElement('canvas');
+	            this.renderTarget = document.createElement('canvas');
 	        }
 	    }, {
 	        key: "dispose",
@@ -8707,7 +8774,7 @@ var pow =
 	            this.objectFactroy.dispose(this._innerSize);
 	            this._rect = undefined;
 	            this._rendererSize = undefined;
-	            this._renderTarget = undefined;
+	            this.renderTarget = undefined;
 	        }
 
 	        //set renderer( renderer ){
@@ -8768,7 +8835,7 @@ var pow =
 	exports.default = Viewport;
 
 /***/ },
-/* 297 */
+/* 298 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -8783,7 +8850,7 @@ var pow =
 
 	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-	var _factoryObject = __webpack_require__(295);
+	var _factoryObject = __webpack_require__(296);
 
 	var _factoryObject2 = _interopRequireDefault(_factoryObject);
 
@@ -8837,7 +8904,7 @@ var pow =
 	exports.default = Camera;
 
 /***/ },
-/* 298 */
+/* 299 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -8851,9 +8918,9 @@ var pow =
 	});
 	exports.default = undefined;
 
-	var _sceneObject = __webpack_require__(299);
+	var _sceneObject = __webpack_require__(300);
 
-	var _sprite = __webpack_require__(300);
+	var _sprite = __webpack_require__(301);
 
 	var renderables = {
 	    SceneObject: _sceneObject.SceneObject,
@@ -8865,7 +8932,7 @@ var pow =
 	exports.default = renderables;
 
 /***/ },
-/* 299 */
+/* 300 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -8881,7 +8948,7 @@ var pow =
 
 	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-	var _factoryObject = __webpack_require__(295);
+	var _factoryObject = __webpack_require__(296);
 
 	var _factoryObject2 = _interopRequireDefault(_factoryObject);
 
@@ -9123,7 +9190,7 @@ var pow =
 	exports.AnchorTypes = AnchorTypes;
 
 /***/ },
-/* 300 */
+/* 301 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -9141,11 +9208,11 @@ var pow =
 
 	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-	var _factoryObject = __webpack_require__(295);
+	var _factoryObject = __webpack_require__(296);
 
 	var _factoryObject2 = _interopRequireDefault(_factoryObject);
 
-	var _sceneObject = __webpack_require__(299);
+	var _sceneObject = __webpack_require__(300);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -9278,7 +9345,7 @@ var pow =
 	exports.Animation = Animation;
 
 /***/ },
-/* 301 */
+/* 302 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -9292,15 +9359,15 @@ var pow =
 	});
 	exports.default = undefined;
 
-	var _vector = __webpack_require__(302);
+	var _vector = __webpack_require__(303);
 
 	var _vector2 = _interopRequireDefault(_vector);
 
-	var _rect = __webpack_require__(303);
+	var _rect = __webpack_require__(304);
 
 	var _rect2 = _interopRequireDefault(_rect);
 
-	var _matrix = __webpack_require__(304);
+	var _matrix = __webpack_require__(305);
 
 	var _matrix2 = _interopRequireDefault(_matrix);
 
@@ -9314,7 +9381,7 @@ var pow =
 	exports.default = math;
 
 /***/ },
-/* 302 */
+/* 303 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -9329,7 +9396,7 @@ var pow =
 
 	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-	var _factoryObject = __webpack_require__(295);
+	var _factoryObject = __webpack_require__(296);
 
 	var _factoryObject2 = _interopRequireDefault(_factoryObject);
 
@@ -9577,7 +9644,7 @@ var pow =
 	exports.default = Vector;
 
 /***/ },
-/* 303 */
+/* 304 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -9592,11 +9659,11 @@ var pow =
 
 	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-	var _factoryObject = __webpack_require__(295);
+	var _factoryObject = __webpack_require__(296);
 
 	var _factoryObject2 = _interopRequireDefault(_factoryObject);
 
-	var _vector = __webpack_require__(302);
+	var _vector = __webpack_require__(303);
 
 	var _vector2 = _interopRequireDefault(_vector);
 
@@ -9766,7 +9833,7 @@ var pow =
 	exports.default = Rect;
 
 /***/ },
-/* 304 */
+/* 305 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -9781,7 +9848,7 @@ var pow =
 
 	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-	var _factoryObject = __webpack_require__(295);
+	var _factoryObject = __webpack_require__(296);
 
 	var _factoryObject2 = _interopRequireDefault(_factoryObject);
 
@@ -10177,7 +10244,7 @@ var pow =
 	exports.default = Matrix3;
 
 /***/ },
-/* 305 */
+/* 306 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -10191,7 +10258,7 @@ var pow =
 	});
 	exports.default = undefined;
 
-	var _glShader = __webpack_require__(306);
+	var _glShader = __webpack_require__(307);
 
 	var _glShader2 = _interopRequireDefault(_glShader);
 
@@ -10204,7 +10271,7 @@ var pow =
 	exports.default = renderer;
 
 /***/ },
-/* 306 */
+/* 307 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -10220,7 +10287,7 @@ var pow =
 
 	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-	var _factoryObject = __webpack_require__(295);
+	var _factoryObject = __webpack_require__(296);
 
 	var _factoryObject2 = _interopRequireDefault(_factoryObject);
 
@@ -10395,7 +10462,7 @@ var pow =
 	exports.default = GlShader;
 
 /***/ },
-/* 307 */
+/* 308 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -10409,7 +10476,7 @@ var pow =
 	});
 	exports.default = undefined;
 
-	var _material = __webpack_require__(308);
+	var _material = __webpack_require__(309);
 
 	var _material2 = _interopRequireDefault(_material);
 
@@ -10422,7 +10489,7 @@ var pow =
 	exports.default = materials;
 
 /***/ },
-/* 308 */
+/* 309 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -10438,7 +10505,7 @@ var pow =
 
 	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-	var _factoryObject = __webpack_require__(295);
+	var _factoryObject = __webpack_require__(296);
 
 	var _factoryObject2 = _interopRequireDefault(_factoryObject);
 
@@ -10526,7 +10593,7 @@ var pow =
 	exports.default = Material;
 
 /***/ },
-/* 309 */
+/* 310 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -10540,11 +10607,11 @@ var pow =
 	});
 	exports.default = undefined;
 
-	var _loaders = __webpack_require__(310);
+	var _loaders = __webpack_require__(311);
 
 	var _loaders2 = _interopRequireDefault(_loaders);
 
-	var _materials = __webpack_require__(313);
+	var _materials = __webpack_require__(314);
 
 	var _materials2 = _interopRequireDefault(_materials);
 
@@ -10558,7 +10625,7 @@ var pow =
 	exports.default = scripts;
 
 /***/ },
-/* 310 */
+/* 311 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -10572,11 +10639,11 @@ var pow =
 	});
 	exports.default = undefined;
 
-	var _imageResource = __webpack_require__(311);
+	var _imageResource = __webpack_require__(312);
 
 	var _imageResource2 = _interopRequireDefault(_imageResource);
 
-	var _jsonResource = __webpack_require__(312);
+	var _jsonResource = __webpack_require__(313);
 
 	var _jsonResource2 = _interopRequireDefault(_jsonResource);
 
@@ -10590,7 +10657,7 @@ var pow =
 	exports.default = loaders;
 
 /***/ },
-/* 311 */
+/* 312 */
 /***/ function(module, exports) {
 
 	/**
@@ -10619,7 +10686,7 @@ var pow =
 	exports.default = ImageResource;
 
 /***/ },
-/* 312 */
+/* 313 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -10645,7 +10712,7 @@ var pow =
 	exports.default = JsonResource;
 
 /***/ },
-/* 313 */
+/* 314 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -10659,46 +10726,17 @@ var pow =
 	});
 	exports.default = undefined;
 
-	var _basicMaterial2 = __webpack_require__(314);
+	var _basicMaterial2 = __webpack_require__(293);
 
 	var _basicMaterial3 = _interopRequireDefault(_basicMaterial2);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var BasicMaterial = _basicMaterial3.default;
-
-	exports.default = BasicMaterial;
-
-/***/ },
-/* 314 */
-/***/ function(module, exports) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	/**
-	 * Created by joseba on 19/4/16.
-	 */
-
-	var BasicMaterial = {
-	    vs: "precision lowp float;" + "attribute vec2 pos;" + "uniform vec2 resolution;" + "attribute vec2 aTextureCoord;" + "attribute vec4 aColor;" + "varying vec2 vTextureCoord;" + "varying vec4 vColor;" + "void main() {" + "   vec2 fpos = (pos / resolution) * 2.0 - 1.0;" + "   gl_Position = vec4(fpos, 0.0, 1.0);" + "   vTextureCoord = aTextureCoord;" + "   vColor = aColor;" + "}",
-	    fs: "precision lowp float;" + "varying vec2 vTextureCoord;" + "varying vec4 vColor;" + "uniform sampler2D texture;" + "void main() {" + "   gl_FragColor = texture2D(texture, vTextureCoord) * vColor.a;" + "}",
-	    attributes: ["pos", "aTextureCoord", "aColor"],
-	    uniforms: [{
-	        name: 'texture',
-	        type: 'uniform1i'
-	    }, {
-	        name: 'resolution',
-	        type: 'uniform2f'
-	    }],
-	    uniformHooks: {
-	        'resolution': ['viewport.rect.w', 'viewport.rect.h']
-	    }
+	var materials = {
+	  BasicMaterial: _basicMaterial3.default
 	};
 
-	exports.default = BasicMaterial;
+	exports.default = materials;
 
 /***/ },
 /* 315 */

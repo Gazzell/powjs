@@ -27,7 +27,7 @@ var renderManager = new (
                 )
             );
             Object.keys( renderers ).forEach( rendererName => this.registerRenderer( rendererName,
-                new renderers[ rendererName ]( this._viewports.get( "default" ) ) ) );
+                new renderers[ rendererName ]( objectFactory, this._viewports.get( "default" ) ) ) );
         }
 
         registerRenderer( name, renderer ){
