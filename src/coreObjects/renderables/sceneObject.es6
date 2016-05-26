@@ -36,7 +36,7 @@ class SceneObject extends FactoryObject{
         this.children = [];
 
         this._transformMatrix = objectFactory.create("Matrix3");
-        this._worldTransform = objectFactory.create("Matrix3");
+        this._finalTransform = objectFactory.create("Matrix3");
         this._worldAlpha = 1.0;
         this._boundingRect = objectFactory.create("Rect");
         this._dirty = true;
@@ -136,7 +136,7 @@ class SceneObject extends FactoryObject{
             }
 
             // update
-            if (this._parent._dirty || this._dirty) {
+            if ((this._parent !== undefined && this._parent._dirty) || this._dirty) {
                 //this.transform = new TWO.core.math.Matrix3();
                 this._transformMatrix.makeTranslate(this._position.x, this._position.y);
                 if (this._rotation) {
@@ -146,11 +146,11 @@ class SceneObject extends FactoryObject{
 
                 //this.transform.multiply( this.pivot );
 
-                if (this._parent !== undefined && this._parent._worldTransform !== undefined) {
-                    this._worldTransform.copy(this._parent._worldTransform)
+                if (this._parent !== undefined && this._parent._finalTransform !== undefined) {
+                    this._finalTransform.copy(this._parent._finalTransform)
                         .multiply(this._transformMatrix);
                 } else {
-                    this._worldTransform.copy(this._transformMatrix);
+                    this._finalTransform.copy(this._transformMatrix);
                 }
 
                 this._calculateTransformedBRect();
@@ -158,7 +158,7 @@ class SceneObject extends FactoryObject{
                 this._dirtyTransform = false;
                 this._dirty = true;
             }
-            let alpha = this._parent._worldAlpha * this._alpha;
+            let alpha = this._parent === undefined ? this._alpha : this._parent._worldAlpha * this._alpha;
             if (this._worldAlpha !== alpha) {
                 this._worldAlpha = alpha;
                 this._dirty = true;
@@ -189,7 +189,7 @@ class SceneObject extends FactoryObject{
         p1.x = p3.x = this._w + this._pivot.x;
         p2.y = p3.y =  this._h + this._pivot.y;
 
-        this._worldTransform.transformVector2(p0)
+        this._finalTransform.transformVector2(p0)
                             .transformVector2(p1)
                             .transformVector2(p2)
                             .transformVector2(p3);

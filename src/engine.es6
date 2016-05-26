@@ -35,6 +35,10 @@ var _engine = new ( class Engine {
         }
     }
 
+    setViewportScene( viewportName, scene ){
+        this.renderManager.setViewportScene( viewportName, scene );
+    }
+
     updateAndDraw( time, delta ){
         this.renderManager.updateAndDraw( time, delta );
     }

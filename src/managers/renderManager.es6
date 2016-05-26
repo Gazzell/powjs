@@ -28,6 +28,8 @@ var renderManager = new (
             );
             Object.keys( renderers ).forEach( rendererName => this.registerRenderer( rendererName,
                 new renderers[ rendererName ]( objectFactory, this._viewports.get( "default" ) ) ) );
+
+            this._viewports.get( "default").renderer = this.registeredRenderers.get("SpriteBatchRenderer");
         }
 
         registerRenderer( name, renderer ){
@@ -80,6 +82,12 @@ var renderManager = new (
             if( this._viewports.has( name ) ) {
                 this._viewports.get(name).renderManager = undefined;
                 this._viewports.delete(name);
+            }
+        }
+
+        setViewportScene( viewportName, scene ){
+            if( this._viewports.has( viewportName ) ){
+                this._viewports.get( viewportName ).scene = scene;
             }
         }
 

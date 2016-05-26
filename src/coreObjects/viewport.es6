@@ -13,6 +13,7 @@ class Viewport extends FactoryObject {
         this._scene = undefined;
         this._camera = undefined;
         this._innerSize = undefined;
+        this._renderer = undefined;
     }
 
     init( params ){
@@ -37,15 +38,12 @@ class Viewport extends FactoryObject {
         this.renderTarget = undefined;
     }
 
-    //set renderer( renderer ){
-    //    this._renderer = renderer;
-    //    if ( this._renderer !== undefined ){
-    //        this._renderer.initRenderTarget( this._renderTarget );
-    //    }
-    //}
-    //get renderer(){
-    //    return this._renderer;
-    //}
+    set renderer( renderer ){
+        this._renderer = renderer;
+    }
+    get renderer(){
+        return this._renderer;
+    }
 
     setRect( x, y, w, h ){
         this._rect.set( x, y, w, h );
@@ -67,6 +65,24 @@ class Viewport extends FactoryObject {
 
     get camera(){
         return this._camera;
+    }
+
+    get scene(){
+        return this._scene;
+    }
+
+    set scene( scene ){
+        this._scene = scene;
+    }
+
+    update( time, delta ){
+        if( this._scene !== undefined ){
+            this._scene.update( time, delta );
+        }
+    }
+
+    draw( time, delta ){
+        this._renderer.draw( time, delta, this );
     }
 
     /**

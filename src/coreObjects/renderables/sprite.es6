@@ -14,7 +14,8 @@ class AnimationFrame extends FactoryObject {
     }
 
     init( params ){
-
+        if( params !== undefined ){
+        }
     }
 
     dispose(){
@@ -44,16 +45,31 @@ class Animation extends FactoryObject{
 class Sprite extends SceneObject{
     constructor( objectFactory, params ){
         super( objectFactory, params );
+        this.type = "Sprite";
         this._spriteDef = undefined;
         this._material = undefined;
+        this._surface = undefined;
         this._spriteSheet = undefined;
-        this._rect = objectFactory.create( "Rect" );
+        this._rect = undefined;
         this._fps = 0;
         this._currentFrame = 0;
         this._totalDuration = 0;
+        this._offset = undefined;
+    }
+
+    init( params ){
+        this._rect = this.objectFactory.create( "Rect" );
+        this._offset = this.objectFactory.create( "Vector" );
+        if( params !== undefined ){
+            if( params.image !== undefined ){
+                this.spriteSheet = params.image;
+            }
+        }
     }
 
     dispose(){
+        this.objectFactory.dispose( this._rect );
+        this.objectFactory.dispose( this._offset );
         super.dispose();
     }
 
@@ -86,6 +102,19 @@ class Sprite extends SceneObject{
 
     get duration(){
         return this._totalDuration;
+    }
+
+    set spriteSheet( spriteSheet ){
+        this._spriteSheet = spriteSheet;
+        this._surface = this._spriteSheet;
+    }
+
+    get surface(){
+        return this._surface;
+    }
+
+    update( time, delta ){
+        super.update( time, delta );
     }
 }
 

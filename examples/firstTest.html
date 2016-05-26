@@ -6,8 +6,28 @@
 </head>
 <script src="../bin/pow.js"></script>
 <script>
-    var engine = new pow.Engine();
-    var pepe = engine.objectFactory.create('SceneObject');
+    var engine = pow.engine;
+    var sprite = engine.objectFactory.create('Sprite');
+    var lastTime;
+
+    engine.resourceManager.obtainResource('../test/resourceManagerRes/star.png', 'star', 'image')
+            .then(
+                    function( image ) {
+                        sprite.spriteSheet = image;
+                        engine.setViewportScene("default", sprite );
+                        lastTime = Date.now();
+                        animate();
+                    }
+            );
+    function animate( ){
+        requestAnimationFrame(animate);
+        time = Date.now();
+        deltaTime = time - lastTime;
+
+        engine.updateAndDraw(time, deltaTime );
+
+        lastTime = time;
+    }
 </script>
 
 <body>

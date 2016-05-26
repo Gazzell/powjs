@@ -19,7 +19,7 @@ class GlShader extends FactoryObject{
 
     init( params ){
         if( params.script ){
-            this.script = script;
+            this.script = params.script;
         }
     }
 
@@ -40,23 +40,31 @@ class GlShader extends FactoryObject{
         }
         this._script = script;
         if( this._script !== undefined ){
+            if( this._script.attributes !== undefined ){
+                this._script.attributes.forEach( att => this.addAttribute( att ) );
+            }
 
+            if( this._script.uniforms !== undefined ){
+               this._script.uniforms.forEach( uniform => this.addUniform( uniform.name, uniform.type ) );
+            }
+
+            this.setAttributeAndUniformLocations();
         }
     }
 
     compile(){
         let ok = false,
             gl = this.gl;
-        if( gl && this.materialDef ) {
+        if( gl && this._script ) {
             this.program = gl.createProgram();
             this.vertexShader = gl.createShader(gl.VERTEX_SHADER);
-            gl.shaderSource(this.vertexShader, this._script.vertexShader);
+            gl.shaderSource(this.vertexShader, this._script.vs);
             gl.compileShader(this.vertexShader);
             ok = gl.getShaderParameter(this.vertexShader, gl.COMPILE_STATUS);
 
             if (ok) {
                 this.fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
-                gl.shaderSource(this.fragmentShader, this._script.fragmentShader);
+                gl.shaderSource(this.fragmentShader, this._script.fs);
                 gl.compileShader(this.fragmentShader);
                 ok = gl.getShaderParameter(this.fragmentShader, gl.COMPILE_STATUS);
 
