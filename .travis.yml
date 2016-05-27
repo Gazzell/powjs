@@ -1,6 +1,8 @@
 language: node_js
 node_js:
   - "5.0.0"
+before_install:
+  - npm install -g phantomjs
 script:
   - webpack
   - karma start --single-run
