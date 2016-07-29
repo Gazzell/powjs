@@ -97,9 +97,9 @@ class GlShader extends FactoryObject{
         return ok;
     }
 
-    use( canvas ){
-        if( this.gl === undefined || this.program === undefined ){
-            this.gl = canvas.getContext("experimental-webgl");
+    use( renderTarget ){
+        if( this.gl !== renderTarget.glContext ){
+            this.gl = renderTarget.glContext;
             if( this.gl !== undefined ){
                 return this.compile();
             }

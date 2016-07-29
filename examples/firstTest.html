@@ -1,36 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title></title>
-</head>
-<script src="../bin/pow.js"></script>
-<script>
-    var engine = pow.engine;
-    var sprite = engine.objectFactory.create('Sprite');
-    var lastTime;
+    <head>
+        <meta charset="UTF-8">
+        <title></title>
+    </head>
+    <body>
+        <script src="../bin/pow.js"></script>
+        <script>
+            var engine = pow.engine;
+            var sprite = engine.objectFactory.create('Sprite');
+            var lastTime;
 
-    engine.resourceManager.obtainResource('../test/resourceManagerRes/star.png', 'star', 'image')
-            .then(
-                    function( image ) {
-                        sprite.spriteSheet = image;
-                        engine.setViewportScene("default", sprite );
-                        lastTime = Date.now();
-                        animate();
-                    }
-            );
-    function animate( ){
-        requestAnimationFrame(animate);
-        time = Date.now();
-        deltaTime = time - lastTime;
+            engine.resourceManager.downloadResource('../test/resourceManagerRes/star.png', 'star', 'image')
+                    .then(
+                            function( image ) {
+                                sprite.spriteSheet = 'star';
+                                engine.setViewportScene("default", sprite );
+                                lastTime = Date.now();
+                                animate();
+                            }
+                    );
+            function animate( ){
+                requestAnimationFrame(animate);
+                time = Date.now();
+                deltaTime = time - lastTime;
 
-        engine.updateAndDraw(time, deltaTime );
+                engine.updateAndDraw(time, deltaTime );
 
-        lastTime = time;
-    }
-</script>
-
-<body>
-
+                lastTime = time;
+            }
+    </script>
 </body>
 </html>

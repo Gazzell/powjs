@@ -14,7 +14,7 @@ class RenderPass extends FactoryObject{
     }
 
     init( params ){
-        this._renderTarget = params.renderTarget;
+        this._renderTarget = params._renderTarget;
         this._material = params.material;
     }
 }

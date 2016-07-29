@@ -49,7 +49,8 @@ var resourceManager = new(
             }
         }
 
-        obtainResource( url, id, type ){
+        downloadResource(url, id, type){
+            var that = this;
             return new Promise( ( resolve, reject ) => {
                 let fireOnResObtained = function fireOnResObtained ( resource, warnMessage ){
                     if( warnMessage !== undefined ){
@@ -59,23 +60,24 @@ var resourceManager = new(
                 };
 
                 if( id !== undefined ){
-                    if( this._resourcesById[ id ] !== undefined ){
-                        fireOnResObtained( undefined, "Pow ResourceManager - obtainResource: ID ${id} already in use." );
-                    } else if( this._resourceTypes[ type ] === undefined ) {
+                    if( that._resourcesById[ id ] !== undefined ){
+                        fireOnResObtained( that._resourcesById[ id ], "Pow ResourceManager - obtainResource: ID ${id} already in use." );
+                    } else if( that._resourceTypes[ type ] === undefined ) {
                         fireOnResObtained( undefined, "Pow ResourceManager - obtainResource: TYPE ${type} not registered for resource ${id} ( ${url} )." );
                     } else {
-                        if( this._resourceTypes[ type ].download === undefined ){
+                        if( that._resourceTypes[ type ].download === undefined ){
                             // download
                             let p = fetch( url )
                                 .then(
                                     response => {
                                         if (response.status >= 200 && response.status < 300) {
-                                            this._resourceTypes[ type ].parse( response )
+                                            that._resourceTypes[ type ].parse( response )
                                                 .then( resource => {
-                                                    if( this._resources[ type ] === undefined ){
-                                                        this._resources[ type ] = {};
+                                                    if( that._resources[ type ] === undefined ){
+                                                        that._resources[ type ] = {};
                                                     }
-                                                    this._resources[ type ][ id ] = resource;
+                                                    that._resources[ type ][ id ] = resource;
+                                                    that._resourcesById[ id ] = resource;
                                                     fireOnResObtained( resource );
                                                 })
                                                 .catch(
@@ -104,6 +106,14 @@ var resourceManager = new(
             });
 
         }
+
+        getResource( id ){
+            if( this._resourcesById[ id ] ){
+                return this._resourcesById[ id ];
+            }
+            return undefined;
+        }
+
     })();
 
 export { resourceManager as default };

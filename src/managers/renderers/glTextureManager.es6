@@ -20,8 +20,8 @@ let TextureManager = new ( class glTextureManager {
 
     createTexture( gl, id, source ){
         if( !this.textures[ id ] && !gl.isContextLost()){
-            this.textures[id] = gl.createTexture();
-            gl.bindTexture(gl.TEXTURE_2D, this.textures[id] );
+            this.textures.set( id, gl.createTexture() );
+            gl.bindTexture(gl.TEXTURE_2D, this.textures.get( id ) );
             gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
 
             // check here for maximum size and resize if we are over it
@@ -47,7 +47,7 @@ let TextureManager = new ( class glTextureManager {
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
             //gl.activeTexture(gl.TEXTURE0 );
-            return this.textures[ id ];
+            return this.textures.get( id );
         }
     }
 

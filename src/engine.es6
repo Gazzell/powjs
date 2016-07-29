@@ -15,13 +15,13 @@ var _engine = new ( class Engine {
 
         // init managers
         this.objectFactory.registerObjects( coreObjects );
-        if( scripts.loaders !== undefined ){
-            this.resourceManager.registerResourceTypes( scripts.loaders );
+        if( scripts.loaders !== undefined ) {
+            this.resourceManager.registerResourceTypes(scripts.loaders);
         }
-        this.renderManager.init( this.objectFactory );
 
         if(!params){
-            params = {};
+            params = {
+            };
         }
 
         if( !params.container ){
@@ -29,10 +29,21 @@ var _engine = new ( class Engine {
             this.htmlContainer.name = 'POW_Div';
             this.htmlContainer.id   = 'POW_Div';
             this.htmlContainer.setAttribute("style", "position:absolute;top:0px;left:0px;");
+            document.body.appendChild( this.htmlContainer );
             params.container = this.htmlContainer;
         } else {
             this.htmlContainer = params.container;
         }
+        if( !params.width ){
+            params.width = 800;
+        }
+        if( !params.height ){
+            params.height = 600;
+        }
+        this.htmlContainer.width = params.width;
+        this.htmlContainer.height = params.height;
+
+        this.renderManager.init( this.objectFactory, params );
     }
 
     setViewportScene( viewportName, scene ){

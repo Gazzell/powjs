@@ -49,6 +49,7 @@ class Sprite extends SceneObject{
         this._spriteDef = undefined;
         this._material = undefined;
         this._surface = undefined;
+        this._surfaceId = undefined;
         this._spriteSheet = undefined;
         this._rect = undefined;
         this._fps = 0;
@@ -104,13 +105,24 @@ class Sprite extends SceneObject{
         return this._totalDuration;
     }
 
-    set spriteSheet( spriteSheet ){
-        this._spriteSheet = spriteSheet;
-        this._surface = this._spriteSheet;
+    set spriteSheet( spriteSheetId ){
+        this._spriteSheet = pow.engine.resourceManager.getResource( spriteSheetId );
+        if( this._spriteSheet !== undefined ) {
+            this._surfaceId = spriteSheetId;
+            this._surface = this._spriteSheet;
+        }
+    }
+
+    get spriteSheet(){
+        return this._spriteSheet;
     }
 
     get surface(){
         return this._surface;
+    }
+
+    get surfaceId(){
+        return this._surfaceId;
     }
 
     update( time, delta ){

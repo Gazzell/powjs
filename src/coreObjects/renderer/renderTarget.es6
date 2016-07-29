@@ -26,4 +26,4 @@ class RenderTarget extends FactoryObject {
     }
 }
 
-export { RenderTarget as RenderTarget };
+export { RenderTarget as default };

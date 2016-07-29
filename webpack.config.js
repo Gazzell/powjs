@@ -6,6 +6,7 @@ module.exports = {
         path: __dirname +'/bin',
         library: 'pow'
     },
+    devtool: 'source-map',
     module: {
         loaders: [
             {

@@ -9,33 +9,47 @@ class Viewport extends FactoryObject {
         super( objectFactory );
         this.renderManager = undefined;
         this._rect = undefined;
-        this.renderTarget = undefined;
+        this._renderTarget = undefined;
+        this._absolutePosition = undefined;
         this._scene = undefined;
         this._camera = undefined;
-        this._innerSize = undefined;
         this._renderer = undefined;
     }
 
     init( params ){
+        this._mainSurfaceSize = this.objectFactory.create("Vector");
         this._rect = this.objectFactory.create("Rect");
+        this._renderTarget = this.objectFactory.create("RenderTarget");
+        this._absolutePosition = this.objectFactory.create("Vector");
+
+        params.container.appendChild( this._renderTarget.canvas );
+
+        if( params.totalWidth ){
+            this._mainSurfaceSize.x = params.totalWidth;
+        }
+        if( params.totalHeight ){
+            this._mainSurfaceSize.y = params.totalHeight;
+        }
         if (params.rect !== undefined ){
             this.setRect( params.rect.x, params.rect.y, params.rect.w, params.rect.h );
         }
-        this._innerSize = this.objectFactory.create("Vector2");
+
         // TODO: calculate inner size
 
         if( params.camera !== undefined  && params.camera instanceof pow.core.Camera){
             this._camera = params.camera;
         }
-        this.renderTarget = document.createElement('canvas');
     }
 
     dispose(){
-        this.objectFactroy.dispose( this._rect );
-        this.objectFactroy.dispose( this._innerSize );
+        this.objectFactory.dispose( this._rect );
+        this.objectFactory.dispose( this._mainSurfaceSize );
+        this.objectFactory.dispose( this._renderTarget );
+        this.objectFactory.dispose( this._absolutePosition );
         this._rect = undefined;
-        this._rendererSize = undefined;
-        this.renderTarget = undefined;
+        this._mainSurfaceSize = undefined;
+        this._renderTarget = undefined;
+        this._absolutePosition = undefinedError;
     }
 
     set renderer( renderer ){
@@ -47,16 +61,15 @@ class Viewport extends FactoryObject {
 
     setRect( x, y, w, h ){
         this._rect.set( x, y, w, h );
+        this._renderTarget.resize( w * this._mainSurfaceSize.x, h * this._mainSurfaceSize.y );
+        this._absolutePosition.set( x * this._mainSurfaceSize.x, y * this._mainSurfaceSize.y );
+        //TODO: reposition renderTarget
     }
     set rect( rect ){
-        this._rect.copy( rect );
+        this.setRect( rect.x, rect.y, rect.w, rect.h );
     }
     get rect(){
         return this._rect;
-    }
-
-    get innerSize(){
-        return this._innerSize;
     }
 
     set camera( camera ){
@@ -90,7 +103,8 @@ class Viewport extends FactoryObject {
      * @param {number} width
      * @param {number} height
      */
-    resize( width, height ){
+    resizeMain( width, height ){
+        this._mainSurfaceSize.set( width, height );
         // force recalculation
         this.rect = this._rect;
     }

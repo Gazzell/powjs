@@ -23,13 +23,13 @@ let fillDrawList = function fillDrawList( node, drawList ){
 class SpriteBatchRendererClass {
     constructor( objectFactory, defaultViewport ) {
         this.objectfactory = objectFactory;
-        this.renderTarget = undefined;
+        this._renderTarget = undefined;
         this.shader = this.objectfactory.create("GlShader", {script: BasicMaterial} );
-        if( !this.shader.use( defaultViewport.renderTarget ) ){
+        if( !this.shader.use( defaultViewport._renderTarget ) ){
             console.warn('Failed to initialize basicMaterial shader');
         }
 
-        gl = defaultViewport.renderTarget.getContext("experimental-webgl");
+        gl = defaultViewport._renderTarget.glContext;
 
         var lostcall = function(event){
             event.preventDefault();
@@ -43,11 +43,11 @@ class SpriteBatchRendererClass {
         };
 
         // listen to loss and restore events
-        defaultViewport.renderTarget.removeEventListener('webglcontextlost', lostcall, false);
-        defaultViewport.renderTarget.removeEventListener('webglcontextrestored', onrestore, false);
+        defaultViewport._renderTarget.canvas.removeEventListener('webglcontextlost', lostcall, false);
+        defaultViewport._renderTarget.canvas.removeEventListener('webglcontextrestored', onrestore, false);
 
-        defaultViewport.renderTarget.addEventListener('webglcontextlost', lostcall, false);
-        defaultViewport.renderTarget.addEventListener('webglcontextrestored', onrestore, false);
+        defaultViewport._renderTarget.canvas.addEventListener('webglcontextlost', lostcall, false);
+        defaultViewport._renderTarget.canvas.addEventListener('webglcontextrestored', onrestore, false);
 
         this.vertexSize = 5; // x, y, u, v, packed rgba
 
@@ -123,15 +123,12 @@ class SpriteBatchRendererClass {
         let texture = undefined;
 
         if( viewport.scene !== undefined ) {
-            this.renderTarget = viewport.renderTarget;
+            this._renderTarget = viewport._renderTarget;
 
-            drawMatrix.makeTranslate(0, this.renderTarget.height);
+            drawMatrix.makeTranslate(0, this._renderTarget.height);
             drawMatrix.scale(1, -1);
 
-
-            if (gl === undefined) {
-                gl = this.renderTarget.glContext;
-            }
+            gl = this._renderTarget.glContext;
 
             fillDrawList(viewport.scene, drawList);
 
@@ -239,10 +236,10 @@ class SpriteBatchRendererClass {
 
                 if (currentElement.surface !== undefined && currentElement.surface.width !== undefined) {
                     if (currentElement._dirtyText === true) {
-                        TextureManager.removeTexture(currentElement._imageId);
+                        TextureManager.removeTexture(currentElement.surfaceId);
                         currentElement._dirtyText = false;
                     }
-                    texture = TextureManager.getTexture(currentElement._imageId);
+                    texture = TextureManager.getTexture(currentElement.surfaceId);
                     if (texture === undefined) {
                         if (currentTexture !== undefined) {
                             this.__flushBatch(currentTexture, elemNum, index);
@@ -250,7 +247,7 @@ class SpriteBatchRendererClass {
                             index += elemNum;
                             elemNum = 0;
                         }
-                        currentTexture = TextureManager.createTexture(gl, currentElement._imageId, currentElement.surface);
+                        currentTexture = TextureManager.createTexture(gl, currentElement.surfaceId, currentElement.surface);
                     } else if (currentTexture !== texture || elemNum >= maxSize) {
                         this.__flushBatch(currentTexture, elemNum, index);
 

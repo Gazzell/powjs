@@ -18,14 +18,18 @@ var renderManager = new (
             this.registeredRenderers = new Map();
         }
 
-        init( objectFactory ){
+        init( objectFactory, params  ){
             this._objectFactory = objectFactory;
-            this._viewports.set( "default", this._objectFactory.create("Viewport",
-                    {
-                        rect: { x: 0, y:0, w:1, h:1 }
-                    }
-                )
+
+            let defaultViewport = this._objectFactory.create("Viewport",
+                {
+                    rect: { x: 0, y:0, w:1, h:1 },
+                    totalWidth: params.width || 800,
+                    totalHeight: params.height || 600,
+                    container: params.container
+                }
             );
+            this._viewports.set( "default", defaultViewport );
             Object.keys( renderers ).forEach( rendererName => this.registerRenderer( rendererName,
                 new renderers[ rendererName ]( objectFactory, this._viewports.get( "default" ) ) ) );
 
@@ -104,7 +108,7 @@ var renderManager = new (
         }
 
         resize( width, height ){
-            this._viewports.forEach( viewport => viewport.resize( width, heightº ) );
+            this._viewports.forEach( viewport => viewport.resizeMain( width, height ) );
         }
     })();
 
