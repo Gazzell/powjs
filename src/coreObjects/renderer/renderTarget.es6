@@ -9,6 +9,8 @@ class RenderTarget extends FactoryObject {
         super(objectFactory);
         this.canvas = undefined;
         this.glContext = undefined;
+        this.width = 0;
+        this.height = 0;
     }
 
     init( params ){
@@ -17,8 +19,8 @@ class RenderTarget extends FactoryObject {
     }
 
     resize( width, height ){
-        this.canvas.width = width;
-        this.canvas.height = height;
+        this.canvas.width = this.width = width;
+        this.canvas.height = this.height = height;
     }
 
     dispose(){

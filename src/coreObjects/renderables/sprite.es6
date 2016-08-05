@@ -110,6 +110,10 @@ class Sprite extends SceneObject{
         if( this._spriteSheet !== undefined ) {
             this._surfaceId = spriteSheetId;
             this._surface = this._spriteSheet;
+            if( this._spriteDef === undefined ){
+                this._w = this._surface.width;
+                this._h = this._surface.height;
+            }
         }
     }
 

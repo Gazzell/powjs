@@ -88,6 +88,10 @@ class Viewport extends FactoryObject {
         this._scene = scene;
     }
 
+    get renderTarget(){
+        return this._renderTarget;
+    }
+
     update( time, delta ){
         if( this._scene !== undefined ){
             this._scene.update( time, delta );

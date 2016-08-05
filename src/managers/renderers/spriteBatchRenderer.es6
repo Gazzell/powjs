@@ -130,12 +130,22 @@ class SpriteBatchRendererClass {
 
             gl = this._renderTarget.glContext;
 
+            gl.viewport(0, 0, this._renderTarget.width, this._renderTarget.height);
+
+            if(!gl.isContextLost()) {
+                gl.clear(gl.COLOR_BUFFER_BIT);
+            }
+
             fillDrawList(viewport.scene, drawList);
 
             gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
 
+            this.shader.use( viewport.renderTarget );
+
             this._setAttribPoiters();
+
+            this.shader.setUniformValue( 'resolution', [ this._renderTarget.width, this._renderTarget.height ]);
 
             for (var i = 0; i < drawList.length; i++) {
                 currentElement = drawList[i];

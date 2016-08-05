@@ -19,17 +19,17 @@ var BasicMaterial = {
     fs: "precision lowp float;" +
         "varying vec2 vTextureCoord;" +
         "varying vec4 vColor;" +
-        "uniform sampler2D texture;" +
+        "uniform sampler2D uSampler;" +
         "void main() {" +
-        "   gl_FragColor = texture2D(texture, vTextureCoord) * vColor.a;" +
+        "   gl_FragColor = texture2D(uSampler, vTextureCoord) * vColor.a;" +
         "}",
     attributes:[
         "pos", "aTextureCoord", "aColor"
     ],
     uniforms: [
         {
-            name: 'texture',
-            type: 'uniform1i'
+            name: 'uSampler',
+            type: 'sampler2D'
         },
         {
             name: 'resolution',

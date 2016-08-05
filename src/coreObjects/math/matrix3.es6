@@ -181,6 +181,7 @@ class Matrix3 extends FactoryObject {
         val[2] = x;
         val[3] = 0;
         val[4] = 1;
+        val[5] = y;
         return this;
     }
 

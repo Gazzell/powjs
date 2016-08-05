@@ -98,10 +98,20 @@ class GlShader extends FactoryObject{
     }
 
     use( renderTarget ){
-        if( this.gl !== renderTarget.glContext ){
+        //if( this.gl !== renderTarget.glContext ){
+        //    this.gl = renderTarget.glContext;
+        //    if( this.gl !== undefined ){
+        //        return this.compile();
+        //    }
+        //} else {
+        //    return true;
+        //}
+        if( this.gl === undefined ) {
             this.gl = renderTarget.glContext;
+
             if( this.gl !== undefined ){
                 return this.compile();
+                this.setAttributeAndUniformLocations();
             }
         } else {
             return true;
@@ -128,13 +138,13 @@ class GlShader extends FactoryObject{
             if( Array.isArray( value ) ){
                 let length = value.length;
                 if( length === 1 ){
-                    this.gl[ this.uniforms[ name ].uType ]( value[0] );
+                    this.gl[ this.uniforms[ name ].uType ](this.uniforms[ name ].uniform,  value[0] );
                 } else if( length === 2 ){
-                    this.gl[ this.uniforms[ name ].uType ]( value[0], value[1] );
+                    this.gl[ this.uniforms[ name ].uType ](this.uniforms[ name ].uniform,  value[0], value[1] );
                 } else if( length === 3 ) {
-                    this.gl[ this.uniforms[ name ].uType ]( value[0], value[1], value[2] );
+                    this.gl[ this.uniforms[ name ].uType ](this.uniforms[ name ].uniform,  value[0], value[1], value[2] );
                 } else if( length === 4 ) {
-                    this.gl[ this.uniforms[ name ].uType ]( value[0], value[1], value[2], value[3] );
+                    this.gl[ this.uniforms[ name ].uType ](this.uniforms[ name ].uniform,  value[0], value[1], value[2], value[3] );
                 }
             } else {
                 this.gl[ this.uniforms[name].uType ]( value );
