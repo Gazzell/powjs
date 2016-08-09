@@ -116,17 +116,17 @@ class SpriteBatchRendererClass {
     }
 
     draw( time, delta, viewport ){
+        let drawMatrix = this.objectfactory.create("Matrix3"),
+            pivotMatrix = this.objectfactory.create("Matrix3"),
+            preDrawMatrix = this.objectfactory.create("Matrix3");
         let drawList = [], elemNum = 0, total = 0, index = 0, currentTexture = undefined, currentAlpha = undefined, currentElement = undefined,
             a, b, c, d, tx, ty, u0, u1, v0, v1;
-        let drawMatrix = this.objectfactory.create("Matrix3"),
-            pivotMatrix = this.objectfactory.create("Matrix3");
         let texture = undefined;
 
         if( viewport.scene !== undefined ) {
             this._renderTarget = viewport._renderTarget;
 
-            drawMatrix.makeTranslate(0, this._renderTarget.height);
-            drawMatrix.scale(1, -1);
+            preDrawMatrix.makeTranslate(0, this._renderTarget.height).scale(1, -1);
 
             gl = this._renderTarget.glContext;
 
@@ -147,7 +147,7 @@ class SpriteBatchRendererClass {
 
             this.shader.setUniformValue( 'resolution', [ this._renderTarget.width, this._renderTarget.height ]);
 
-            for (var i = 0; i < drawList.length; i++) {
+            for (let i = 0; i < drawList.length; i++) {
                 currentElement = drawList[i];
 
                 if (currentElement.surface !== undefined && currentElement.surface.width !== undefined) {
@@ -157,11 +157,8 @@ class SpriteBatchRendererClass {
                     var halfwidthpixel = 0.5 * invwidth;
                     var halfheightpixel = 0.5 * invheight;
 
-                    if (currentElement._dirtyTransform) {
-                        drawMatrix.multiply(currentElement._finalTransform);
-                        pivotMatrix.makeTranslate(currentElement.pivot.x, currentElement.pivot.y);
-                        drawMatrix.multiply(pivotMatrix);
-                    }
+                    pivotMatrix.makeTranslate(currentElement.pivot.x, currentElement.pivot.y);
+                    drawMatrix.copy( preDrawMatrix ).multiply(currentElement._finalTransform).multiply(pivotMatrix);
 
                     a = drawMatrix.value[0];
                     b = drawMatrix.value[3];
@@ -280,8 +277,8 @@ class SpriteBatchRendererClass {
         drawList.length = 0;
         currentTexture = undefined;
 
-        this.objectfactory.dispose( drawMatrix );
-        this.objectfactory.dispose( pivotMatrix );
+        this.objectfactory.reset( drawMatrix );
+        this.objectfactory.reset( pivotMatrix );
     }
 
     __flushBatch ( texture, size, offsetIndex ) {

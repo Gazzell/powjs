@@ -11,7 +11,7 @@ describe("Scene Object", function() {
     });
     afterEach(function() {
         while (root.children.length > 0){
-            engine.objectFactory.dispose( root.children.pop() );
+            engine.objectFactory.reset( root.children.pop() );
         }
     });
 

@@ -14,10 +14,12 @@ class Camera extends FactoryObject {
         if (params.rect !== undefined ){
             this.setRect( rect.x, rect.y, rect.w, rect.h );
         }
+        return this;
     }
 
     setRect( x, y, w, h ){
         this._rect.set( x, y, w, h );
+        return this;
     }
     set rect( rect ){
         this._rect.copy( rect );

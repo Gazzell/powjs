@@ -18,8 +18,8 @@ class AnimationFrame extends FactoryObject {
         }
     }
 
-    dispose(){
-        this.rect.dispose();
+    reset(){
+        this.rect.reset();
         this.duration = 0;
     }
 }
@@ -32,10 +32,10 @@ class Animation extends FactoryObject{
         this.currentFrame = 0;
     }
 
-    dispose(){
+    reset(){
         this.frameCount = 0;
         this.currentFrame = 0;
-        this.frames.forEach( frame => this.objectFactory.dispose( frame ) );
+        this.frames.forEach( frame => this.objectFactory.reset( frame ) );
         this.frames.clear();
     }
 
@@ -66,12 +66,14 @@ class Sprite extends SceneObject{
                 this.spriteSheet = params.image;
             }
         }
+        return this;
     }
 
-    dispose(){
-        this.objectFactory.dispose( this._rect );
-        this.objectFactory.dispose( this._offset );
-        super.dispose();
+    reset(){
+        this.objectFactory.reset( this._rect );
+        this.objectFactory.reset( this._offset );
+        super.reset();
+
     }
 
     set material( material ){

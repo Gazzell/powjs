@@ -12,6 +12,7 @@ class Rect extends FactoryObject{
         this.y = 0;
         this.w = 0;
         this.h = 0;
+        return this;
     }
 
     /**
@@ -26,13 +27,15 @@ class Rect extends FactoryObject{
         this.y = y;
         this.w = w;
         this.h = h;
+        return this;
     }
 
     /**
-     * dispose to default
+     * reset to default
      */
-    dispose(){
+    reset(){
         this.set( 0, 0, 0, 0 );
+        return this;
     }
 
     /**
@@ -47,6 +50,7 @@ class Rect extends FactoryObject{
         this.y = piy;
         this.w = pfx - pix;
         this.h = pfy - piy;
+        return this;
     }
 
     /**
@@ -58,6 +62,7 @@ class Rect extends FactoryObject{
         this.y = rect.y;
         this.w = rect.w;
         this.h = rect.h;
+        return this;
     }
 
     /**
@@ -89,6 +94,7 @@ class Rect extends FactoryObject{
         if (result.y > this.y + this.h) {
             result.y = this.y + this.h;
         }// v = min(v, b.max[i])
+        return this;
     }
 
     /**
@@ -109,6 +115,7 @@ class Rect extends FactoryObject{
     translate(vector) {
         this.x += vector.x;
         this.y += vector.y;
+        return this;
     }
 
     /**
@@ -123,6 +130,7 @@ class Rect extends FactoryObject{
         this.x = tempVect.x;
         this.y = tempVect.y;
         this.objectFactory.release( tempVect );
+        return this;
     }
 }
 

@@ -16,15 +16,18 @@ class RenderTarget extends FactoryObject {
     init( params ){
         this.canvas = document.createElement('canvas');
         this.glContext = this.canvas.getContext("experimental-webgl");
+        return this;
     }
 
     resize( width, height ){
         this.canvas.width = this.width = width;
         this.canvas.height = this.height = height;
+        return this;
     }
 
-    dispose(){
+    reset(){
         this.canvas = undefined;
+        return this;
     }
 }
 

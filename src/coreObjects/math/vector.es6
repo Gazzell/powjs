@@ -20,13 +20,15 @@ class Vector extends FactoryObject{
     set ( x, y ) {
         this.x = x;
         this.y = y;
+        return this;
     }
 
     /**
-     * dispose to default
+     * reset to default
      */
-    dispose(){
+    reset(){
         this.set( 0, 0 );
+        return this;
     }
 
     /**
@@ -36,6 +38,7 @@ class Vector extends FactoryObject{
     copy ( v ) {
         this.x = v.x;
         this.y = v.y;
+        return this;
     }
 
     /**
@@ -46,6 +49,7 @@ class Vector extends FactoryObject{
     add ( v1, v2 ) {
         this.x = v1.x + v2.x;
         this.y = v1.y + v2.y;
+        return this;
     }
 
     /**
@@ -55,6 +59,7 @@ class Vector extends FactoryObject{
     addSelf ( v ) {
         this.x += v.x;
         this.y += v.y;
+        return this;
     }
 
     /**
@@ -65,6 +70,7 @@ class Vector extends FactoryObject{
     sub ( v1, v2 ) {
         this.x = v1.x - v2.x;
         this.y = v1.y - v2.y;
+        return this;
     }
 
     /**
@@ -74,6 +80,7 @@ class Vector extends FactoryObject{
     subSelf ( v ) {
         this.x -= v.x;
         this.y -= v.y;
+        return this;
     }
 
     /**
@@ -83,6 +90,7 @@ class Vector extends FactoryObject{
     multiplyScalar ( s ) {
         this.x *= s;
         this.y *= s;
+        return this;
     }
 
     /**
@@ -96,6 +104,7 @@ class Vector extends FactoryObject{
         } else {
             this.set( 0, 0 );
         }
+        return this;
     }
 
 
@@ -104,6 +113,7 @@ class Vector extends FactoryObject{
      */
     negate ( ) {
         this.multiplyScalar( -1 );
+        return this;
     }
 
     /**
@@ -136,6 +146,7 @@ class Vector extends FactoryObject{
      */
     normalize () {
         this.divideScalar( this.length() );
+        return this;
     }
 
     /**
@@ -163,6 +174,7 @@ class Vector extends FactoryObject{
      */
     setLength ( l ) {
         this.normalize().multiplyScalar( l );
+        return this;
     }
 
     /**

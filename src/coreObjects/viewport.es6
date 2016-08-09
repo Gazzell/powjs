@@ -39,17 +39,19 @@ class Viewport extends FactoryObject {
         if( params.camera !== undefined  && params.camera instanceof pow.core.Camera){
             this._camera = params.camera;
         }
+        return this;
     }
 
-    dispose(){
-        this.objectFactory.dispose( this._rect );
-        this.objectFactory.dispose( this._mainSurfaceSize );
-        this.objectFactory.dispose( this._renderTarget );
-        this.objectFactory.dispose( this._absolutePosition );
+    reset(){
+        this.objectFactory.reset( this._rect );
+        this.objectFactory.reset( this._mainSurfaceSize );
+        this.objectFactory.reset( this._renderTarget );
+        this.objectFactory.reset( this._absolutePosition );
         this._rect = undefined;
         this._mainSurfaceSize = undefined;
         this._renderTarget = undefined;
         this._absolutePosition = undefinedError;
+        return this;
     }
 
     set renderer( renderer ){
@@ -64,6 +66,7 @@ class Viewport extends FactoryObject {
         this._renderTarget.resize( w * this._mainSurfaceSize.x, h * this._mainSurfaceSize.y );
         this._absolutePosition.set( x * this._mainSurfaceSize.x, y * this._mainSurfaceSize.y );
         //TODO: reposition renderTarget
+        return this;
     }
     set rect( rect ){
         this.setRect( rect.x, rect.y, rect.w, rect.h );
@@ -111,6 +114,7 @@ class Viewport extends FactoryObject {
         this._mainSurfaceSize.set( width, height );
         // force recalculation
         this.rect = this._rect;
+        return this;
     }
 };
 

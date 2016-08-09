@@ -8,9 +8,13 @@ class FactoryObject{
         this.objectFactory = objectFactory;
     }
 
-    init( params ){}
+    init( params ){
+        return this;
+    }
 
-    dispose(){}
+    reset(){
+        return this;
+    }
 }
 
 export { FactoryObject as default };

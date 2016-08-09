@@ -8,14 +8,23 @@
         <script src="../bin/pow.js"></script>
         <script>
             var engine = pow.engine;
-            var sprite = engine.objectFactory.create('Sprite');
+            var sprites = [];
+            var scene = engine.objectFactory.create('SceneObject');
+            for(var i = 0; i < 1000; i++ ){
+                sprites[i] = engine.objectFactory.create('Sprite');
+            }
             var lastTime;
 
             engine.resourceManager.downloadResource('../test/resourceManagerRes/star.png', 'star', 'image')
                     .then(
                             function( image ) {
-                                sprite.spriteSheet = 'star';
-                                engine.setViewportScene("default", sprite );
+                                for(var i = 0; i < 1000; i++ ) {
+                                    sprites[i].spriteSheet = 'star';
+                                    sprites[i].position.set(Math.random() * 800, Math.random() * 600);
+                                    sprites[i].anchor = "CENTER";
+                                    scene.addChild(sprites[i]);
+                                }
+                                engine.setViewportScene("default", scene );
                                 lastTime = Date.now();
                                 animate();
                             }
@@ -24,6 +33,9 @@
                 requestAnimationFrame(animate);
                 time = Date.now();
                 deltaTime = time - lastTime;
+                for(var i = 0; i < 1000; i++ ) {
+                    sprites[i].transform('rotate', 0.01);
+                }
 
                 engine.updateAndDraw(time, deltaTime );
 

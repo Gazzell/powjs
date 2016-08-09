@@ -31,6 +31,9 @@ class SceneObject extends FactoryObject{
         this._w = 0;
         this._h = 0;
         this._pivot = objectFactory.create("Vector");
+        this._anchorType = AnchorTypes["TOP_LEFT"];
+        this._anchor = objectFactory.create("Vector");
+        this._customAnchor = false;
         this._parent = undefined;
 
         this.children = [];
@@ -50,20 +53,22 @@ class SceneObject extends FactoryObject{
     }
 
     init( params ){
-
+        return this;
     }
 
-    dispose(){
-        this._position.dispose();
+    reset(){
+        this._position.reset();
         this._rotation = 0;
         this._scale.set( 1, 1 );
         this._alpha = 1.0;
-        this._pivot.dispose();
+        this._pivot.reset();
+        this._anchorType = AnchorTypes["TOP_LEFT"];
+        this._anchor.reset();
 
-        this._transformMatrix.dispose();
-        this._boundingRect.dispose();
+        this._transformMatrix.reset();
+        this._boundingRect.reset();
 
-        this.children.forEach( child => this.objectFactory.dispose( child ) );
+        this.children.forEach( child => this.objectFactory.reset( child ) );
         this.children.length = 0;
 
         this._parent = undefined;
@@ -72,6 +77,39 @@ class SceneObject extends FactoryObject{
 
         this._preDrawCbks.length = 0;
         this._postDrawCbks.length = 0;
+        return this;
+    }
+
+    /**
+     * Set element property
+     * @param {string} property name
+     * @param value
+     * @returns {SceneObject} this
+     */
+    set( transformName, value ){
+        if( this.hasOwnProperty( transformName ) ){
+            this[ transformName ] = value;
+        }
+        return this;
+    }
+
+    /**
+     * Apply transform
+     * @param {string} transformName
+     * @param value
+     * @returns {SceneObject} this
+     */
+    transform( transformName, value ){
+        if( transformName === 'translate' ){
+            this.position.addSelf( value );
+        } else if( transformName === 'rotate' ){
+            this.rotation += value;
+        } else if( transformName === 'scale' ){
+            this.scale.addSelf( value );
+        }
+        this._dirty = true;
+        this._dirtyTransform = true;
+        return this;
     }
 
     set position( pos ){
@@ -116,6 +154,56 @@ class SceneObject extends FactoryObject{
         return this._boundingRect;
     }
 
+    get pivot(){
+        return this._pivot;
+    }
+
+    get anchor(){
+        return this._anchorType;
+    }
+
+    set anchor( anchorType ){
+        let aType = AnchorTypes[ anchorType ];
+            if(  aType !== undefined && aType !== this._anchorType ) {
+                if (this.type == 'Object2d' && aType != AnchorTypes['CUSTOM']) {
+                    this._anchorType = AnchorTypes.CENTER;
+                } else {
+                    this._anchorType = aType;
+                }
+
+                if(aType == AnchorTypes["TOP_LEFT"]) {
+                    this._anchor.set(0, 0);
+                } else if( aType == AnchorTypes["TOP_CENTER"]) {
+                    this._anchor.set(0.5, 0);
+                } else if( aType == AnchorTypes["TOP_RIGHT"]) {
+                    this._anchor.set(1, 0);
+                } else if( aType == AnchorTypes["CENTER_LEFT"]) {
+                    this._anchor.set(0, 0.5);
+                } else if( aType == AnchorTypes["CENTER"]) {
+                    this._anchor.set(0.5, 0.5);
+                } else if( aType == AnchorTypes["CENTER_RIGHT"]) {
+                    this._anchor.set(1, 0.5);
+                } else if( aType == AnchorTypes["BOTTOM_LEFT"]) {
+                    this._anchor.set(0, 1);
+                } else if( aType == AnchorTypes["BOTTOM_CENTER"]) {
+                    this._anchor.set(0.5, 1);
+                } else if( aType == AnchorTypes["BOTTOM_RIGHT"]) {
+                    this._anchor.set(1, 1);
+                } else if( aType == AnchorTypes["CUSTOM"]){
+                    this._customAnchor = true;
+                }
+            }
+
+            if (this._anchorType !== AnchorTypes["CUSTOM"]) {
+                this._pivot.set( -this._anchor.x * this._w,  -this._anchor.y * this._h );
+                this._dirtyTransform = true;
+            }
+    }
+
+    get anchor(){
+        return this._anchor;
+    }
+
     addChild( child, index = -1 ){
         if( index !== -1 && index < this.children.length - 1){
             this.children.splice( index, 0, child );
@@ -123,6 +211,7 @@ class SceneObject extends FactoryObject{
             child._parent = this;
             this.children.push( child );
         }
+        return this;
     }
 
     update( time, delta ){
@@ -162,6 +251,10 @@ class SceneObject extends FactoryObject{
             if (this._worldAlpha !== alpha) {
                 this._worldAlpha = alpha;
                 this._dirty = true;
+            }
+
+            for( let i = 0; i < this.children.length; i++ ){
+                this.children[i].update( time, delta );
             }
 
             // post update hooks
@@ -204,10 +297,10 @@ class SceneObject extends FactoryObject{
         d = d + (d < 0 ? 0 : 1) >> 0;
 
         this._boundingRect.setPoints( a, b, c, d );
-        this.objectFactory.dispose( p0 );
-        this.objectFactory.dispose( p1 );
-        this.objectFactory.dispose( p2 );
-        this.objectFactory.dispose( p3 );
+        this.objectFactory.reset( p0 );
+        this.objectFactory.reset( p1 );
+        this.objectFactory.reset( p2 );
+        this.objectFactory.reset( p3 );
     }
 }
 

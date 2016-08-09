@@ -21,9 +21,10 @@ class GlShader extends FactoryObject{
         if( params.script ){
             this.script = params.script;
         }
+        return this;
     }
 
-    dispose() {
+    reset() {
         this.attribs = {};
         this.uniforms = {};
         this._script = undefined;
@@ -31,6 +32,7 @@ class GlShader extends FactoryObject{
         this.vertexShader = undefined;
         this.fragmentShader = undefined;
         this.gl = undefined;
+        return this;
     }
 
     set script( script ){
@@ -50,6 +52,7 @@ class GlShader extends FactoryObject{
 
             this.setAttributeAndUniformLocations();
         }
+        return this;
     }
 
     compile(){
@@ -124,6 +127,7 @@ class GlShader extends FactoryObject{
             aType: attributeType,
             attrib: undefined
         }
+        return this;
     }
 
     addUniform( name, uniformType ){
@@ -131,6 +135,7 @@ class GlShader extends FactoryObject{
             uType: uniformType,
             uniform: undefined
         }
+        return this;
     }
 
     setUniformValue( name, value ){
@@ -150,6 +155,7 @@ class GlShader extends FactoryObject{
                 this.gl[ this.uniforms[name].uType ]( value );
             }
         }
+        return this;
     }
 
     setAttributeAndUniformLocations(){
@@ -164,6 +170,7 @@ class GlShader extends FactoryObject{
                 this.uniforms[ uniformName ].uniform =  gl.getUniformLocation(this.program, uniformName );
             }
         }
+        return this;
     }
 }
 
