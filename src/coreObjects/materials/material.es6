@@ -26,7 +26,7 @@ class Material extends FactoryObject{
 
     reset(){
         if( this._shader !== undefined ) {
-            this.objectFactroy.reset(this._shader);
+            this.objectFactroy.dispose(this._shader);
             this._shader = undefined;
         }
     }
@@ -50,7 +50,7 @@ class Material extends FactoryObject{
 
     set script( script ){
         if( script !== this._script && this._shader !== undefined ){
-            this.objectFactory.reset( this._shader );
+            this.objectFactory.dispose( this._shader );
         }
         this._script = script;
         if( this._script !== undefined ){

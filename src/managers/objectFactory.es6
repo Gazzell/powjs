@@ -45,7 +45,7 @@ var objectFactory = new (
             }
         }
 
-        reset( object ){
+        dispose(object ){
             if( this.objectPool.has( object.type ) ){
                 object.reset();
                 this.objectPool.get( object.type ).push( object );

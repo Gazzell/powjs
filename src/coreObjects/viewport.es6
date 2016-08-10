@@ -43,10 +43,10 @@ class Viewport extends FactoryObject {
     }
 
     reset(){
-        this.objectFactory.reset( this._rect );
-        this.objectFactory.reset( this._mainSurfaceSize );
-        this.objectFactory.reset( this._renderTarget );
-        this.objectFactory.reset( this._absolutePosition );
+        this.objectFactory.dispose( this._rect );
+        this.objectFactory.dispose( this._mainSurfaceSize );
+        this.objectFactory.dispose( this._renderTarget );
+        this.objectFactory.dispose( this._absolutePosition );
         this._rect = undefined;
         this._mainSurfaceSize = undefined;
         this._renderTarget = undefined;

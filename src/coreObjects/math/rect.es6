@@ -31,7 +31,7 @@ class Rect extends FactoryObject{
     }
 
     /**
-     * reset to default
+     * dispose to default
      */
     reset(){
         this.set( 0, 0, 0, 0 );

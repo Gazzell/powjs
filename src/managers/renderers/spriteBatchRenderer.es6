@@ -116,39 +116,27 @@ class SpriteBatchRendererClass {
     }
 
     draw( time, delta, viewport ){
-        let drawMatrix = this.objectfactory.create("Matrix3"),
-            pivotMatrix = this.objectfactory.create("Matrix3"),
-            preDrawMatrix = this.objectfactory.create("Matrix3");
-        let drawList = [], elemNum = 0, total = 0, index = 0, currentTexture = undefined, currentAlpha = undefined, currentElement = undefined,
-            a, b, c, d, tx, ty, u0, u1, v0, v1;
-        let texture = undefined;
+        let preDrawMatrix = this.objectfactory.create("Matrix3");
+        let drawList = [];
+        let that = this;
+        function drawBatch( batch ){
+            let texture = undefined;
+            let elemNum = 0, total = 0, index = 0, currentTexture = undefined, currentAlpha = undefined, currentElement = undefined,
+                a, b, c, d, tx, ty, u0, u1, v0, v1;
+            let drawMatrix = that.objectfactory.create("Matrix3"),
+                pivotMatrix = that.objectfactory.create("Matrix3");
 
-        if( viewport.scene !== undefined ) {
-            this._renderTarget = viewport._renderTarget;
+            gl.bindBuffer(gl.ARRAY_BUFFER, that.vertexBuffer);
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, that.indexBuffer);
 
-            preDrawMatrix.makeTranslate(0, this._renderTarget.height).scale(1, -1);
+            that.shader.use( viewport.renderTarget );
 
-            gl = this._renderTarget.glContext;
+            that._setAttribPoiters();
 
-            gl.viewport(0, 0, this._renderTarget.width, this._renderTarget.height);
+            that.shader.setUniformValue( 'resolution', [ that._renderTarget.width, that._renderTarget.height ]);
 
-            if(!gl.isContextLost()) {
-                gl.clear(gl.COLOR_BUFFER_BIT);
-            }
-
-            fillDrawList(viewport.scene, drawList);
-
-            gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
-            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-
-            this.shader.use( viewport.renderTarget );
-
-            this._setAttribPoiters();
-
-            this.shader.setUniformValue( 'resolution', [ this._renderTarget.width, this._renderTarget.height ]);
-
-            for (let i = 0; i < drawList.length; i++) {
-                currentElement = drawList[i];
+            for (let i = 0; i < batch.length; i++) {
+                currentElement = batch[i];
 
                 if (currentElement.surface !== undefined && currentElement.surface.width !== undefined) {
                     var invwidth = 1 / currentElement.surface.width;
@@ -187,8 +175,8 @@ class SpriteBatchRendererClass {
                     currentElement._dirtyTransform = false;
 
                     // draw elements
-                    var positions = this.positions;
-                    var colors = this.colors;
+                    var positions = that.positions;
+                    var colors = that.colors;
 
                     // TODO: different tints
                     var tint = 0xFFFFFF;
@@ -219,9 +207,9 @@ class SpriteBatchRendererClass {
                     positions[index++] = v1;
                     colors[index++] = color;
 
-                    //var colIndex = elemNum * this.colorcomponents * 6;
+                    //var colIndex = elemNum * that.colorcomponents * 6;
                     //for( var p = 0; p < 6; p++ ){
-                    //    this.colors[colIndex + p] = currentElement.finalAlpha;
+                    //    that.colors[colIndex + p] = currentElement.finalAlpha;
                     //}
 
                     elemNum++;
@@ -230,16 +218,16 @@ class SpriteBatchRendererClass {
 
 
             if (elemNum > maxSize * 0.5) {
-                gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vertexArray);
+                gl.bufferSubData(gl.ARRAY_BUFFER, 0, that.vertexArray);
             } else {
-                var view = this.positions.subarray(0, elemNum * this.vertexSize * 4);
+                var view = that.positions.subarray(0, elemNum * that.vertexSize * 4);
                 gl.bufferSubData(gl.ARRAY_BUFFER, 0, view);
             }
 
             elemNum = 0;
             index = 0;
-            for (var i = 0; i < drawList.length; i++) {
-                currentElement = drawList[i];
+            for (var i = 0; i < batch.length; i++) {
+                currentElement = batch[i];
 
                 if (currentElement.surface !== undefined && currentElement.surface.width !== undefined) {
                     if (currentElement._dirtyText === true) {
@@ -249,14 +237,14 @@ class SpriteBatchRendererClass {
                     texture = TextureManager.getTexture(currentElement.surfaceId);
                     if (texture === undefined) {
                         if (currentTexture !== undefined) {
-                            this.__flushBatch(currentTexture, elemNum, index);
+                            that.__flushBatch(currentTexture, elemNum, index);
 
                             index += elemNum;
                             elemNum = 0;
                         }
                         currentTexture = TextureManager.createTexture(gl, currentElement.surfaceId, currentElement.surface);
                     } else if (currentTexture !== texture || elemNum >= maxSize) {
-                        this.__flushBatch(currentTexture, elemNum, index);
+                        that.__flushBatch(currentTexture, elemNum, index);
 
                         index += elemNum;
                         total += elemNum;
@@ -270,15 +258,43 @@ class SpriteBatchRendererClass {
 
                 }
             }
+            that.__flushBatch(currentTexture, elemNum, index);
 
-            this.__flushBatch(currentTexture, elemNum, index);
+            currentTexture = undefined;
+            that.objectfactory.dispose( drawMatrix );
+            that.objectfactory.dispose( pivotMatrix );
+        }
+
+        if( viewport.scene !== undefined ) {
+
+            this._renderTarget = viewport._renderTarget;
+
+            preDrawMatrix.makeTranslate(0, this._renderTarget.height).scale(1, -1);
+
+            gl = this._renderTarget.glContext;
+
+            gl.viewport(0, 0, this._renderTarget.width, this._renderTarget.height);
+            if(!gl.isContextLost()) {
+                gl.clear(gl.COLOR_BUFFER_BIT);
+            }
+
+
+            fillDrawList(viewport.scene, drawList);
+            while( drawList.length > 0 ){
+                if( drawList.length <= maxSize ){
+                    drawBatch( drawList );
+                    drawList.length = 0;
+                } else {
+                    let batch = drawList.splice( 0, maxSize );
+                    drawBatch( batch );
+                }
+            }
+
         }
 
         drawList.length = 0;
-        currentTexture = undefined;
 
-        this.objectfactory.reset( drawMatrix );
-        this.objectfactory.reset( pivotMatrix );
+        this.objectfactory.dispose( preDrawMatrix );
     }
 
     __flushBatch ( texture, size, offsetIndex ) {

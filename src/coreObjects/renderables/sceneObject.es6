@@ -68,7 +68,7 @@ class SceneObject extends FactoryObject{
         this._transformMatrix.reset();
         this._boundingRect.reset();
 
-        this.children.forEach( child => this.objectFactory.reset( child ) );
+        this.children.forEach( child => this.objectFactory.dispose( child ) );
         this.children.length = 0;
 
         this._parent = undefined;
@@ -297,10 +297,10 @@ class SceneObject extends FactoryObject{
         d = d + (d < 0 ? 0 : 1) >> 0;
 
         this._boundingRect.setPoints( a, b, c, d );
-        this.objectFactory.reset( p0 );
-        this.objectFactory.reset( p1 );
-        this.objectFactory.reset( p2 );
-        this.objectFactory.reset( p3 );
+        this.objectFactory.dispose( p0 );
+        this.objectFactory.dispose( p1 );
+        this.objectFactory.dispose( p2 );
+        this.objectFactory.dispose( p3 );
     }
 }
 

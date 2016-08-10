@@ -35,7 +35,7 @@ class Animation extends FactoryObject{
     reset(){
         this.frameCount = 0;
         this.currentFrame = 0;
-        this.frames.forEach( frame => this.objectFactory.reset( frame ) );
+        this.frames.forEach( frame => this.objectFactory.dispose( frame ) );
         this.frames.clear();
     }
 
@@ -70,8 +70,8 @@ class Sprite extends SceneObject{
     }
 
     reset(){
-        this.objectFactory.reset( this._rect );
-        this.objectFactory.reset( this._offset );
+        this.objectFactory.dispose( this._rect );
+        this.objectFactory.dispose( this._offset );
         super.reset();
 
     }

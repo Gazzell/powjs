@@ -10,7 +10,7 @@
             var engine = pow.engine;
             var sprites = [];
             var scene = engine.objectFactory.create('SceneObject');
-            for(var i = 0; i < 1000; i++ ){
+            for(var i = 0; i < 10000; i++ ){
                 sprites[i] = engine.objectFactory.create('Sprite');
             }
             var lastTime;
@@ -18,7 +18,7 @@
             engine.resourceManager.downloadResource('../test/resourceManagerRes/star.png', 'star', 'image')
                     .then(
                             function( image ) {
-                                for(var i = 0; i < 1000; i++ ) {
+                                for(var i = 0; i < 10000; i++ ) {
                                     sprites[i].spriteSheet = 'star';
                                     sprites[i].position.set(Math.random() * 800, Math.random() * 600);
                                     sprites[i].anchor = "CENTER";
@@ -33,7 +33,7 @@
                 requestAnimationFrame(animate);
                 time = Date.now();
                 deltaTime = time - lastTime;
-                for(var i = 0; i < 1000; i++ ) {
+                for(var i = 0; i < 10000; i++ ) {
                     sprites[i].transform('rotate', 0.01);
                 }
 
